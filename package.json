@@ -9,6 +9,9 @@
     "preview": "astro preview",
     "astro": "astro"
   },
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
     "@astrojs/starlight": "^0.35.2",
     "@cybermp/server-types": "^1.1.11",
