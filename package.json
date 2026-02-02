@@ -11,13 +11,18 @@
   },
   "dependencies": {
     "@astrojs/starlight": "^0.35.2",
+    "@cybermp/server-types": "^1.1.11",
     "astro": "^5.6.1",
     "sharp": "^0.34.2",
     "starlight-links-validator": "^0.17.1",
-    "starlight-theme-next": "^0.3.2"
+    "starlight-theme-next": "^0.3.2",
+    "starlight-typedoc": "^0.21.5",
+    "typedoc": "^0.28.16",
+    "typedoc-plugin-markdown": "^4.9.0"
   },
   "packageManager": "pnpm@10.14.0",
   "devDependencies": {
+    "@cybermp/client-types": "^1.5.2",
     "prettier": "^3.6.2"
   }
 }

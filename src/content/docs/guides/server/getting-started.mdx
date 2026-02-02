@@ -1,0 +1,160 @@
+---
+title: Getting started
+description: .
+slug: server/getting-started
+---
+import { FileTree } from '@astrojs/starlight/components';
+
+
+There are two ways of running CyberMP Server -
+
+- [In Docker](#docker)
+- [Natively (Windows / Linux)](#natively)
+
+## Docker
+
+### Pull the Docker Image
+
+Pull the latest server image:
+
+```shell
+docker pull ghcr.io/cyber-mp/server:latest
+```
+
+### Setup
+
+- Create a project directory on your host machine.
+- Inside that directory, create a `resources` folder.
+- Create a `server.toml` file
+
+#### Configure server
+
+Copy the [Example Configuration](#configuration-example) into your `server.toml`.
+
+At a minimum, ensure your `connection_host_addr` is set correctly.
+For advanced options, see the [Full Configuration Reference](/server/configuration).
+
+### Run
+
+#### Docker run
+
+Open terminal and run:
+```shell
+docker run -it \
+--mount type=bind,source="$(pwd)"/server.toml,target=/cybermp/server.toml \
+--mount type=bind,source="$(pwd)"/resources,target=/cybermp/resources \
+-p 2077:2077/tcp \
+-p 2077:2077/udp \
+ghcr.io/cyber-mp/server:latest
+```
+
+#### Docker compose
+
+Create a `docker-compose.yml` file with following content:
+```yaml
+services:
+  server:
+    image: ghcr.io/cyber-mp/server:latest
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./server.toml:/cybermp/server.toml
+      - ./resources:/cybermp/resources
+    ports:
+      - 2077:2077/tcp
+      - 2077:2077/udp
+```
+
+Open terminal and run:
+```shell
+docker compose up
+```
+
+### Verify
+
+Check your terminal output. A successful start will display the initialization logs:
+```shell
+[00:00:00] [Server] CyberMP server starting...
+[00:00:00] [Server] Resources initializing...
+>
+```
+
+To confirm the server is reachable, visit http://127.0.0.1:2077 in your browser. It should return the server version string.
+
+Congrats! You are now running CyberMP Server!
+
+## Natively
+
+### Getting files
+
+1. Navigate to the [GitHub Releases](https://github.com/cyber-mp/cybermp-server-releases) page.
+2. Download the archive for your platform (Windows or Linux).
+3. Extract the contents to your preferred installation directory.
+
+### Setup
+
+The server requires a specific directory layout to load resources and configuration. Create a `resources` folder and a `server.toml` file in the root directory.
+
+The result should look something like this -
+<FileTree>
+    - bin
+        - ...
+    - cybermp
+        - ...
+    - resources
+        - ...
+    - CoreRuntime.dll # # (libCoreRuntime.so on Linux)
+    - **CyberMP-Server.exe** # (cybermp-server on Linux)
+    - server.toml
+</FileTree>
+
+#### Configure server
+
+Copy the [Example Configuration](#configuration-example) into your `server.toml`.
+
+At a minimum, ensure your `connection_host_addr` is set correctly.
+For advanced options, see the [Full Configuration Reference](/server/configuration).
+
+### Run
+
+Open your terminal in the server root directory and run the command for your OS:
+
+Windows:
+```shell
+.\CyberMP-Server.exe -run
+```
+
+Linux:
+```shell
+./cybermp-server -run
+```
+
+### Verify
+
+Check your terminal output. A successful start will display the initialization logs:
+```shell
+[00:00:00] [Server] CyberMP server starting...
+[00:00:00] [Server] Resources initializing...
+>
+```
+
+To confirm the server is reachable, visit http://127.0.0.1:2077 in your browser. It should return the server version string.
+
+Congrats! You are now running CyberMP Server!
+
+## Configuration example
+
+Example of `server.toml` configuration:
+```toml
+tcp_host = "0.0.0.0:2077"
+udp_host = "0.0.0.0:2077"
+
+connection_host_addr = "127.0.0.1:2077"
+max_players = 20
+
+resources = []
+
+disable_VoIP_server = false
+
+steam_api_key = "none"
+```
