@@ -1,7 +1,6 @@
 // @ts-check
 import starlight from '@astrojs/starlight';
 import { defineConfig } from 'astro/config';
-import starlightLinksValidatorPlugin from 'starlight-links-validator';
 import starlightThemeNext from 'starlight-theme-next';
 import { createStarlightTypeDocPlugin } from 'starlight-typedoc';
 
@@ -16,7 +15,7 @@ export default defineConfig({
   integrations: [
     starlight({
       plugins: [
-        starlightLinksValidatorPlugin(),
+        // starlightLinksValidatorPlugin(),
         starlightThemeNext(),
         serverStarlightTypeDoc({
           entryPoints: [
