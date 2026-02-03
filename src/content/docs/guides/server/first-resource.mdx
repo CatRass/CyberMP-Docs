@@ -3,6 +3,7 @@ title: Creating Your First Resource
 description: .
 slug: guides/server/first-resource
 ---
+import { FileTree } from '@astrojs/starlight/components';
 
 This tutorial will guide you through creating a simple "Hello World" resource to learn the basic structure of CyberMP server-side scripting.
 
@@ -60,6 +61,15 @@ steam_api_key = "none"
 ```
 
 ### 5. Verify the Result
+
+Your final structure should look something like this -
+<FileTree>
+    - resources
+        - hello_world
+            - resource.toml
+            - server.js
+    - server.toml
+</FileTree>
 
 Start your server. If everything is configured correctly, you will see your message in the console logs during the initialization phase:
 
