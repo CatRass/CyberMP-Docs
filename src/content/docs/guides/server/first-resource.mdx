@@ -1,5 +1,7 @@
 ---
 title: Creating Your First Resource
+sidebar:
+  label: First resource
 description: .
 slug: guides/server/first-resource
 ---
@@ -9,14 +11,14 @@ This tutorial will guide you through creating a simple "Hello World" resource to
 
 By the end of this guide, you will have a resource that prints a message to the server console when it starts.
 
-### 1. Create the Resource Folder
+## 1. Create the Resource Folder
 
 CyberMP identifies resources by their folder names within the resources directory.
 
 - Navigate to your server's resources folder.
 - Create a new folder named `hello_world`. This is your resource directory.
 
-### 2. Configure the Resource
+## 2. Configure the Resource
 
 Every resource requires a `resource.toml` file to define its entry points and behavior.
 
@@ -28,7 +30,7 @@ Every resource requires a `resource.toml` file to define its entry points and be
 server_script = './server.js'
 ```
 
-### 3. Write the Script
+## 3. Write the Script
 
 Now, create the actual logic for your resource.
 
@@ -39,7 +41,7 @@ Now, create the actual logic for your resource.
 console.log('Hello World from CyberMP!');
 ```
 
-### 4. Load the Resource
+## 4. Load the Resource
 
 To see your resource in action, you need to tell the server to load it.
 
@@ -60,7 +62,7 @@ disable_VoIP_server = false
 steam_api_key = "none"
 ```
 
-### 5. Verify the Result
+## 5. Verify the Result
 
 Your final structure should look something like this -
 <FileTree>
