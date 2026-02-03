@@ -303,7 +303,7 @@ Returns model hash convertable to number.
 | Parameter | Type | Description |
 | ------ | ------ | ------ |
 | `name` | `string` | Model name |
-| `type` | `"cname"` \| `"tweakdbid"` | Model name type |
+| `type` | `"tweakdbid"` \| `"cname"` | Model name type |
 
 #### Returns
 

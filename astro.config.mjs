@@ -5,10 +5,8 @@ import starlightSidebarTopics from 'starlight-sidebar-topics';
 import starlightThemeNext from 'starlight-theme-next';
 import { createStarlightTypeDocPlugin } from 'starlight-typedoc';
 
-const [serverStarlightTypeDoc, serverTypeDocSidebarGroup] =
-  createStarlightTypeDocPlugin();
-const [clientStarlightTypeDoc, clientTypeDocSidebarGroup] =
-  createStarlightTypeDocPlugin();
+const [serverStarlightTypeDoc] = createStarlightTypeDocPlugin();
+const [clientStarlightTypeDoc] = createStarlightTypeDocPlugin();
 
 // https://astro.build/config
 export default defineConfig({
@@ -68,7 +66,7 @@ export default defineConfig({
             './node_modules/@cybermp/server-types/index.d.ts',
             './node_modules/@cybermp/server-types/events.d.ts',
           ],
-          tsconfig: 'tsconfig.json',
+          tsconfig: 'tsconfig.typedoc.json',
           output: 'reference/server/api',
           typeDoc: {
             githubPages: false,
@@ -97,7 +95,7 @@ export default defineConfig({
             './node_modules/@cybermp/client-types/out/precomputed/primitives.d.ts',
             './node_modules/@cybermp/client-types/out/precomputed/voice-chat.d.ts',
           ],
-          tsconfig: 'tsconfig.json',
+          tsconfig: 'tsconfig.typedoc.json',
           output: 'reference/client/api',
           typeDoc: {
             githubPages: false,
@@ -138,28 +136,6 @@ export default defineConfig({
       editLink: {
         baseUrl: 'https://github.com/cyber-mp/cybermp-docs/edit/main',
       },
-      // sidebar: [
-      //   {
-      //     label: 'Guides',
-      //     items: [
-      //       '/',
-      //     ],
-      //   },
-      //   {
-      //     label: 'Reference',
-      //     items: [
-
-      //     ],
-      //   },
-      //   {
-      //     label: 'Server reference API',
-      //     autogenerate: { directory: 'server-reference' },
-      //   },
-      //   {
-      //     label: 'Client reference API',
-      //     autogenerate: { directory: 'client-reference' },
-      //   },
-      // ],
     }),
   ],
 });
