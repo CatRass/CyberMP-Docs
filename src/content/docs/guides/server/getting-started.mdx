@@ -1,12 +1,11 @@
 ---
 title: Getting started
 description: .
-slug: server/getting-started
+slug: guides/server/getting-started
 ---
 import { FileTree } from '@astrojs/starlight/components';
 
-
-There are two ways of running CyberMP Server -
+There are two ways to run CyberMP Server -
 
 - [In Docker](#docker)
 - [Natively (Windows / Linux)](#natively)
@@ -32,7 +31,7 @@ docker pull ghcr.io/cyber-mp/server:latest
 Copy the [Example Configuration](#configuration-example) into your `server.toml`.
 
 At a minimum, ensure your `connection_host_addr` is set correctly.
-For advanced options, see the [Full Configuration Reference](/server/configuration).
+For advanced options, see the [Full Configuration Reference](/reference/server/configuration).
 
 ### Run
 
@@ -51,7 +50,7 @@ ghcr.io/cyber-mp/server:latest
 #### Docker compose
 
 Create a `docker-compose.yml` file with following content:
-```yaml
+```yaml title="docker-compose.yml"
 services:
   server:
     image: ghcr.io/cyber-mp/server:latest
@@ -60,6 +59,7 @@ services:
     volumes:
       - ./server.toml:/cybermp/server.toml
       - ./resources:/cybermp/resources
+      - ./crashdumps:/cybermp/crashdumps
     ports:
       - 2077:2077/tcp
       - 2077:2077/udp
@@ -87,9 +87,24 @@ Congrats! You are now running CyberMP Server!
 
 ### Getting files
 
-1. Navigate to the [GitHub Releases](https://github.com/cyber-mp/cybermp-server-releases) page.
+1. Navigate to the <a href="https://github.com/cyber-mp/cybermp-server-releases/releases" target="_blank">Github releases</a> page.
 2. Download the archive for your platform (Windows or Linux).
 3. Extract the contents to your preferred installation directory.
+
+#### Prerequisites for Linux
+The CyberMP Linux binary is well tested only on Ubuntu for now. While it is compatible with other distributions, you must ensure the following dependencies are installed:
+
+- `libssl1.1`
+- `libnng-dev`
+- `libc-ares-dev`
+- `libatomic1`
+- `curl`
+- `libcurl3-gnutls`
+
+To install these on Ubuntu/Debian, run:
+```shell
+sudo apt update && sudo apt install -y libssl1.1 libnng-dev libc-ares-dev libatomic1 curl libcurl3-gnutls
+```
 
 ### Setup
 
@@ -113,7 +128,7 @@ The result should look something like this -
 Copy the [Example Configuration](#configuration-example) into your `server.toml`.
 
 At a minimum, ensure your `connection_host_addr` is set correctly.
-For advanced options, see the [Full Configuration Reference](/server/configuration).
+For advanced options, see the [Full Configuration Reference](/reference/server/configuration).
 
 ### Run
 
@@ -142,10 +157,11 @@ To confirm the server is reachable, visit http://127.0.0.1:2077 in your browser.
 
 Congrats! You are now running CyberMP Server!
 
+
+:::note
 ## Configuration example
 
-Example of `server.toml` configuration:
-```toml
+```toml title="server.toml"
 tcp_host = "0.0.0.0:2077"
 udp_host = "0.0.0.0:2077"
 
