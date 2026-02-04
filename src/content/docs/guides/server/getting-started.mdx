@@ -3,160 +3,151 @@ title: Getting started
 description: .
 slug: guides/server/getting-started
 ---
-import { FileTree } from '@astrojs/starlight/components';
+import { FileTree, Tabs, TabItem, Steps } from '@astrojs/starlight/components';
 
-There are two ways to run CyberMP Server -
+There are two ways to run CyberMP Server:
 
-- [In Docker](#docker)
-- [Natively (Windows / Linux)](#natively)
+- In Docker
+- Native (Windows / Linux)
 
-## Docker
 
-### Pull the Docker Image
+<Steps>
+1. ## Getting files
+    <Tabs syncKey="execute-method">
+        <TabItem label="Docker">
+            Pull the latest server image:
 
-Pull the latest server image:
+            ```shell
+            docker pull ghcr.io/cyber-mp/server:latest
+            ```
+        </TabItem>
+        <TabItem label="Native">
+            1. Navigate to the <a href="https://github.com/cyber-mp/cybermp-server-releases/releases" target="_blank">Github releases</a> page.
+            2. Download the archive for your platform (Windows or Linux).
+            3. Extract the contents to your preferred installation directory.
+        </TabItem>
+    </Tabs>
 
-```shell
-docker pull ghcr.io/cyber-mp/server:latest
-```
+2. ## Setup
+    <Tabs syncKey="execute-method">
+        <TabItem label="Docker">
+            - Create a project directory on your host machine.
+            - Inside that directory, create a `resources` folder.
+            - Create a `server.toml` file
+        </TabItem>
+        <TabItem label="Native">
+            The server requires a specific directory layout to load resources and configuration. Create a `resources` folder and a `server.toml` file in the root directory.
 
-### Setup
+            The result should look something like this:
+            <FileTree>
+                - bin
+                    - ...
+                - cybermp
+                    - ...
+                - resources
+                    - ...
+                - CoreRuntime.dll # # (libCoreRuntime.so on Linux)
+                - **CyberMP-Server.exe** # (cybermp-server on Linux)
+                - server.toml
+            </FileTree>
+        </TabItem>
+    </Tabs>
 
-- Create a project directory on your host machine.
-- Inside that directory, create a `resources` folder.
-- Create a `server.toml` file
+    #### Configure server
 
-#### Configure server
+    Copy the [Example Configuration](#configuration-example) into your `server.toml`.
 
-Copy the [Example Configuration](#configuration-example) into your `server.toml`.
+    At a minimum, ensure your `connection_host_addr` is set correctly.
+    For advanced options, see the [Full Configuration Reference](/reference/server/configuration).
 
-At a minimum, ensure your `connection_host_addr` is set correctly.
-For advanced options, see the [Full Configuration Reference](/reference/server/configuration).
+3. ## Run
+    <Tabs syncKey="execute-method">
+        <TabItem label="Docker">
+            <Tabs>
+              <TabItem label="Docker run">
+                  Open terminal and run:
+                  ```shell
+                  docker run -it \
+                  --mount type=bind,source="$(pwd)"/server.toml,target=/cybermp/server.toml \
+                  --mount type=bind,source="$(pwd)"/resources,target=/cybermp/resources \
+                  -p 2077:2077/tcp \
+                  -p 2077:2077/udp \
+                  ghcr.io/cyber-mp/server:latest
+                  ```
+              </TabItem>
+              <TabItem label="Docker compose">
 
-### Run
+                  Create a `docker-compose.yml` file with following content:
+                  ```yaml title="docker-compose.yml"
+                  services:
+                    server:
+                      image: ghcr.io/cyber-mp/server:latest
+                      stdin_open: true
+                      tty: true
+                      volumes:
+                        - ./server.toml:/cybermp/server.toml
+                        - ./resources:/cybermp/resources
+                        - ./crashdumps:/cybermp/crashdumps
+                      ports:
+                        - 2077:2077/tcp
+                        - 2077:2077/udp
+                  ```
 
-#### Docker run
+                  Open terminal and run:
+                  ```shell
+                  docker compose up
+                  ```
+              </TabItem>
+            </Tabs>
+        </TabItem>
+        <TabItem label="Native">
+            #### Prerequisites for Linux
+            The CyberMP Linux binary is well tested only on Ubuntu for now. While it is compatible with other distributions, you must ensure the following dependencies are installed:
 
-Open terminal and run:
-```shell
-docker run -it \
---mount type=bind,source="$(pwd)"/server.toml,target=/cybermp/server.toml \
---mount type=bind,source="$(pwd)"/resources,target=/cybermp/resources \
--p 2077:2077/tcp \
--p 2077:2077/udp \
-ghcr.io/cyber-mp/server:latest
-```
+            - `libssl1.1`
+            - `libnng-dev`
+            - `libc-ares-dev`
+            - `libatomic1`
+            - `curl`
+            - `libcurl3-gnutls`
 
-#### Docker compose
+            To install these on Ubuntu/Debian, run:
+            ```shell
+            sudo apt update && sudo apt install -y libssl1.1 libnng-dev libc-ares-dev libatomic1 curl libcurl3-gnutls
+            ```
 
-Create a `docker-compose.yml` file with following content:
-```yaml title="docker-compose.yml"
-services:
-  server:
-    image: ghcr.io/cyber-mp/server:latest
-    stdin_open: true
-    tty: true
-    volumes:
-      - ./server.toml:/cybermp/server.toml
-      - ./resources:/cybermp/resources
-      - ./crashdumps:/cybermp/crashdumps
-    ports:
-      - 2077:2077/tcp
-      - 2077:2077/udp
-```
+            <br/>
 
-Open terminal and run:
-```shell
-docker compose up
-```
+            Open your terminal in the server root directory and run the command for your OS:
 
-### Verify
+            <Tabs>
+                <TabItem label="Windows">
+                    ```shell
+                    .\CyberMP-Server.exe -run
+                    ```
+                </TabItem>
+                <TabItem label="Linux">
+                    ```shell
+                    ./cybermp-server -run
+                    ```
+                </TabItem>
+            </Tabs>
+        </TabItem>
+    </Tabs>
 
-Check your terminal output. A successful start will display the initialization logs:
-```ansi
-[38;2;179;133;0m[00:00:00] [Server][0m CyberMP server starting...
-[38;2;179;133;0m[00:00:00] [Server][0m Resources initializing...
->
-```
+4. ## Verify
+    Check your terminal output. A successful start will display the initialization logs:
+    ```ansi
+    [38;2;179;133;0m[00:00:00] [Server][0m CyberMP server starting...
+    [38;2;179;133;0m[00:00:00] [Server][0m Resources initializing...
+    >
+    ```
 
-To confirm the server is reachable, visit http://127.0.0.1:2077 in your browser. It should return the server version string.
+    To confirm the server is reachable, visit http://127.0.0.1:2077 in your browser. It should return the server version string.
 
-Congrats! You are now running CyberMP Server!
+    Congrats! You are now running CyberMP Server!
 
-## Natively
-
-### Getting files
-
-1. Navigate to the <a href="https://github.com/cyber-mp/cybermp-server-releases/releases" target="_blank">Github releases</a> page.
-2. Download the archive for your platform (Windows or Linux).
-3. Extract the contents to your preferred installation directory.
-
-#### Prerequisites for Linux
-The CyberMP Linux binary is well tested only on Ubuntu for now. While it is compatible with other distributions, you must ensure the following dependencies are installed:
-
-- `libssl1.1`
-- `libnng-dev`
-- `libc-ares-dev`
-- `libatomic1`
-- `curl`
-- `libcurl3-gnutls`
-
-To install these on Ubuntu/Debian, run:
-```shell
-sudo apt update && sudo apt install -y libssl1.1 libnng-dev libc-ares-dev libatomic1 curl libcurl3-gnutls
-```
-
-### Setup
-
-The server requires a specific directory layout to load resources and configuration. Create a `resources` folder and a `server.toml` file in the root directory.
-
-The result should look something like this -
-<FileTree>
-    - bin
-        - ...
-    - cybermp
-        - ...
-    - resources
-        - ...
-    - CoreRuntime.dll # # (libCoreRuntime.so on Linux)
-    - **CyberMP-Server.exe** # (cybermp-server on Linux)
-    - server.toml
-</FileTree>
-
-#### Configure server
-
-Copy the [Example Configuration](#configuration-example) into your `server.toml`.
-
-At a minimum, ensure your `connection_host_addr` is set correctly.
-For advanced options, see the [Full Configuration Reference](/reference/server/configuration).
-
-### Run
-
-Open your terminal in the server root directory and run the command for your OS:
-
-Windows:
-```shell
-.\CyberMP-Server.exe -run
-```
-
-Linux:
-```shell
-./cybermp-server -run
-```
-
-### Verify
-
-Check your terminal output. A successful start will display the initialization logs:
-```ansi
-[38;2;179;133;0m[00:00:00] [Server][0m CyberMP server starting...
-[38;2;179;133;0m[00:00:00] [Server][0m Resources initializing...
->
-```
-
-To confirm the server is reachable, visit http://127.0.0.1:2077 in your browser. It should return the server version string.
-
-Congrats! You are now running CyberMP Server!
-
+</Steps>
 
 :::note
 ## Configuration example

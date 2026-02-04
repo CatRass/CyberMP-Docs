@@ -1,6 +1,7 @@
 // @ts-check
 import starlight from '@astrojs/starlight';
 import { defineConfig } from 'astro/config';
+import { pluginCollapsible } from 'expressive-code-collapsible';
 import starlightSidebarTopics from 'starlight-sidebar-topics';
 import starlightThemeNext from 'starlight-theme-next';
 import { createStarlightTypeDocPlugin } from 'starlight-typedoc';
@@ -16,15 +17,34 @@ export default defineConfig({
       plugins: [
         starlightSidebarTopics([
           {
-            label: 'Guides',
-            link: '/',
+            label: 'Guides and recipes',
+            link: '/guides/server/getting-started',
             icon: 'open-book',
             items: [
               {
                 label: 'Server',
+                items: ['guides/server/getting-started'],
+              },
+              {
+                label: 'Resources',
                 items: [
-                  'guides/server/getting-started',
-                  'guides/server/first-resource',
+                  'guides/resources/creating-resource',
+                  'guides/resources/interacting-with-resources',
+                ],
+              },
+              {
+                label: 'General',
+                items: [
+                  'guides/general/type-safety',
+                  'guides/general/hotreload',
+                  'guides/general/rpc',
+                ],
+              },
+              {
+                label: 'Client',
+                items: [
+                  'guides/client/spawning-player',
+                  'guides/client/teleporting-player',
                 ],
               },
             ],
@@ -54,6 +74,8 @@ export default defineConfig({
                     autogenerate: { directory: 'reference/client/api' },
                     collapsed: true,
                   },
+                  'reference/client/console',
+                  'reference/client/working-with-game-natives',
                 ],
               },
             ],
@@ -114,6 +136,9 @@ export default defineConfig({
           },
         }),
       ],
+      expressiveCode: {
+        plugins: [pluginCollapsible({ lineThreshold: 25, previewLines: 10 })],
+      },
       title: 'CyberMP Docs',
       credits: false,
       components: {
@@ -141,4 +166,7 @@ export default defineConfig({
       },
     }),
   ],
+  redirects: {
+    '/': '/guides/server/getting-started',
+  },
 });
