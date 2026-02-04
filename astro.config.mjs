@@ -116,6 +116,9 @@ export default defineConfig({
       ],
       title: 'CyberMP Docs',
       credits: false,
+      components: {
+        ThemeSelect: './src/components/starlight/theme-select.astro',
+      },
       logo: {
         src: './src/assets/logo.svg',
         replacesTitle: true,
