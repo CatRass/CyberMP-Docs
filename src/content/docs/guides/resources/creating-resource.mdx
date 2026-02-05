@@ -18,6 +18,7 @@ By the end of this guide, you will have a resource that prints a message to the 
 
     - Navigate to your server's resources folder.
     - Create a new folder named `hello_world`. This is your resource directory.
+    ---
 
 2. ## Configure the Resource
 
@@ -79,15 +80,15 @@ By the end of this guide, you will have a resource that prints a message to the 
         - server.toml
     </FileTree>
 
+    Start your server. If everything is configured correctly, you will see your message in the console logs during the initialization phase:
+
+    ```ansi {3}
+    [38;2;179;133;0m[00:00:00] [Server][0m CyberMP server starting...
+    [38;2;179;133;0m[00:00:00] [Server][0m Resources initializing...
+    [38;2;179;133;0m[00:00:00] [script:hello_world][0m Hello World from CyberMP!
+    [38;2;179;133;0m[00:00:00] [Resources][0m Loaded resource hello_world
+    ```
+
+    If you connect to the server, and press `F8` to open client console, you should see client log.
+
 </Steps>
-
-Start your server. If everything is configured correctly, you will see your message in the console logs during the initialization phase:
-
-```ansi {3}
-[38;2;179;133;0m[00:00:00] [Server][0m CyberMP server starting...
-[38;2;179;133;0m[00:00:00] [Server][0m Resources initializing...
-[38;2;179;133;0m[00:00:00] [script:hello_world][0m Hello World from CyberMP!
-[38;2;179;133;0m[00:00:00] [Resources][0m Loaded resource hello_world
-```
-
-If you connect to the server, and press `F8` to open client console, you should see client log.

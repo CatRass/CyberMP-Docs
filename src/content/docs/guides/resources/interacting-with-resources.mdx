@@ -3,5 +3,36 @@ title: Interacting with resources
 description: CyberMP Server Configuration
 slug: guides/resources/interacting-with-resources
 ---
+This guide covers the manual lifecycle management of server resources using the [Server Console](/reference/server/console).
 
-TODO
+## Refreshing the Resource Index
+
+If you add a completely new folder to your `/resources` directory while the server is running, the server will not recognize it immediately.
+
+To force the server to rescan the directory, use:
+```shell
+refresh
+```
+
+- When to use: Only when you add or delete resource folders or change resource.toml.
+- Effect: The server re-indexes the disk and triggers the onResourcesRefreshed event.
+
+## Starting and Stopping Resources
+
+You can toggle resources on and off without shutting down the server. This is useful for debugging specific scripts or disabling heavy resources during maintenance.
+
+- To Enable:
+```shell
+start {resource_name}
+```
+
+- To Disable:
+```shell
+stop {resource_name}
+```
+
+Example:
+```ansi
+> stop hello_world
+[38;2;179;133;0m[00:00:00] [Resources][0m Stopped resource hello_world
+```

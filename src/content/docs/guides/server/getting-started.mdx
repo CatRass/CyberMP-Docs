@@ -10,7 +10,6 @@ There are two ways to run CyberMP Server:
 - In Docker
 - Native (Windows / Linux)
 
-
 <Steps>
 1. ## Getting files
     <Tabs syncKey="execute-method">
@@ -34,6 +33,13 @@ There are two ways to run CyberMP Server:
             - Create a project directory on your host machine.
             - Inside that directory, create a `resources` folder.
             - Create a `server.toml` file
+
+            The result should look something like this:
+            <FileTree>
+                - resources
+                    - ...
+                - server.toml
+            </FileTree>
         </TabItem>
         <TabItem label="Native">
             The server requires a specific directory layout to load resources and configuration. Create a `resources` folder and a `server.toml` file in the root directory.

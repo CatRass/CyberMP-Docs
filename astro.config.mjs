@@ -30,6 +30,7 @@ export default defineConfig({
                 items: [
                   'guides/resources/creating-resource',
                   'guides/resources/interacting-with-resources',
+                  'guides/resources/live-updates',
                 ],
               },
               {
