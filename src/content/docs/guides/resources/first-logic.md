@@ -2,8 +2,9 @@
 title: Creating Your first client resource
 sidebar:
   label: First logic
+  badge: Temp
 description: .
-slug: guides/server/first-event
+slug: guides/resources/first-logic
 ---
 
 In [previous](/guides/server/first-resource) guide we've created resource `hello_world` that just displays console log in server console.

@@ -31,6 +31,7 @@ export default defineConfig({
                   'guides/resources/creating-resource',
                   'guides/resources/interacting-with-resources',
                   'guides/resources/live-updates',
+                  'guides/resources/first-logic',
                 ],
               },
               {
