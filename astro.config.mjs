@@ -86,10 +86,7 @@ export default defineConfig({
         // starlightLinksValidatorPlugin(),
         starlightThemeNext(),
         serverStarlightTypeDoc({
-          entryPoints: [
-            './node_modules/@cybermp/server-types/index.d.ts',
-            './node_modules/@cybermp/server-types/events.d.ts',
-          ],
+          entryPoints: ['./node_modules/@cybermp/server-types/src/index.d.ts'],
           tsconfig: 'tsconfig.typedoc.json',
           output: 'reference/server/api',
           typeDoc: {
@@ -97,8 +94,8 @@ export default defineConfig({
             hideGenerator: true,
             readme: 'none',
             parametersFormat: 'table',
-            router: 'structure',
-            flattenOutputFiles: true,
+            router: 'category',
+            flattenOutputFiles: false,
             hidePageHeader: true,
             hidePageTitle: true,
             hideBreadcrumbs: true,
@@ -110,23 +107,15 @@ export default defineConfig({
         }),
         clientStarlightTypeDoc({
           entryPoints: [
-            './node_modules/@cybermp/client-types/out/precomputed/classes.d.ts',
-            './node_modules/@cybermp/client-types/out/precomputed/enums.d.ts',
-            './node_modules/@cybermp/client-types/out/precomputed/events.d.ts',
             './node_modules/@cybermp/client-types/out/precomputed/game.d.ts',
-            './node_modules/@cybermp/client-types/out/precomputed/global.d.ts',
-            './node_modules/@cybermp/client-types/out/precomputed/meta.d.ts',
-            './node_modules/@cybermp/client-types/out/precomputed/primitives.d.ts',
-            './node_modules/@cybermp/client-types/out/precomputed/voice-chat.d.ts',
           ],
           tsconfig: 'tsconfig.typedoc.json',
           output: 'reference/client/api',
           typeDoc: {
-            githubPages: false,
             hideGenerator: true,
             readme: 'none',
             parametersFormat: 'table',
-            router: 'structure',
+            router: 'category',
             flattenOutputFiles: true,
             hidePageHeader: true,
             hidePageTitle: true,
@@ -168,6 +157,11 @@ export default defineConfig({
       },
     }),
   ],
+  vite: {
+    server: {
+      host: true,
+    },
+  },
   redirects: {
     '/': '/guides/server/getting-started',
   },

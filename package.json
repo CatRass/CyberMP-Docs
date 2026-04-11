@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "dev": "astro dev",
+    "dev": "astro dev --host",
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
@@ -26,8 +26,9 @@
     "typedoc-plugin-markdown": "^4.9.0"
   },
   "devDependencies": {
-    "@cybermp/client-types": "^1.5.2",
-    "@cybermp/server-types": "^1.1.11",
+    "@biomejs/biome": "2.4.11",
+    "@cybermp/client-types": "^2.0.3",
+    "@cybermp/server-types": "^3.1.1",
     "prettier": "^3.6.2"
   }
 }
