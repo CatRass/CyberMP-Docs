@@ -9,7 +9,7 @@ title: "VehicleDestructionChangeEventData"
 type VehicleDestructionChangeEventData = object;
 ```
 
-Defined in: events.d.ts:134
+Defined in: events.ts:183
 
 ## Properties
 
@@ -21,7 +21,7 @@ Defined in: events.d.ts:134
 brokenGlass: number;
 ```
 
-Defined in: events.d.ts:136
+Defined in: events.ts:185
 
 ***
 
@@ -33,7 +33,7 @@ Defined in: events.d.ts:136
 brokenLights: number;
 ```
 
-Defined in: events.d.ts:137
+Defined in: events.ts:186
 
 ***
 
@@ -45,7 +45,7 @@ Defined in: events.d.ts:137
 flatTire: number;
 ```
 
-Defined in: events.d.ts:138
+Defined in: events.ts:187
 
 ***
 
@@ -57,7 +57,7 @@ Defined in: events.d.ts:138
 vehicleID: number;
 ```
 
-Defined in: events.d.ts:135
+Defined in: events.ts:184
 
 ***
 
@@ -69,4 +69,4 @@ Defined in: events.d.ts:135
 windshieldShattered: boolean;
 ```
 
-Defined in: events.d.ts:139
+Defined in: events.ts:188

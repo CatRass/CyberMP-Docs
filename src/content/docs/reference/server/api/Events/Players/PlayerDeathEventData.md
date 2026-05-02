@@ -9,7 +9,7 @@ title: "PlayerDeathEventData"
 type PlayerDeathEventData = object;
 ```
 
-Defined in: events.d.ts:106
+Defined in: events.ts:155
 
 ## Properties
 
@@ -21,4 +21,4 @@ Defined in: events.d.ts:106
 optional killerId: number;
 ```
 
-Defined in: events.d.ts:107
+Defined in: events.ts:156

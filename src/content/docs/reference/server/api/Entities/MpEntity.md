@@ -5,17 +5,23 @@ prev: false
 title: "MpEntity"
 ---
 
-Defined in: entities.d.ts:21
+Defined in: entities.ts:36
 
 Base interface representing any in-game entity.
 
 ## Extended by
 
-- [`MpObject`](/reference/server/api/entities/mpobject/)
-- [`MpPed`](/reference/server/api/entities/mpped/)
-- [`MpPickup`](/reference/server/api/entities/mppickup/)
+- [`MpObject`](/reference/server/api/entities/objects/mpobject/)
+- [`MpPed`](/reference/server/api/entities/peds/mpped/)
+- [`MpPickup`](/reference/server/api/entities/pickups/mppickup/)
 - [`MpPlayer`](/reference/server/api/entities/mpplayer/)
-- [`MpVehicle`](/reference/server/api/entities/mpvehicle/)
+- [`MpVehicle`](/reference/server/api/entities/vehicles/mpvehicle/)
+
+## Type Parameters
+
+| Type Parameter | Default type |
+| ------ | ------ |
+| `TEntityType` *extends* [`EntityType`](/reference/server/api/entities/entitytype/) | [`EntityType`](/reference/server/api/entities/entitytype/) |
 
 ## Properties
 
@@ -27,7 +33,7 @@ Base interface representing any in-game entity.
 dimension: number;
 ```
 
-Defined in: entities.d.ts:45
+Defined in: entities.ts:60
 
 Virtual world dimension this entity belongs to
 
@@ -41,7 +47,7 @@ Virtual world dimension this entity belongs to
 readonly exist: boolean;
 ```
 
-Defined in: entities.d.ts:42
+Defined in: entities.ts:57
 
 Whether the entity still exists in the world
 
@@ -55,7 +61,7 @@ Whether the entity still exists in the world
 readonly firstOwner: MpPlayer;
 ```
 
-Defined in: entities.d.ts:29
+Defined in: entities.ts:44
 
 First player who synced this entity
 
@@ -69,7 +75,7 @@ First player who synced this entity
 readonly id: number;
 ```
 
-Defined in: entities.d.ts:23
+Defined in: entities.ts:38
 
 Unique entity identifier
 
@@ -83,7 +89,7 @@ Unique entity identifier
 readonly owner: MpPlayer;
 ```
 
-Defined in: entities.d.ts:26
+Defined in: entities.ts:41
 
 Current owner of the entity sync
 
@@ -97,7 +103,7 @@ Current owner of the entity sync
 readonly position: Vector3;
 ```
 
-Defined in: entities.d.ts:30
+Defined in: entities.ts:45
 
 ***
 
@@ -109,7 +115,7 @@ Defined in: entities.d.ts:30
 readonly rotation: Rotation;
 ```
 
-Defined in: entities.d.ts:31
+Defined in: entities.ts:46
 
 ***
 
@@ -121,7 +127,7 @@ Defined in: entities.d.ts:31
 streamingRadius: number;
 ```
 
-Defined in: entities.d.ts:48
+Defined in: entities.ts:63
 
 Distance at which this entity streams in/out
 
@@ -132,12 +138,12 @@ Distance at which this entity streams in/out
 ### type
 
 ```ts
-readonly type: EntityType;
+readonly type: TEntityType;
 ```
 
-Defined in: entities.d.ts:39
+Defined in: entities.ts:54
 
-Type of entity (see [EntityType](/reference/server/api/enums/entitytype/)).
+Type of entity (see [EntityType](/reference/server/api/entities/entitytype/)).
 
 ***
 
@@ -149,7 +155,7 @@ Type of entity (see [EntityType](/reference/server/api/enums/entitytype/)).
 readonly yaw: number;
 ```
 
-Defined in: entities.d.ts:34
+Defined in: entities.ts:49
 
 Yaw angle in degrees
 
@@ -163,7 +169,7 @@ Yaw angle in degrees
 getMeta<T>(key): T;
 ```
 
-Defined in: entities.d.ts:60
+Defined in: entities.ts:75
 
 Retrieves metadata stored on this entity.
 
@@ -204,7 +210,7 @@ setMeta(
    sync?): void;
 ```
 
-Defined in: entities.d.ts:69
+Defined in: entities.ts:84
 
 Sets metadata on this entity.
 

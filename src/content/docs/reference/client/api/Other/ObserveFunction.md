@@ -9,7 +9,7 @@ title: "ObserveFunction"
 type ObserveFunction = <C, I, M>(className, methodName, callback) => void;
 ```
 
-Defined in: precomputed/game.d.ts:32
+Defined in: game.d.ts:24
 
 ## Type Parameters
 

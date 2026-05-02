@@ -5,9 +5,12 @@
     "moduleResolution": "bundler",
     "skipLibCheck": true,
     "strict": true,
-    "noUnusedLocals": true,
-    "noImplicitAny": true,
+    "noUnusedLocals": false,
+    "noImplicitAny": false,
     "noEmit": true,
+    "allowImportingTsExtensions": true,
   },
-  "include": ["./node_modules/@cybermp/**/*"],
+  "include": [
+    "./node_modules/@cybermp/**/*"
+  ],
 }

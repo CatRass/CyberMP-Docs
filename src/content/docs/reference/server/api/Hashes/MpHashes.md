@@ -5,7 +5,7 @@ prev: false
 title: "MpHashes"
 ---
 
-Defined in: hashes.d.ts:7
+Defined in: hashes.ts:7
 
 Converts a path/name to any game hash type.
 
@@ -19,7 +19,7 @@ Converts a path/name to any game hash type.
 cname(path): GameHash;
 ```
 
-Defined in: hashes.d.ts:9
+Defined in: hashes.ts:9
 
 #### Parameters
 
@@ -41,7 +41,7 @@ Defined in: hashes.d.ts:9
 resref(path): GameHash;
 ```
 
-Defined in: hashes.d.ts:10
+Defined in: hashes.ts:10
 
 #### Parameters
 
@@ -63,7 +63,7 @@ Defined in: hashes.d.ts:10
 tweakdbid(path): GameHash;
 ```
 
-Defined in: hashes.d.ts:8
+Defined in: hashes.ts:8
 
 #### Parameters
 

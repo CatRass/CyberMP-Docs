@@ -43,14 +43,11 @@ importers:
         specifier: 2.4.11
         version: 2.4.11
       '@cybermp/client-types':
-        specifier: ^2.0.3
-        version: 2.0.3
+        specifier: ^2.2.1
+        version: 2.2.1
       '@cybermp/server-types':
-        specifier: ^3.1.1
-        version: 3.1.1
-      prettier:
-        specifier: ^3.6.2
-        version: 3.8.1
+        specifier: ^3.2.3
+        version: 3.2.3
 
 packages:
 
@@ -167,11 +164,11 @@ packages:
     resolution: {integrity: sha512-kzyuwOAQnXJNLS9PSyrk0CWk35nWJW/zl/6KvnTBMFK65gm7U1/Z5BqjxeapjZCIhQcM/DsrEmcbRwDyXyXK4A==}
     engines: {node: '>=14'}
 
-  '@cybermp/client-types@2.0.3':
-    resolution: {integrity: sha512-Mk71Ua3GaTs5TJ7GT8tRdQe9ZSMz/INrk4pn6pEwxLxPjsUH6F/hongR4ToxH+wqNaHMaJBTY+D4/sOwKQ7yUg==}
+  '@cybermp/client-types@2.2.1':
+    resolution: {integrity: sha512-FLfYEulx/EItLWbE0WylU3fuJq+lqc/iybs2D5A8jJksYcQtrfj1//swhM9McTp6hOORWVBxNKUFck3mSAXrwA==}
 
-  '@cybermp/server-types@3.1.1':
-    resolution: {integrity: sha512-qGK9iuOTXTGn7HyEA5+TxbKehX+YRmbAqo1oJdceioeocAHr8un0xBFAOnJGJL2S3Qlv/iYBUCaitrnSz28/0A==}
+  '@cybermp/server-types@3.2.3':
+    resolution: {integrity: sha512-nzGdDhjNTwyNAzrnd6oRaUuyvZ81i0h7icTicpesRvo+o00dByyNBcxuAWatgP28lOjGPrcQNRvtYtMq7HpD7A==}
 
   '@emnapi/runtime@1.8.1':
     resolution: {integrity: sha512-mehfKSMWjjNol8659Z8KxEMrdSJDDot5SXMq00dM8BN4o+CLNXQ0xH2V7EchNHV4RmbZLmmPdEaXZc5H2FXmDg==}
@@ -1513,11 +1510,6 @@ packages:
     resolution: {integrity: sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg==}
     engines: {node: ^10 || ^12 || >=14}
 
-  prettier@3.8.1:
-    resolution: {integrity: sha512-UOnG6LftzbdaHZcKoPFtOcCKztrQ57WkHDeRD9t/PTQtmT0NHSeWWepj6pS0z/N7+08BHFDQVUrfmfMRcZwbMg==}
-    engines: {node: '>=14'}
-    hasBin: true
-
   prismjs@1.30.0:
     resolution: {integrity: sha512-DEvV2ZF2r2/63V+tK8hQvrR2ZGn10srHbXviTlcv7Kpzw8jWiNTqbVgjO3IY8RxrrOUF8VPMQQFysYYYv0YZxw==}
     engines: {node: '>=6'}
@@ -2161,9 +2153,9 @@ snapshots:
 
   '@ctrl/tinycolor@4.2.0': {}
 
-  '@cybermp/client-types@2.0.3': {}
+  '@cybermp/client-types@2.2.1': {}
 
-  '@cybermp/server-types@3.1.1': {}
+  '@cybermp/server-types@3.2.3': {}
 
   '@emnapi/runtime@1.8.1':
     dependencies:
@@ -3868,8 +3860,6 @@ snapshots:
       nanoid: 3.3.11
       picocolors: 1.1.1
       source-map-js: 1.2.1
-
-  prettier@3.8.1: {}
 
   prismjs@1.30.0: {}
 

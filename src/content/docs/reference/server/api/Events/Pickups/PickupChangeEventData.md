@@ -9,7 +9,7 @@ title: "PickupChangeEventData"
 type PickupChangeEventData = object;
 ```
 
-Defined in: events.d.ts:155
+Defined in: events.ts:234
 
 ## Properties
 
@@ -21,7 +21,7 @@ Defined in: events.d.ts:155
 pickupHash: GameHash;
 ```
 
-Defined in: events.d.ts:157
+Defined in: events.ts:236
 
 ***
 
@@ -33,7 +33,7 @@ Defined in: events.d.ts:157
 pickupHashes: GameHash[];
 ```
 
-Defined in: events.d.ts:158
+Defined in: events.ts:237
 
 ***
 
@@ -45,4 +45,4 @@ Defined in: events.d.ts:158
 pickupNetId: number;
 ```
 
-Defined in: events.d.ts:156
+Defined in: events.ts:235

@@ -5,7 +5,7 @@ prev: false
 title: "MpCommands"
 ---
 
-Defined in: commands.d.ts:6
+Defined in: commands.ts:6
 
 ## Methods
 
@@ -17,7 +17,7 @@ Defined in: commands.d.ts:6
 add(commandName, callback): void;
 ```
 
-Defined in: commands.d.ts:12
+Defined in: commands.ts:12
 
 Register a command in the server scope.
 

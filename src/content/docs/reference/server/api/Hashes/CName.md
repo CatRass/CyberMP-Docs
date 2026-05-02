@@ -9,4 +9,4 @@ title: "CName"
 type CName = GameHash;
 ```
 
-Defined in: shared.d.ts:37
+Defined in: shared.ts:37

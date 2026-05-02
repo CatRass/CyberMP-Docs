@@ -9,7 +9,7 @@ title: "Rotation"
 type Rotation = [number, number, number];
 ```
 
-Defined in: shared.d.ts:24
+Defined in: shared.ts:24
 
 0 - pitch
 1 - roll

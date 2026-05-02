@@ -9,7 +9,7 @@ title: "AppearanceWeightPropertyData"
 type AppearanceWeightPropertyData = object;
 ```
 
-Defined in: events.d.ts:87
+Defined in: events.ts:136
 
 ## Properties
 
@@ -21,7 +21,7 @@ Defined in: events.d.ts:87
 regionHash: GameHash;
 ```
 
-Defined in: events.d.ts:89
+Defined in: events.ts:138
 
 ***
 
@@ -33,7 +33,7 @@ Defined in: events.d.ts:89
 targetHash: GameHash;
 ```
 
-Defined in: events.d.ts:88
+Defined in: events.ts:137
 
 ***
 
@@ -45,4 +45,4 @@ Defined in: events.d.ts:88
 weight: number;
 ```
 
-Defined in: events.d.ts:90
+Defined in: events.ts:139

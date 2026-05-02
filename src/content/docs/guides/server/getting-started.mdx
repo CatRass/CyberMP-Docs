@@ -8,7 +8,7 @@ import { FileTree, Tabs, TabItem, Steps } from '@astrojs/starlight/components';
 There are two ways to run CyberMP Server:
 
 - In Docker
-- Native (Windows / Linux)
+- Binary
 
 <Steps>
 1. ## Getting files
@@ -20,7 +20,7 @@ There are two ways to run CyberMP Server:
             docker pull ghcr.io/cyber-mp/server:latest
             ```
         </TabItem>
-        <TabItem label="Native">
+        <TabItem label="Binary">
             1. Navigate to the <a href="https://github.com/cyber-mp/cybermp-server-releases/releases" target="_blank">Github releases</a> page.
             2. Download the archive for your platform (Windows or Linux).
             3. Extract the contents to your preferred installation directory.
@@ -41,7 +41,7 @@ There are two ways to run CyberMP Server:
                 - server.toml
             </FileTree>
         </TabItem>
-        <TabItem label="Native">
+        <TabItem label="Binary">
             The server requires a specific directory layout to load resources and configuration. Create a `resources` folder and a `server.toml` file in the root directory.
 
             The result should look something like this:
@@ -63,7 +63,6 @@ There are two ways to run CyberMP Server:
 
     Copy the [Example Configuration](#configuration-example) into your `server.toml`.
 
-    At a minimum, ensure your `connection_host_addr` is set correctly.
     For advanced options, see the [Full Configuration Reference](/reference/server/configuration).
 
 3. ## Run
@@ -106,7 +105,7 @@ There are two ways to run CyberMP Server:
               </TabItem>
             </Tabs>
         </TabItem>
-        <TabItem label="Native">
+        <TabItem label="Binary">
             #### Prerequisites for Linux
             The CyberMP Linux binary is well tested only on Ubuntu for now. While it is compatible with other distributions, you must ensure the following dependencies are installed:
 
@@ -162,7 +161,6 @@ There are two ways to run CyberMP Server:
 tcp_host = "0.0.0.0:2077"
 udp_host = "0.0.0.0:2077"
 
-connection_host_addr = "127.0.0.1:2077"
 max_players = 20
 
 resources = []

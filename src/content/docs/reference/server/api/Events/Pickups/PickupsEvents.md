@@ -5,9 +5,13 @@ prev: false
 title: "PickupsEvents"
 ---
 
-Defined in: events.d.ts:321
+Defined in: events.ts:455
 
 Events related to Pickups
+
+## Extended by
+
+- [`MpEventsMap`](/reference/server/api/events/mpeventsmap/)
 
 ## Methods
 
@@ -16,10 +20,10 @@ Events related to Pickups
 ### pickupChange()
 
 ```ts
-pickupChange(playerId, data): void;
+pickupChange(playerId, data): boolean | void;
 ```
 
-Defined in: events.d.ts:325
+Defined in: events.ts:459
 
 Triggered when a pickup's state changes.
 
@@ -32,7 +36,7 @@ Triggered when a pickup's state changes.
 
 #### Returns
 
-`void`
+`boolean` \| `void`
 
 ***
 
@@ -44,7 +48,7 @@ Triggered when a pickup's state changes.
 pickupDespawn(id): void;
 ```
 
-Defined in: events.d.ts:345
+Defined in: events.ts:479
 
 Triggered when a pickup despawns.
 
@@ -65,10 +69,10 @@ Triggered when a pickup despawns.
 ### pickupDrop()
 
 ```ts
-pickupDrop(playerId, data): void;
+pickupDrop(playerId, data): boolean | void;
 ```
 
-Defined in: events.d.ts:335
+Defined in: events.ts:469
 
 Triggered when a pickup is dropped.
 
@@ -81,7 +85,7 @@ Triggered when a pickup is dropped.
 
 #### Returns
 
-`void`
+`boolean` \| `void`
 
 ***
 
@@ -90,10 +94,10 @@ Triggered when a pickup is dropped.
 ### pickupRaise()
 
 ```ts
-pickupRaise(playerId, data): void;
+pickupRaise(playerId, data): boolean | void;
 ```
 
-Defined in: events.d.ts:330
+Defined in: events.ts:464
 
 Triggered when a pickup is raised.
 
@@ -106,7 +110,7 @@ Triggered when a pickup is raised.
 
 #### Returns
 
-`void`
+`boolean` \| `void`
 
 ***
 
@@ -118,7 +122,7 @@ Triggered when a pickup is raised.
 pickupSpawn(id): void;
 ```
 
-Defined in: events.d.ts:340
+Defined in: events.ts:474
 
 Triggered when a pickup spawns.
 

@@ -9,7 +9,7 @@ title: "AppearancePropertyData"
 type AppearancePropertyData = object;
 ```
 
-Defined in: events.d.ts:76
+Defined in: events.ts:125
 
 ## Properties
 
@@ -21,7 +21,7 @@ Defined in: events.d.ts:76
 appearanceHash: GameHash;
 ```
 
-Defined in: events.d.ts:80
+Defined in: events.ts:129
 
 ***
 
@@ -33,7 +33,7 @@ Defined in: events.d.ts:80
 chunkMask: GameHash;
 ```
 
-Defined in: events.d.ts:81
+Defined in: events.ts:130
 
 ***
 
@@ -45,7 +45,7 @@ Defined in: events.d.ts:81
 isEnabed: boolean;
 ```
 
-Defined in: events.d.ts:78
+Defined in: events.ts:127
 
 ***
 
@@ -57,7 +57,7 @@ Defined in: events.d.ts:78
 meshType: number;
 ```
 
-Defined in: events.d.ts:77
+Defined in: events.ts:126
 
 ***
 
@@ -69,4 +69,4 @@ Defined in: events.d.ts:77
 pathToMesh: GameHash;
 ```
 
-Defined in: events.d.ts:79
+Defined in: events.ts:128

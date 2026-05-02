@@ -9,7 +9,7 @@ title: "Vector4"
 type Vector4 = [number, number, number, number];
 ```
 
-Defined in: shared.d.ts:16
+Defined in: shared.ts:16
 
 0 - x
 1 - y

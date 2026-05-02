@@ -9,7 +9,7 @@ title: "Vector3Object"
 type Vector3Object = object;
 ```
 
-Defined in: events.d.ts:35
+Defined in: events.ts:84
 
 ## Properties
 
@@ -21,7 +21,7 @@ Defined in: events.d.ts:35
 posX: number;
 ```
 
-Defined in: events.d.ts:36
+Defined in: events.ts:85
 
 ***
 
@@ -33,7 +33,7 @@ Defined in: events.d.ts:36
 posY: number;
 ```
 
-Defined in: events.d.ts:37
+Defined in: events.ts:86
 
 ***
 
@@ -45,4 +45,4 @@ Defined in: events.d.ts:37
 posZ: number;
 ```
 
-Defined in: events.d.ts:38
+Defined in: events.ts:87

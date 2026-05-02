@@ -9,7 +9,7 @@ title: "ServerConfig"
 type ServerConfig = object;
 ```
 
-Defined in: mp.d.ts:49
+Defined in: mp.ts:50
 
 ## Properties
 
@@ -21,7 +21,7 @@ Defined in: mp.d.ts:49
 connection_host_addr: string;
 ```
 
-Defined in: mp.d.ts:52
+Defined in: mp.ts:53
 
 ***
 
@@ -33,7 +33,7 @@ Defined in: mp.d.ts:52
 optional core: CoreConfig;
 ```
 
-Defined in: mp.d.ts:57
+Defined in: mp.ts:58
 
 ***
 
@@ -45,7 +45,7 @@ Defined in: mp.d.ts:57
 disable_VoIP_server: boolean;
 ```
 
-Defined in: mp.d.ts:56
+Defined in: mp.ts:57
 
 ***
 
@@ -57,7 +57,7 @@ Defined in: mp.d.ts:56
 max_players: number;
 ```
 
-Defined in: mp.d.ts:53
+Defined in: mp.ts:54
 
 ***
 
@@ -69,7 +69,7 @@ Defined in: mp.d.ts:53
 resources: string[];
 ```
 
-Defined in: mp.d.ts:55
+Defined in: mp.ts:56
 
 ***
 
@@ -81,7 +81,7 @@ Defined in: mp.d.ts:55
 secret_token: string;
 ```
 
-Defined in: mp.d.ts:54
+Defined in: mp.ts:55
 
 ***
 
@@ -93,7 +93,7 @@ Defined in: mp.d.ts:54
 tcp_host: string;
 ```
 
-Defined in: mp.d.ts:50
+Defined in: mp.ts:51
 
 ***
 
@@ -105,4 +105,4 @@ Defined in: mp.d.ts:50
 udp_host: string;
 ```
 
-Defined in: mp.d.ts:51
+Defined in: mp.ts:52

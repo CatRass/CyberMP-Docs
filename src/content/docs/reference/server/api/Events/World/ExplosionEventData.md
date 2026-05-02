@@ -9,7 +9,7 @@ title: "ExplosionEventData"
 type ExplosionEventData = Vector3Object & object;
 ```
 
-Defined in: events.d.ts:66
+Defined in: events.ts:115
 
 Explosion event information.
 
@@ -17,7 +17,7 @@ Explosion event information.
 
 | Name | Type | Defined in |
 | ------ | ------ | ------ |
-| `hashObject` | [`GameHash`](/reference/server/api/hashes/gamehash/) | events.d.ts:69 |
-| `isVehicle` | `boolean` | events.d.ts:67 |
-| `objNetID` | `number` | events.d.ts:70 |
-| `vehicleID` | `number` | events.d.ts:68 |
+| `hashObject` | [`GameHash`](/reference/server/api/hashes/gamehash/) | events.ts:118 |
+| `isVehicle` | `boolean` | events.ts:116 |
+| `objNetID` | `number` | events.ts:119 |
+| `vehicleID` | `number` | events.ts:117 |

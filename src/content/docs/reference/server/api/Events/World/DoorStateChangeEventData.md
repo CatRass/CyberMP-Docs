@@ -9,7 +9,7 @@ title: "DoorStateChangeEventData"
 type DoorStateChangeEventData = Vector3Object & object;
 ```
 
-Defined in: events.d.ts:45
+Defined in: events.ts:94
 
 Data for a door state change event.
 
@@ -17,5 +17,5 @@ Data for a door state change event.
 
 | Name | Type | Defined in |
 | ------ | ------ | ------ |
-| `hashObject` | [`GameHash`](/reference/server/api/hashes/gamehash/) | events.d.ts:46 |
-| `state` | `boolean` | events.d.ts:47 |
+| `hashObject` | [`GameHash`](/reference/server/api/hashes/gamehash/) | events.ts:95 |
+| `state` | `boolean` | events.ts:96 |

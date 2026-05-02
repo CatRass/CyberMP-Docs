@@ -9,13 +9,13 @@ title: "PickupCreateEventData"
 type PickupCreateEventData = Vector3Object & object;
 ```
 
-Defined in: events.d.ts:173
+Defined in: events.ts:252
 
 ## Type Declaration
 
 | Name | Type | Defined in |
 | ------ | ------ | ------ |
-| `isBag` | `boolean` | events.d.ts:177 |
-| `pickupHash` | [`GameHash`](/reference/server/api/hashes/gamehash/) | events.d.ts:175 |
-| `pickupHashes` | [`GameHash`](/reference/server/api/hashes/gamehash/)[] | events.d.ts:176 |
-| `pickupNetId` | `number` | events.d.ts:174 |
+| `isBag` | `boolean` | events.ts:256 |
+| `pickupHash` | [`GameHash`](/reference/server/api/hashes/gamehash/) | events.ts:254 |
+| `pickupHashes` | [`GameHash`](/reference/server/api/hashes/gamehash/)[] | events.ts:255 |
+| `pickupNetId` | `number` | events.ts:253 |

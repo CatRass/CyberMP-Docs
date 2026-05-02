@@ -5,9 +5,13 @@ prev: false
 title: "ResourcesEvents"
 ---
 
-Defined in: events.d.ts:184
+Defined in: events.ts:263
 
 Events related to resources.
+
+## Extended by
+
+- [`MpEventsMap`](/reference/server/api/events/mpeventsmap/)
 
 ## Methods
 
@@ -19,7 +23,7 @@ Events related to resources.
 anyResourceStart(resourceName): void;
 ```
 
-Defined in: events.d.ts:188
+Defined in: events.ts:267
 
 Triggered when any resource starts.
 
@@ -43,7 +47,7 @@ Triggered when any resource starts.
 anyResourceStop(resourceName): void;
 ```
 
-Defined in: events.d.ts:192
+Defined in: events.ts:271
 
 Triggered when any resource stops.
 
@@ -67,7 +71,7 @@ Triggered when any resource stops.
 anyServerResourceStart(resourceName): void;
 ```
 
-Defined in: events.d.ts:196
+Defined in: events.ts:275
 
 Triggered when any server resource starts.
 
@@ -91,7 +95,7 @@ Triggered when any server resource starts.
 anyServerResourceStop(resourceName): void;
 ```
 
-Defined in: events.d.ts:200
+Defined in: events.ts:279
 
 Triggered when any server resource stops.
 
@@ -115,7 +119,7 @@ Triggered when any server resource stops.
 resourcesRefresh(): void;
 ```
 
-Defined in: events.d.ts:212
+Defined in: events.ts:291
 
 Triggered when resources are refreshed.
 
@@ -133,7 +137,7 @@ Triggered when resources are refreshed.
 resourceStart(): void;
 ```
 
-Defined in: events.d.ts:204
+Defined in: events.ts:283
 
 Triggered when a resource starts.
 
@@ -151,7 +155,7 @@ Triggered when a resource starts.
 resourceStop(): void;
 ```
 
-Defined in: events.d.ts:208
+Defined in: events.ts:287
 
 Triggered when a resource stops.
 

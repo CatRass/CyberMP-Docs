@@ -9,4 +9,4 @@ title: "TweakDBID"
 type TweakDBID = GameHash;
 ```
 
-Defined in: shared.d.ts:33
+Defined in: shared.ts:33

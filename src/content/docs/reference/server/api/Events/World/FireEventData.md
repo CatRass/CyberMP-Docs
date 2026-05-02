@@ -9,13 +9,13 @@ title: "FireEventData"
 type FireEventData = Vector3Object & object;
 ```
 
-Defined in: events.d.ts:145
+Defined in: events.ts:224
 
 ## Type Declaration
 
 | Name | Type | Defined in |
 | ------ | ------ | ------ |
-| `dirX` | `number` | events.d.ts:147 |
-| `dirY` | `number` | events.d.ts:148 |
-| `dirZ` | `number` | events.d.ts:149 |
-| `hashObject` | [`GameHash`](/reference/server/api/hashes/gamehash/) | events.d.ts:146 |
+| `dirX` | `number` | events.ts:226 |
+| `dirY` | `number` | events.ts:227 |
+| `dirZ` | `number` | events.ts:228 |
+| `hashObject` | [`GameHash`](/reference/server/api/hashes/gamehash/) | events.ts:225 |

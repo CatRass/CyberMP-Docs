@@ -5,7 +5,7 @@ prev: false
 title: "TweakDB"
 ---
 
-Defined in: precomputed/game.d.ts:42
+Defined in: game.d.ts:34
 
 ## Methods
 
@@ -17,7 +17,7 @@ Defined in: precomputed/game.d.ts:42
 createRecord(key, value): boolean;
 ```
 
-Defined in: precomputed/game.d.ts:51
+Defined in: game.d.ts:43
 
 #### Parameters
 
@@ -40,7 +40,7 @@ Defined in: precomputed/game.d.ts:51
 getFlat<T>(str): T;
 ```
 
-Defined in: precomputed/game.d.ts:46
+Defined in: game.d.ts:38
 
 #### Type Parameters
 
@@ -68,7 +68,7 @@ Defined in: precomputed/game.d.ts:46
 getRecord<T>(str): T;
 ```
 
-Defined in: precomputed/game.d.ts:44
+Defined in: game.d.ts:36
 
 #### Type Parameters
 
@@ -96,7 +96,7 @@ Defined in: precomputed/game.d.ts:44
 getRecords<T>(str): T[];
 ```
 
-Defined in: precomputed/game.d.ts:43
+Defined in: game.d.ts:35
 
 #### Type Parameters
 
@@ -124,7 +124,7 @@ Defined in: precomputed/game.d.ts:43
 query(str): string[];
 ```
 
-Defined in: precomputed/game.d.ts:45
+Defined in: game.d.ts:37
 
 #### Parameters
 
@@ -146,7 +146,7 @@ Defined in: precomputed/game.d.ts:45
 setFlat(str, obj): boolean;
 ```
 
-Defined in: precomputed/game.d.ts:48
+Defined in: game.d.ts:40
 
 #### Parameters
 
@@ -169,7 +169,7 @@ Defined in: precomputed/game.d.ts:48
 setFlatNoUpdate(str, obj): boolean;
 ```
 
-Defined in: precomputed/game.d.ts:49
+Defined in: game.d.ts:41
 
 #### Parameters
 
@@ -192,7 +192,7 @@ Defined in: precomputed/game.d.ts:49
 setFlats(str, arr): boolean;
 ```
 
-Defined in: precomputed/game.d.ts:47
+Defined in: game.d.ts:39
 
 #### Parameters
 
@@ -215,7 +215,7 @@ Defined in: precomputed/game.d.ts:47
 updateRecord(str): boolean;
 ```
 
-Defined in: precomputed/game.d.ts:50
+Defined in: game.d.ts:42
 
 #### Parameters
 

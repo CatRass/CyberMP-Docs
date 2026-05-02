@@ -5,13 +5,13 @@ prev: false
 title: "MpPlayer"
 ---
 
-Defined in: players.d.ts:7
+Defined in: players.ts:6
 
 Base interface representing any in-game entity.
 
 ## Extends
 
-- [`MpEntity`](/reference/server/api/entities/mpentity/)
+- [`MpEntity`](/reference/server/api/entities/mpentity/)\<[`Player`](/reference/server/api/entities/entitytype/#player)\>
 
 ## Properties
 
@@ -23,7 +23,7 @@ Base interface representing any in-game entity.
 dimension: number;
 ```
 
-Defined in: entities.d.ts:45
+Defined in: entities.ts:60
 
 Virtual world dimension this entity belongs to
 
@@ -41,7 +41,7 @@ Virtual world dimension this entity belongs to
 readonly exist: boolean;
 ```
 
-Defined in: entities.d.ts:42
+Defined in: entities.ts:57
 
 Whether the entity still exists in the world
 
@@ -59,7 +59,7 @@ Whether the entity still exists in the world
 readonly firstOwner: MpPlayer;
 ```
 
-Defined in: entities.d.ts:29
+Defined in: entities.ts:44
 
 First player who synced this entity
 
@@ -77,7 +77,7 @@ First player who synced this entity
 readonly health: number;
 ```
 
-Defined in: players.d.ts:9
+Defined in: players.ts:8
 
 ***
 
@@ -89,7 +89,7 @@ Defined in: players.d.ts:9
 readonly id: number;
 ```
 
-Defined in: entities.d.ts:23
+Defined in: entities.ts:38
 
 Unique entity identifier
 
@@ -99,15 +99,29 @@ Unique entity identifier
 
 ***
 
+<a id="ip"></a>
+
+### ip
+
+```ts
+readonly ip: string;
+```
+
+Defined in: players.ts:13
+
+***
+
 <a id="lastvehicle"></a>
 
 ### lastVehicle
 
 ```ts
-readonly lastVehicle: MpVehicle | null;
+readonly lastVehicle: 
+  | MpVehicle
+  | null;
 ```
 
-Defined in: players.d.ts:13
+Defined in: players.ts:12
 
 ***
 
@@ -119,7 +133,7 @@ Defined in: players.d.ts:13
 readonly nickname: string;
 ```
 
-Defined in: players.d.ts:10
+Defined in: players.ts:9
 
 ***
 
@@ -131,7 +145,7 @@ Defined in: players.d.ts:10
 readonly owner: MpPlayer;
 ```
 
-Defined in: entities.d.ts:26
+Defined in: entities.ts:41
 
 Current owner of the entity sync
 
@@ -149,7 +163,7 @@ Current owner of the entity sync
 readonly ping: number;
 ```
 
-Defined in: players.d.ts:11
+Defined in: players.ts:10
 
 ***
 
@@ -161,7 +175,7 @@ Defined in: players.d.ts:11
 readonly position: Vector3;
 ```
 
-Defined in: entities.d.ts:30
+Defined in: entities.ts:45
 
 #### Inherited from
 
@@ -177,7 +191,7 @@ Defined in: entities.d.ts:30
 readonly rotation: Rotation;
 ```
 
-Defined in: entities.d.ts:31
+Defined in: entities.ts:46
 
 #### Inherited from
 
@@ -193,7 +207,7 @@ Defined in: entities.d.ts:31
 streamingRadius: number;
 ```
 
-Defined in: entities.d.ts:48
+Defined in: entities.ts:63
 
 Distance at which this entity streams in/out
 
@@ -208,12 +222,12 @@ Distance at which this entity streams in/out
 ### type
 
 ```ts
-readonly type: EntityType;
+readonly type: Player;
 ```
 
-Defined in: entities.d.ts:39
+Defined in: entities.ts:54
 
-Type of entity (see [EntityType](/reference/server/api/enums/entitytype/)).
+Type of entity (see [EntityType](/reference/server/api/entities/entitytype/)).
 
 #### Inherited from
 
@@ -226,10 +240,12 @@ Type of entity (see [EntityType](/reference/server/api/enums/entitytype/)).
 ### vehicle
 
 ```ts
-readonly vehicle: MpVehicle | null;
+readonly vehicle: 
+  | MpVehicle
+  | null;
 ```
 
-Defined in: players.d.ts:12
+Defined in: players.ts:11
 
 ***
 
@@ -241,7 +257,7 @@ Defined in: players.d.ts:12
 readonly velocity: Vector3;
 ```
 
-Defined in: players.d.ts:8
+Defined in: players.ts:7
 
 ***
 
@@ -253,7 +269,7 @@ Defined in: players.d.ts:8
 readonly yaw: number;
 ```
 
-Defined in: entities.d.ts:34
+Defined in: entities.ts:49
 
 Yaw angle in degrees
 
@@ -271,7 +287,7 @@ Yaw angle in degrees
 emit(eventName, ...args): void;
 ```
 
-Defined in: players.d.ts:18
+Defined in: players.ts:17
 
 #### Parameters
 
@@ -286,28 +302,6 @@ Defined in: players.d.ts:18
 
 ***
 
-<a id="getidentifier"></a>
-
-### getIdentifier()
-
-```ts
-getIdentifier(type): string;
-```
-
-Defined in: players.d.ts:16
-
-#### Parameters
-
-| Parameter | Type |
-| ------ | ------ |
-| `type` | [`PlayerIdentifierType`](/reference/server/api/other/playeridentifiertype/) |
-
-#### Returns
-
-`string`
-
-***
-
 <a id="getmeta"></a>
 
 ### getMeta()
@@ -316,7 +310,7 @@ Defined in: players.d.ts:16
 getMeta<T>(key): T;
 ```
 
-Defined in: entities.d.ts:60
+Defined in: entities.ts:75
 
 Retrieves metadata stored on this entity.
 
@@ -358,7 +352,7 @@ const health = entity.getMeta<number>("health");
 kick(reason?): void;
 ```
 
-Defined in: players.d.ts:15
+Defined in: players.ts:15
 
 #### Parameters
 
@@ -380,7 +374,7 @@ Defined in: players.d.ts:15
 mute(): void;
 ```
 
-Defined in: players.d.ts:19
+Defined in: players.ts:18
 
 #### Returns
 
@@ -399,7 +393,7 @@ setMeta(
    sync?): void;
 ```
 
-Defined in: entities.d.ts:69
+Defined in: entities.ts:84
 
 Sets metadata on this entity.
 

@@ -11,31 +11,42 @@ title: "@cybermp/server-types"
 
 ## Entities
 
+- [EntityType](/reference/server/api/entities/entitytype/)
+- [MpEntities](/reference/server/api/entities/mpentities/)
 - [MpEntity](/reference/server/api/entities/mpentity/)
-- [MpObject](/reference/server/api/entities/mpobject/)
-- [MpPed](/reference/server/api/entities/mpped/)
-- [MpPickup](/reference/server/api/entities/mppickup/)
 - [MpPlayer](/reference/server/api/entities/mpplayer/)
-- [MpVehicle](/reference/server/api/entities/mpvehicle/)
+- [MpPlayers](/reference/server/api/entities/mpplayers/)
+- [MpAnyEntity](/reference/server/api/entities/mpanyentity/)
 
-## Entities/Pools
+## Entities/Objects
 
-- [MpEntities](/reference/server/api/entities/pools/mpentities/)
-- [MpObjects](/reference/server/api/entities/pools/mpobjects/)
-- [MpPeds](/reference/server/api/entities/pools/mppeds/)
-- [MpPickups](/reference/server/api/entities/pools/mppickups/)
-- [MpPlayers](/reference/server/api/entities/pools/mpplayers/)
-- [MpVehicles](/reference/server/api/entities/pools/mpvehicles/)
+- [MpObject](/reference/server/api/entities/objects/mpobject/)
+- [MpObjects](/reference/server/api/entities/objects/mpobjects/)
+- [CreateObjectOptions](/reference/server/api/entities/objects/createobjectoptions/)
 
-## Enums
+## Entities/Peds
 
-- [EntityType](/reference/server/api/enums/entitytype/)
-- [PickupType](/reference/server/api/enums/pickuptype/)
-- [VehicleSeat](/reference/server/api/enums/vehicleseat/)
+- [MpPed](/reference/server/api/entities/peds/mpped/)
+- [MpPeds](/reference/server/api/entities/peds/mppeds/)
+- [CreatePedOptions](/reference/server/api/entities/peds/createpedoptions/)
+
+## Entities/Pickups
+
+- [PickupType](/reference/server/api/entities/pickups/pickuptype/)
+- [MpPickup](/reference/server/api/entities/pickups/mppickup/)
+- [MpPickups](/reference/server/api/entities/pickups/mppickups/)
+- [CreatePickupOptions](/reference/server/api/entities/pickups/createpickupoptions/)
+
+## Entities/Vehicles
+
+- [VehicleSeat](/reference/server/api/entities/vehicles/vehicleseat/)
+- [MpVehicle](/reference/server/api/entities/vehicles/mpvehicle/)
+- [MpVehicles](/reference/server/api/entities/vehicles/mpvehicles/)
 
 ## Events
 
 - [MpEvents](/reference/server/api/events/mpevents/)
+- [MpEventsMap](/reference/server/api/events/mpeventsmap/)
 
 ## Events/Entities
 
@@ -54,12 +65,16 @@ title: "@cybermp/server-types"
 
 ## Events/Players
 
+- [MeleeActionType](/reference/server/api/events/players/meleeactiontype/)
 - [PlayersEvents](/reference/server/api/events/players/playersevents/)
 - [AppearancePropertyData](/reference/server/api/events/players/appearancepropertydata/)
 - [AppearanceWeightPropertyData](/reference/server/api/events/players/appearanceweightpropertydata/)
 - [DamageEventData](/reference/server/api/events/players/damageeventdata/)
+- [MeleeActionEventData](/reference/server/api/events/players/meleeactioneventdata/)
 - [PlayerAppearanceChangeEventData](/reference/server/api/events/players/playerappearancechangeeventdata/)
 - [PlayerDeathEventData](/reference/server/api/events/players/playerdeatheventdata/)
+- [ShootActionEventData](/reference/server/api/events/players/shootactioneventdata/)
+- [ThrowGrenadeEventData](/reference/server/api/events/players/throwgrenadeeventdata/)
 
 ## Events/Resources
 
@@ -70,6 +85,7 @@ title: "@cybermp/server-types"
 - [VehiclesEvents](/reference/server/api/events/vehicles/vehiclesevents/)
 - [VehicleCustomizationChangeEventData](/reference/server/api/events/vehicles/vehiclecustomizationchangeeventdata/)
 - [VehicleDestructionChangeEventData](/reference/server/api/events/vehicles/vehicledestructionchangeeventdata/)
+- [VehicleWeaponShootEventData](/reference/server/api/events/vehicles/vehicleweaponshooteventdata/)
 
 ## Events/World
 
@@ -96,14 +112,6 @@ title: "@cybermp/server-types"
 - [GameHash](/reference/server/api/hashes/gamehash/)
 - [ResRef](/reference/server/api/hashes/resref/)
 - [TweakDBID](/reference/server/api/hashes/tweakdbid/)
-
-## Other
-
-- [CreateObjectOptions](/reference/server/api/other/createobjectoptions/)
-- [CreatePedOptions](/reference/server/api/other/createpedoptions/)
-- [CreatePickupOptions](/reference/server/api/other/createpickupoptions/)
-- [CreateVehicleOptions](/reference/server/api/other/createvehicleoptions/)
-- [PlayerIdentifierType](/reference/server/api/other/playeridentifiertype/)
 
 ## Resources
 

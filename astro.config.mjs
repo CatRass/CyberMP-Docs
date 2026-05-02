@@ -86,7 +86,7 @@ export default defineConfig({
         // starlightLinksValidatorPlugin(),
         starlightThemeNext(),
         serverStarlightTypeDoc({
-          entryPoints: ['./node_modules/@cybermp/server-types/src/index.d.ts'],
+          entryPoints: ['./node_modules/@cybermp/server-types/src/index.ts'],
           tsconfig: 'tsconfig.typedoc.json',
           output: 'reference/server/api',
           typeDoc: {
@@ -107,7 +107,7 @@ export default defineConfig({
         }),
         clientStarlightTypeDoc({
           entryPoints: [
-            './node_modules/@cybermp/client-types/out/precomputed/game.d.ts',
+            './node_modules/@cybermp/client-types/precomputed/index.d.ts',
           ],
           tsconfig: 'tsconfig.typedoc.json',
           output: 'reference/client/api',

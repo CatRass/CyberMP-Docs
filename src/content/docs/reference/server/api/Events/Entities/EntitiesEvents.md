@@ -5,7 +5,11 @@ prev: false
 title: "EntitiesEvents"
 ---
 
-Defined in: events.d.ts:366
+Defined in: events.ts:500
+
+## Extended by
+
+- [`MpEventsMap`](/reference/server/api/events/mpeventsmap/)
 
 ## Methods
 
@@ -17,7 +21,7 @@ Defined in: events.d.ts:366
 entityDespawn(id, type): void;
 ```
 
-Defined in: events.d.ts:381
+Defined in: events.ts:515
 
 Triggered when an entity despawns.
 
@@ -26,7 +30,7 @@ Triggered when an entity despawns.
 | Parameter | Type | Description |
 | ------ | ------ | ------ |
 | `id` | `number` | The entity ID |
-| `type` | [`EntityType`](/reference/server/api/enums/entitytype/) | The entity type (see [EntityType](/reference/server/api/enums/entitytype/)) |
+| `type` | [`EntityType`](/reference/server/api/entities/entitytype/) | The entity type (see [EntityType](/reference/server/api/entities/entitytype/)) |
 
 #### Returns
 
@@ -42,7 +46,7 @@ Triggered when an entity despawns.
 entitySpawn(id, type): void;
 ```
 
-Defined in: events.d.ts:373
+Defined in: events.ts:507
 
 Triggered when an entity spawns.
 
@@ -51,7 +55,7 @@ Triggered when an entity spawns.
 | Parameter | Type | Description |
 | ------ | ------ | ------ |
 | `id` | `number` | The entity ID |
-| `type` | [`EntityType`](/reference/server/api/enums/entitytype/) | The entity type (see [EntityType](/reference/server/api/enums/entitytype/)) |
+| `type` | [`EntityType`](/reference/server/api/entities/entitytype/) | The entity type (see [EntityType](/reference/server/api/entities/entitytype/)) |
 
 #### Returns
 
@@ -67,7 +71,7 @@ Triggered when an entity spawns.
 gameObjectDespawn(id): void;
 ```
 
-Defined in: events.d.ts:399
+Defined in: events.ts:533
 
 Triggered when a game object despawns.
 
@@ -91,7 +95,7 @@ Triggered when a game object despawns.
 gameObjectSpawn(id): void;
 ```
 
-Defined in: events.d.ts:395
+Defined in: events.ts:529
 
 Triggered when a game object spawns.
 
@@ -115,7 +119,7 @@ Triggered when a game object spawns.
 objectDespawn(id): void;
 ```
 
-Defined in: events.d.ts:390
+Defined in: events.ts:524
 
 Triggered when an object despawns.
 
@@ -139,7 +143,7 @@ Triggered when an object despawns.
 objectSpawn(id): void;
 ```
 
-Defined in: events.d.ts:386
+Defined in: events.ts:520
 
 Triggered when an object spawns.
 

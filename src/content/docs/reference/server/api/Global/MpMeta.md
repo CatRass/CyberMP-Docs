@@ -5,7 +5,7 @@ prev: false
 title: "MpMeta"
 ---
 
-Defined in: meta.d.ts:8
+Defined in: meta.ts:8
 
 Sets/gets metadata for the any entity.
 
@@ -19,7 +19,7 @@ Sets/gets metadata for the any entity.
 getEntityMeta<T>(entity, key): T;
 ```
 
-Defined in: meta.d.ts:26
+Defined in: meta.ts:26
 
 #### Type Parameters
 
@@ -31,7 +31,7 @@ Defined in: meta.d.ts:26
 
 | Parameter | Type |
 | ------ | ------ |
-| `entity` | `number` \| [`MpEntity`](/reference/server/api/entities/mpentity/) |
+| `entity` | \| `number` \| [`MpEntity`](/reference/server/api/entities/mpentity/)\<[`EntityType`](/reference/server/api/entities/entitytype/)\> |
 | `key` | `string` |
 
 #### Returns
@@ -48,7 +48,7 @@ Defined in: meta.d.ts:26
 getGlobalMeta<T>(key): T;
 ```
 
-Defined in: meta.d.ts:10
+Defined in: meta.ts:10
 
 #### Type Parameters
 
@@ -76,7 +76,7 @@ Defined in: meta.d.ts:10
 getPlayerMeta<T>(player, key): T;
 ```
 
-Defined in: meta.d.ts:18
+Defined in: meta.ts:18
 
 #### Type Parameters
 
@@ -109,13 +109,13 @@ setEntityMeta(
    sync?): void;
 ```
 
-Defined in: meta.d.ts:20
+Defined in: meta.ts:20
 
 #### Parameters
 
 | Parameter | Type |
 | ------ | ------ |
-| `entity` | `number` \| [`MpEntity`](/reference/server/api/entities/mpentity/) |
+| `entity` | \| `number` \| [`MpEntity`](/reference/server/api/entities/mpentity/)\<[`EntityType`](/reference/server/api/entities/entitytype/)\> |
 | `key` | `string` |
 | `value` | `any` |
 | `sync?` | `boolean` |
@@ -137,7 +137,7 @@ setGlobalMeta(
    sync?): void;
 ```
 
-Defined in: meta.d.ts:9
+Defined in: meta.ts:9
 
 #### Parameters
 
@@ -165,7 +165,7 @@ setPlayerMeta(
    sync?): void;
 ```
 
-Defined in: meta.d.ts:12
+Defined in: meta.ts:12
 
 #### Parameters
 

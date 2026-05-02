@@ -9,4 +9,4 @@ title: "GameHash"
 type GameHash = bigint | number;
 ```
 
-Defined in: shared.d.ts:29
+Defined in: shared.ts:29

@@ -5,9 +5,13 @@ prev: false
 title: "WorldEvents"
 ---
 
-Defined in: events.d.ts:266
+Defined in: events.ts:368
 
 Events related to the world.
+
+## Extended by
+
+- [`MpEventsMap`](/reference/server/api/events/mpeventsmap/)
 
 ## Methods
 
@@ -16,10 +20,10 @@ Events related to the world.
 ### doorStateChange()
 
 ```ts
-doorStateChange(playerId, data): void;
+doorStateChange(playerId, data): boolean | void;
 ```
 
-Defined in: events.d.ts:270
+Defined in: events.ts:372
 
 Triggered when a any door's state changes.
 
@@ -32,7 +36,7 @@ Triggered when a any door's state changes.
 
 #### Returns
 
-`void`
+`boolean` \| `void`
 
 ***
 
@@ -41,10 +45,10 @@ Triggered when a any door's state changes.
 ### explosion()
 
 ```ts
-explosion(playerId, data): void;
+explosion(playerId, data): boolean | void;
 ```
 
-Defined in: events.d.ts:282
+Defined in: events.ts:390
 
 Triggered when an explosion occurs.
 
@@ -57,7 +61,7 @@ Triggered when an explosion occurs.
 
 #### Returns
 
-`void`
+`boolean` \| `void`
 
 ***
 
@@ -66,10 +70,10 @@ Triggered when an explosion occurs.
 ### fire()
 
 ```ts
-fire(playerId, data): void;
+fire(playerId, data): boolean | void;
 ```
 
-Defined in: events.d.ts:278
+Defined in: events.ts:386
 
 Triggered when a fire starts anywhere on map.
 
@@ -82,7 +86,7 @@ Triggered when a fire starts anywhere on map.
 
 #### Returns
 
-`void`
+`boolean` \| `void`
 
 ***
 
@@ -91,10 +95,10 @@ Triggered when a fire starts anywhere on map.
 ### liftStateChange()
 
 ```ts
-liftStateChange(playerId, data): void;
+liftStateChange(playerId, data): boolean | void;
 ```
 
-Defined in: events.d.ts:274
+Defined in: events.ts:379
 
 Triggered when a any lift's state changes.
 
@@ -107,4 +111,4 @@ Triggered when a any lift's state changes.
 
 #### Returns
 
-`void`
+`boolean` \| `void`

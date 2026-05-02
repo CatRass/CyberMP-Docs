@@ -9,7 +9,7 @@ title: "UnwrapClass"
 type UnwrapClass<T> = T extends () => U ? U : T;
 ```
 
-Defined in: precomputed/game.d.ts:17
+Defined in: game.d.ts:9
 
 ## Type Parameters
 

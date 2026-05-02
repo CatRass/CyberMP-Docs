@@ -9,7 +9,7 @@ title: "LiftStateChangeEventData"
 type LiftStateChangeEventData = Vector3Object & object;
 ```
 
-Defined in: events.d.ts:54
+Defined in: events.ts:103
 
 Data for lift/elevator state changes.
 
@@ -17,8 +17,8 @@ Data for lift/elevator state changes.
 
 | Name | Type | Defined in |
 | ------ | ------ | ------ |
-| `currentFloor` | `number` | events.d.ts:58 |
-| `hashObject` | [`GameHash`](/reference/server/api/hashes/gamehash/) | events.d.ts:55 |
-| `maxFloor` | `number` | events.d.ts:59 |
-| `playerID` | `number` | events.d.ts:56 |
-| `targetFloor` | `number` | events.d.ts:57 |
+| `currentFloor` | `number` | events.ts:107 |
+| `hashObject` | [`GameHash`](/reference/server/api/hashes/gamehash/) | events.ts:104 |
+| `maxFloor` | `number` | events.ts:108 |
+| `playerID` | `number` | events.ts:105 |
+| `targetFloor` | `number` | events.ts:106 |

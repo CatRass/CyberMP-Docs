@@ -5,9 +5,13 @@ prev: false
 title: "PedEvents"
 ---
 
-Defined in: events.d.ts:352
+Defined in: events.ts:486
 
 Events related to Peds.
+
+## Extended by
+
+- [`MpEventsMap`](/reference/server/api/events/mpeventsmap/)
 
 ## Methods
 
@@ -19,7 +23,7 @@ Events related to Peds.
 pedDespawn(id): void;
 ```
 
-Defined in: events.d.ts:360
+Defined in: events.ts:494
 
 Triggered when a ped despawns.
 
@@ -43,7 +47,7 @@ Triggered when a ped despawns.
 pedSpawn(id): void;
 ```
 
-Defined in: events.d.ts:356
+Defined in: events.ts:490
 
 Triggered when a ped spawns.
 

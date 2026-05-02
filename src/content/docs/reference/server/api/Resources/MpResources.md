@@ -5,7 +5,7 @@ prev: false
 title: "MpResources"
 ---
 
-Defined in: resources.d.ts:5
+Defined in: resources.ts:5
 
 ## Methods
 
@@ -17,7 +17,7 @@ Defined in: resources.d.ts:5
 getCurrentName(): string;
 ```
 
-Defined in: resources.d.ts:31
+Defined in: resources.ts:31
 
 Gets the current resource's name.
 
@@ -40,7 +40,7 @@ getMetadata(
    index): string;
 ```
 
-Defined in: resources.d.ts:40
+Defined in: resources.ts:40
 
 Gets metadata from a resource manifest.
 
@@ -68,7 +68,7 @@ Metadata string.
 getState(resourceName): string;
 ```
 
-Defined in: resources.d.ts:11
+Defined in: resources.ts:11
 
 Gets the current state of a resource.
 
@@ -94,7 +94,7 @@ Resource state as string.
 loadFile(resourceName, pathToResource): string;
 ```
 
-Defined in: resources.d.ts:48
+Defined in: resources.ts:48
 
 Reads a file inside a resource and returns its contents.
 
@@ -121,7 +121,7 @@ File content as string.
 restart(resourceName): void;
 ```
 
-Defined in: resources.d.ts:25
+Defined in: resources.ts:25
 
 #### Parameters
 
@@ -143,7 +143,7 @@ Defined in: resources.d.ts:25
 start(resourceName): void;
 ```
 
-Defined in: resources.d.ts:17
+Defined in: resources.ts:17
 
 Starts a specific resource by name.
 
@@ -167,7 +167,7 @@ Starts a specific resource by name.
 stop(resourceName): void;
 ```
 
-Defined in: resources.d.ts:23
+Defined in: resources.ts:23
 
 Stops a specific resource by name.
 

@@ -5,9 +5,13 @@ prev: false
 title: "PlayersEvents"
 ---
 
-Defined in: events.d.ts:219
+Defined in: events.ts:298
 
 Events related to players.
+
+## Extended by
+
+- [`MpEventsMap`](/reference/server/api/events/mpeventsmap/)
 
 ## Methods
 
@@ -16,10 +20,10 @@ Events related to players.
 ### damage()
 
 ```ts
-damage(playerId, data): void;
+damage(playerId, data): boolean | void;
 ```
 
-Defined in: events.d.ts:259
+Defined in: events.ts:345
 
 Triggered when a player takes damage.
 
@@ -32,7 +36,32 @@ Triggered when a player takes damage.
 
 #### Returns
 
-`void`
+`boolean` \| `void`
+
+***
+
+<a id="meleeaction"></a>
+
+### meleeAction()
+
+```ts
+meleeAction(playerId, data): boolean | void;
+```
+
+Defined in: events.ts:349
+
+Triggered when a player performs a melee action.
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `playerId` | `number` |
+| `data` | [`MeleeActionEventData`](/reference/server/api/events/players/meleeactioneventdata/) |
+
+#### Returns
+
+`boolean` \| `void`
 
 ***
 
@@ -41,10 +70,10 @@ Triggered when a player takes damage.
 ### playerAppearanceChange()
 
 ```ts
-playerAppearanceChange(playerId, data): void;
+playerAppearanceChange(playerId, data): boolean | void;
 ```
 
-Defined in: events.d.ts:251
+Defined in: events.ts:330
 
 Triggered when a player's appearance changes.
 
@@ -57,7 +86,7 @@ Triggered when a player's appearance changes.
 
 #### Returns
 
-`void`
+`boolean` \| `void`
 
 ***
 
@@ -69,7 +98,7 @@ Triggered when a player's appearance changes.
 playerConnected(playerId, tempId): void;
 ```
 
-Defined in: events.d.ts:227
+Defined in: events.ts:306
 
 Triggered when a player has connected.
 
@@ -94,7 +123,7 @@ Triggered when a player has connected.
 playerConnecting(tempId, name): void;
 ```
 
-Defined in: events.d.ts:223
+Defined in: events.ts:302
 
 Triggered when a player is connecting.
 
@@ -119,7 +148,7 @@ Triggered when a player is connecting.
 playerDeath(playerId, data): void;
 ```
 
-Defined in: events.d.ts:243
+Defined in: events.ts:322
 
 Triggered when a player dies.
 
@@ -144,7 +173,7 @@ Triggered when a player dies.
 playerDespawn(playerId): void;
 ```
 
-Defined in: events.d.ts:239
+Defined in: events.ts:318
 
 Triggered when a player despawns.
 
@@ -168,7 +197,7 @@ Triggered when a player despawns.
 playerDisconnected(playerId, reason): void;
 ```
 
-Defined in: events.d.ts:247
+Defined in: events.ts:326
 
 Triggered when a player disconnects.
 
@@ -185,6 +214,54 @@ Triggered when a player disconnects.
 
 ***
 
+<a id="playerhealing"></a>
+
+### playerHealing()
+
+```ts
+playerHealing(playerId): boolean | void;
+```
+
+Defined in: events.ts:337
+
+Triggered when a player's healing.
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `playerId` | `number` |
+
+#### Returns
+
+`boolean` \| `void`
+
+***
+
+<a id="playerknockdown"></a>
+
+### playerKnockdown()
+
+```ts
+playerKnockdown(playerId): boolean | void;
+```
+
+Defined in: events.ts:341
+
+Triggered when a player's knocked down.
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `playerId` | `number` |
+
+#### Returns
+
+`boolean` \| `void`
+
+***
+
 <a id="playerrespawn"></a>
 
 ### playerRespawn()
@@ -193,7 +270,7 @@ Triggered when a player disconnects.
 playerRespawn(playerId, data): void;
 ```
 
-Defined in: events.d.ts:235
+Defined in: events.ts:314
 
 Triggered when a player respawns.
 
@@ -218,7 +295,7 @@ Triggered when a player respawns.
 playerSpawn(playerId): void;
 ```
 
-Defined in: events.d.ts:231
+Defined in: events.ts:310
 
 Triggered when a player spawns.
 
@@ -231,3 +308,78 @@ Triggered when a player spawns.
 #### Returns
 
 `void`
+
+***
+
+<a id="shootaction"></a>
+
+### shootAction()
+
+```ts
+shootAction(playerId, data): boolean | void;
+```
+
+Defined in: events.ts:353
+
+Triggered when a player performs a shoot action.
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `playerId` | `number` |
+| `data` | [`ShootActionEventData`](/reference/server/api/events/players/shootactioneventdata/) |
+
+#### Returns
+
+`boolean` \| `void`
+
+***
+
+<a id="throwgrenade"></a>
+
+### throwGrenade()
+
+```ts
+throwGrenade(playerId, data): boolean | void;
+```
+
+Defined in: events.ts:361
+
+Triggered when a player throws a grenade.
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `playerId` | `number` |
+| `data` | [`ThrowGrenadeEventData`](/reference/server/api/events/players/throwgrenadeeventdata/) |
+
+#### Returns
+
+`boolean` \| `void`
+
+***
+
+<a id="weaponreload"></a>
+
+### weaponReload()
+
+```ts
+weaponReload(playerId, weaponHash): boolean | void;
+```
+
+Defined in: events.ts:357
+
+Triggered when a player reloads their weapon.
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `playerId` | `number` |
+| `weaponHash` | [`GameHash`](/reference/server/api/hashes/gamehash/) |
+
+#### Returns
+
+`boolean` \| `void`

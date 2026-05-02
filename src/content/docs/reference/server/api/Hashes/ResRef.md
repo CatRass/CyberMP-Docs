@@ -9,4 +9,4 @@ title: "ResRef"
 type ResRef = GameHash;
 ```
 
-Defined in: shared.d.ts:41
+Defined in: shared.ts:41

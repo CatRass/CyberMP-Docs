@@ -5,7 +5,7 @@ prev: false
 title: "MpServer"
 ---
 
-Defined in: mp.d.ts:63
+Defined in: mp.ts:64
 
 ## Properties
 
@@ -17,7 +17,7 @@ Defined in: mp.d.ts:63
 commands: MpCommands;
 ```
 
-Defined in: mp.d.ts:67
+Defined in: mp.ts:68
 
 ***
 
@@ -29,7 +29,7 @@ Defined in: mp.d.ts:67
 config: ServerConfig;
 ```
 
-Defined in: mp.d.ts:82
+Defined in: mp.ts:92
 
 ***
 
@@ -41,7 +41,7 @@ Defined in: mp.d.ts:82
 entities: MpEntities;
 ```
 
-Defined in: mp.d.ts:68
+Defined in: mp.ts:69
 
 ***
 
@@ -53,7 +53,7 @@ Defined in: mp.d.ts:68
 events: MpEvents;
 ```
 
-Defined in: mp.d.ts:64
+Defined in: mp.ts:65
 
 ***
 
@@ -65,7 +65,7 @@ Defined in: mp.d.ts:64
 hashes: MpHashes;
 ```
 
-Defined in: mp.d.ts:74
+Defined in: mp.ts:75
 
 ***
 
@@ -77,7 +77,79 @@ Defined in: mp.d.ts:74
 meta: MpMeta;
 ```
 
-Defined in: mp.d.ts:65
+Defined in: mp.ts:66
+
+***
+
+<a id="mpentity"></a>
+
+### MpEntity
+
+```ts
+MpEntity: Class<MpEntity<EntityType>>;
+```
+
+Defined in: mp.ts:80
+
+***
+
+<a id="mpobject"></a>
+
+### MpObject
+
+```ts
+MpObject: Class<MpObject>;
+```
+
+Defined in: mp.ts:84
+
+***
+
+<a id="mpped"></a>
+
+### MpPed
+
+```ts
+MpPed: Class<MpPed>;
+```
+
+Defined in: mp.ts:83
+
+***
+
+<a id="mppickup"></a>
+
+### MpPickup
+
+```ts
+MpPickup: Class<MpPickup>;
+```
+
+Defined in: mp.ts:81
+
+***
+
+<a id="mpplayer"></a>
+
+### MpPlayer
+
+```ts
+MpPlayer: Class<MpPlayer>;
+```
+
+Defined in: mp.ts:79
+
+***
+
+<a id="mpvehicle"></a>
+
+### MpVehicle
+
+```ts
+MpVehicle: Class<MpVehicle>;
+```
+
+Defined in: mp.ts:82
 
 ***
 
@@ -89,7 +161,7 @@ Defined in: mp.d.ts:65
 objects: MpObjects;
 ```
 
-Defined in: mp.d.ts:71
+Defined in: mp.ts:72
 
 ***
 
@@ -101,7 +173,7 @@ Defined in: mp.d.ts:71
 peds: MpPeds;
 ```
 
-Defined in: mp.d.ts:73
+Defined in: mp.ts:74
 
 ***
 
@@ -113,7 +185,7 @@ Defined in: mp.d.ts:73
 pickups: MpPickups;
 ```
 
-Defined in: mp.d.ts:72
+Defined in: mp.ts:73
 
 ***
 
@@ -125,7 +197,7 @@ Defined in: mp.d.ts:72
 players: MpPlayers;
 ```
 
-Defined in: mp.d.ts:70
+Defined in: mp.ts:71
 
 ***
 
@@ -137,7 +209,7 @@ Defined in: mp.d.ts:70
 resources: MpResources;
 ```
 
-Defined in: mp.d.ts:66
+Defined in: mp.ts:67
 
 ***
 
@@ -149,9 +221,25 @@ Defined in: mp.d.ts:66
 vehicles: MpVehicles;
 ```
 
-Defined in: mp.d.ts:69
+Defined in: mp.ts:70
 
 ## Methods
+
+<a id="cancelevent"></a>
+
+### cancelEvent()
+
+```ts
+cancelEvent(): void;
+```
+
+Defined in: mp.ts:77
+
+#### Returns
+
+`void`
+
+***
 
 <a id="isserver"></a>
 
@@ -161,7 +249,7 @@ Defined in: mp.d.ts:69
 isServer(): boolean;
 ```
 
-Defined in: mp.d.ts:80
+Defined in: mp.ts:90
 
 Checks if the code is running on the server.
 

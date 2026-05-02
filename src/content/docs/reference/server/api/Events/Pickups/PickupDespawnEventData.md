@@ -9,7 +9,7 @@ title: "PickupDespawnEventData"
 type PickupDespawnEventData = object;
 ```
 
-Defined in: events.d.ts:164
+Defined in: events.ts:243
 
 ## Properties
 
@@ -21,7 +21,7 @@ Defined in: events.d.ts:164
 isBag: boolean;
 ```
 
-Defined in: events.d.ts:167
+Defined in: events.ts:246
 
 ***
 
@@ -33,7 +33,7 @@ Defined in: events.d.ts:167
 pickupHash: GameHash;
 ```
 
-Defined in: events.d.ts:166
+Defined in: events.ts:245
 
 ***
 
@@ -45,4 +45,4 @@ Defined in: events.d.ts:166
 pickupNetId: number;
 ```
 
-Defined in: events.d.ts:165
+Defined in: events.ts:244

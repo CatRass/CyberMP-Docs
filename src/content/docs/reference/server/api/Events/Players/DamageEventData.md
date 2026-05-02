@@ -9,7 +9,7 @@ title: "DamageEventData"
 type DamageEventData = object;
 ```
 
-Defined in: events.d.ts:9
+Defined in: events.ts:10
 
 Data describing a damage event between players.
 
@@ -23,7 +23,7 @@ Data describing a damage event between players.
 compName: string;
 ```
 
-Defined in: events.d.ts:24
+Defined in: events.ts:25
 
 ***
 
@@ -35,7 +35,7 @@ Defined in: events.d.ts:24
 damageType: number;
 ```
 
-Defined in: events.d.ts:10
+Defined in: events.ts:11
 
 ***
 
@@ -47,7 +47,7 @@ Defined in: events.d.ts:10
 damageValues: number[];
 ```
 
-Defined in: events.d.ts:22
+Defined in: events.ts:23
 
 ***
 
@@ -59,7 +59,7 @@ Defined in: events.d.ts:22
 dismembermentParts: any[];
 ```
 
-Defined in: events.d.ts:25
+Defined in: events.ts:26
 
 ***
 
@@ -71,7 +71,7 @@ Defined in: events.d.ts:25
 flags: number[];
 ```
 
-Defined in: events.d.ts:23
+Defined in: events.ts:24
 
 ***
 
@@ -83,7 +83,7 @@ Defined in: events.d.ts:23
 hitComponent: number;
 ```
 
-Defined in: events.d.ts:15
+Defined in: events.ts:16
 
 ***
 
@@ -95,7 +95,7 @@ Defined in: events.d.ts:15
 hitDirectionX: number;
 ```
 
-Defined in: events.d.ts:19
+Defined in: events.ts:20
 
 ***
 
@@ -107,7 +107,7 @@ Defined in: events.d.ts:19
 hitDirectionY: number;
 ```
 
-Defined in: events.d.ts:20
+Defined in: events.ts:21
 
 ***
 
@@ -119,7 +119,7 @@ Defined in: events.d.ts:20
 hitDirectionZ: number;
 ```
 
-Defined in: events.d.ts:21
+Defined in: events.ts:22
 
 ***
 
@@ -131,7 +131,7 @@ Defined in: events.d.ts:21
 hitPositionX: number;
 ```
 
-Defined in: events.d.ts:16
+Defined in: events.ts:17
 
 ***
 
@@ -143,7 +143,7 @@ Defined in: events.d.ts:16
 hitPositionY: number;
 ```
 
-Defined in: events.d.ts:17
+Defined in: events.ts:18
 
 ***
 
@@ -155,7 +155,7 @@ Defined in: events.d.ts:17
 hitPositionZ: number;
 ```
 
-Defined in: events.d.ts:18
+Defined in: events.ts:19
 
 ***
 
@@ -167,7 +167,7 @@ Defined in: events.d.ts:18
 hitReactionZones: any[];
 ```
 
-Defined in: events.d.ts:26
+Defined in: events.ts:27
 
 ***
 
@@ -179,7 +179,7 @@ Defined in: events.d.ts:26
 hitShapeNames: string[];
 ```
 
-Defined in: events.d.ts:28
+Defined in: events.ts:29
 
 ***
 
@@ -191,7 +191,7 @@ Defined in: events.d.ts:28
 hitShapeTypes: any[];
 ```
 
-Defined in: events.d.ts:27
+Defined in: events.ts:28
 
 ***
 
@@ -203,7 +203,7 @@ Defined in: events.d.ts:27
 killerId: number;
 ```
 
-Defined in: events.d.ts:13
+Defined in: events.ts:14
 
 ***
 
@@ -215,7 +215,7 @@ Defined in: events.d.ts:13
 physicsMaterials: string[];
 ```
 
-Defined in: events.d.ts:29
+Defined in: events.ts:30
 
 ***
 
@@ -227,7 +227,7 @@ Defined in: events.d.ts:29
 totalDamage: number;
 ```
 
-Defined in: events.d.ts:12
+Defined in: events.ts:13
 
 ***
 
@@ -239,7 +239,7 @@ Defined in: events.d.ts:12
 victimId: number;
 ```
 
-Defined in: events.d.ts:14
+Defined in: events.ts:15
 
 ***
 
@@ -251,4 +251,4 @@ Defined in: events.d.ts:14
 weaponHash: GameHash;
 ```
 
-Defined in: events.d.ts:11
+Defined in: events.ts:12

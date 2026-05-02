@@ -9,7 +9,7 @@ title: "PlayerAppearanceChangeEventData"
 type PlayerAppearanceChangeEventData = object;
 ```
 
-Defined in: events.d.ts:96
+Defined in: events.ts:145
 
 ## Properties
 
@@ -21,7 +21,7 @@ Defined in: events.d.ts:96
 garments: AppearancePropertyData[];
 ```
 
-Defined in: events.d.ts:98
+Defined in: events.ts:147
 
 ***
 
@@ -33,7 +33,7 @@ Defined in: events.d.ts:98
 morphs: AppearancePropertyData[];
 ```
 
-Defined in: events.d.ts:99
+Defined in: events.ts:148
 
 ***
 
@@ -45,7 +45,7 @@ Defined in: events.d.ts:99
 skinneds: AppearancePropertyData[];
 ```
 
-Defined in: events.d.ts:97
+Defined in: events.ts:146
 
 ***
 
@@ -57,4 +57,4 @@ Defined in: events.d.ts:97
 weights: AppearanceWeightPropertyData[];
 ```
 
-Defined in: events.d.ts:100
+Defined in: events.ts:149

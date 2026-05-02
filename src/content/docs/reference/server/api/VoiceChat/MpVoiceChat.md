@@ -5,7 +5,7 @@ prev: false
 title: "MpVoiceChat"
 ---
 
-Defined in: voice-chat.d.ts:6
+Defined in: voice-chat.ts:6
 
 ## Methods
 
@@ -17,7 +17,7 @@ Defined in: voice-chat.d.ts:6
 createChannel(voiceId): void;
 ```
 
-Defined in: voice-chat.d.ts:9
+Defined in: voice-chat.ts:9
 
 #### Parameters
 
@@ -39,7 +39,7 @@ Defined in: voice-chat.d.ts:9
 isPlayerMuted(player): boolean;
 ```
 
-Defined in: voice-chat.d.ts:11
+Defined in: voice-chat.ts:11
 
 #### Parameters
 
@@ -61,7 +61,7 @@ Defined in: voice-chat.d.ts:11
 mutePlayer(player): void;
 ```
 
-Defined in: voice-chat.d.ts:7
+Defined in: voice-chat.ts:7
 
 #### Parameters
 

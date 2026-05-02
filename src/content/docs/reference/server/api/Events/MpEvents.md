@@ -5,7 +5,7 @@ prev: false
 title: "MpEvents"
 ---
 
-Defined in: events.d.ts:420
+Defined in: events.ts:555
 
 Event system for subscribing, emitting, and handling multiplayer events.
 
@@ -21,7 +21,7 @@ Provides both strongly typed and generic event APIs.
 emit(eventName, ...args): void;
 ```
 
-Defined in: events.d.ts:464
+Defined in: events.ts:601
 
 Emit a shared custom event.
 
@@ -49,7 +49,7 @@ emitClient(
    args): void;
 ```
 
-Defined in: events.d.ts:471
+Defined in: events.ts:608
 
 Emit a client-side event from the server.
 
@@ -77,7 +77,7 @@ Emit a client-side event from the server.
 off<E>(eventName, callback): void;
 ```
 
-Defined in: events.d.ts:451
+Defined in: events.ts:586
 
 Unregister an event listener.
 
@@ -87,14 +87,14 @@ Works for both standard and [MpEvents.onClient](/reference/server/api/events/mpe
 
 | Type Parameter | Description |
 | ------ | ------ |
-| `E` *extends* keyof `MpEventsMap` | Event key from MpEventsMap |
+| `E` *extends* keyof [`MpEventsMap`](/reference/server/api/events/mpeventsmap/) | Event key from MpEventsMap |
 
 ##### Parameters
 
 | Parameter | Type |
 | ------ | ------ |
 | `eventName` | `E` |
-| `callback` | `MpEventsMap`\[`E`\] |
+| `callback` | [`MpEventsMap`](/reference/server/api/events/mpeventsmap/)\[`E`\] |
 
 ##### Returns
 
@@ -106,9 +106,11 @@ Works for both standard and [MpEvents.onClient](/reference/server/api/events/mpe
 off(eventName, callback): void;
 ```
 
-Defined in: events.d.ts:459
+Defined in: events.ts:596
 
-Unregister a generic event listener.
+Unregister an event listener.
+
+Works for both standard and [MpEvents.onClient](/reference/server/api/events/mpevents/#onclient) events.
 
 ##### Parameters
 
@@ -133,7 +135,7 @@ Unregister a generic event listener.
 on<E>(eventName, callback): void;
 ```
 
-Defined in: events.d.ts:426
+Defined in: events.ts:561
 
 Listen for a platform or custom event.
 
@@ -141,14 +143,14 @@ Listen for a platform or custom event.
 
 | Type Parameter | Description |
 | ------ | ------ |
-| `E` *extends* keyof `MpEventsMap` | Event key from MpEventsMap |
+| `E` *extends* keyof [`MpEventsMap`](/reference/server/api/events/mpeventsmap/) | Event key from MpEventsMap |
 
 ##### Parameters
 
 | Parameter | Type |
 | ------ | ------ |
 | `eventName` | `E` |
-| `callback` | `MpEventsMap`\[`E`\] |
+| `callback` | [`MpEventsMap`](/reference/server/api/events/mpeventsmap/)\[`E`\] |
 
 ##### Returns
 
@@ -160,7 +162,7 @@ Listen for a platform or custom event.
 on(eventName, callback): void;
 ```
 
-Defined in: events.d.ts:431
+Defined in: events.ts:566
 
 Listen for a generic event.
 
@@ -185,7 +187,7 @@ Listen for a generic event.
 onClient(eventName, callback): void;
 ```
 
-Defined in: events.d.ts:439
+Defined in: events.ts:574
 
 Listen for a client-side event on the server.
 

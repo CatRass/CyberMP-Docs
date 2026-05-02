@@ -9,7 +9,7 @@ title: "OverrideFunction"
 type OverrideFunction = <C, I, M>(className, methodName, callback) => void;
 ```
 
-Defined in: precomputed/game.d.ts:19
+Defined in: game.d.ts:11
 
 ## Type Parameters
 
