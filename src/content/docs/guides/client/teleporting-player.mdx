@@ -1,0 +1,103 @@
+---
+title: How to teleport player
+description: Learn how to safely teleport players in the game world.
+slug: guides/client/teleporting-player
+---
+import { Steps } from '@astrojs/starlight/components';
+
+In this guide, you will learn how to build a reusable teleportation function, handle menu closures to prevent UI lockups, and create a custom console command to move the player around the map.
+
+<Steps>
+1. ## Tracking and Closing Menus
+
+   Before teleporting a player (or spawning them), it is crucial to force-close any open pause or settings menus to prevent the game's user interface from getting stuck.
+
+   First, add these observers to your `client.js` to track when the player enters and exits menus:
+
+   ```js title="client.js"
+    let MenuScenario_PauseMenu = null;
+    let SettingsMainGameController = null;
+    
+    mp.game.onGameLoaded(() => {
+        // Track Settings Menu
+        mp.game.observe('SettingsMainGameController', 'OnMenuChanged', (self) => {
+            SettingsMainGameController = self;
+        });
+        
+        mp.game.observe('SettingsMainGameController', 'RequestClose', () => {
+            SettingsMainGameController = null;
+        });
+        
+        // Track Pause Menu
+        mp.game.observe('MenuScenario_PauseMenu', 'OnSwitchToSettings', (self) => {
+            MenuScenario_PauseMenu = self;
+        });
+        
+        mp.game.observe('MenuScenario_PauseMenu', 'OnEnterScenario', (self) => {
+            MenuScenario_PauseMenu = self;
+        });
+    });
+   ```
+
+    Next, create a helper function that triggers the close events:
+    
+    ```js title="client.js"
+    const closeAllMenus = () => {
+        const player = mp.game.GetPlayer();
+        
+        // Force close standard hub menus
+        player.QueueEvent(new mp.game.ForceCloseHubMenuEvent());
+        
+        // Safely invoke close events on tracked menus
+        MenuScenario_PauseMenu?.OnClosePauseMenu();
+        SettingsMainGameController?.RequestClose();
+    };
+    
+    ```
+
+2. ## Implementing the Teleport Function
+
+    With menu handling out of the way, we can build the core teleport logic. We will use the game's native `TeleportationFacility` to move the player object.
+    Add the following function to `client.js`:
+    ```js title="client.js"
+    const teleportPlayer = (x, y, z, yaw = 1) => {
+        // Always close menus before moving the player
+        closeAllMenus();
+        
+        const teleportFacility =
+            mp.game.ScriptGameInstance.GetTeleportationFacility();
+        
+        const playerObj = mp.game.GetPlayerObject();
+        
+        // Execute teleport using target coordinates and rotation
+        teleportFacility.Teleport(
+            playerObj,
+            Object.assign(new mp.game.Vector4(), { x, y, z, w: 1 }),
+            Object.assign(new mp.game.EulerAngles(), {
+            roll: 0,
+            pitch: 0,
+            yaw,
+            }),
+        );
+    };
+    ```
+
+
+3. ## Registering the Commands
+
+    To test your new logic, let's register a couple of chat commands via `mp.commands.add`. We will add an `afterlife` command to teleport the player directly to the Afterlife club, and a `close-menu` command for utility.
+    ```js title="client.js"
+    // Teleports the player to the Afterlife club coordinates
+    mp.events.addCommand('afterlife', () => {
+        teleportPlayer(-1456.893433, 1038.277222, 16.825035, 1);
+    });
+    
+    // Utility command to manually close stuck UI menus
+    mp.events.addCommand('close-menu', () => {
+        closeAllMenus();
+    });
+    ```
+</Steps>
+
+
+Save your file and restart your resource. You can now press `F8` to open your client console and type `afterlife` to instantly teleport to Afterlife!

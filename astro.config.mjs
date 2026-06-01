@@ -32,7 +32,13 @@ export default defineConfig({
                   'guides/resources/creating-resource',
                   'guides/resources/interacting-with-resources',
                   'guides/resources/live-updates',
-                  'guides/resources/first-logic',
+                ],
+              },
+              {
+                label: 'Client',
+                items: [
+                  'guides/client/spawning-player',
+                  'guides/client/teleporting-player',
                 ],
               },
               {
@@ -41,13 +47,6 @@ export default defineConfig({
                   'guides/general/type-safety',
                   'guides/general/hotreload',
                   'guides/general/rpc',
-                ],
-              },
-              {
-                label: 'Client',
-                items: [
-                  'guides/client/spawning-player',
-                  'guides/client/teleporting-player',
                 ],
               },
             ],

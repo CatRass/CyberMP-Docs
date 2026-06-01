@@ -1,0 +1,110 @@
+---
+title: Spawning player
+description: Learn how to set player health and spawn a player in the game world.
+slug: guides/client/spawning-player
+---
+import { Steps } from '@astrojs/starlight/components';
+
+In this guide, you will learn how to configure your client-side script to handle player spawning, manage health stat pools, and set up a basic spawn command.
+
+<Steps>
+1. ## Handling Health Stats
+
+   Before we can safely spawn a player, we need to initialize their health values. The game relies on specific entity IDs and stat modifiers to change player attributes.
+
+   Add the following constants and helper functions to your `client.js` file to handle setting normal health and maximum health:
+
+   ```js title="client.js"
+   // Health stat pool type - https://nativedb.red4ext.com/e/5923428624360168
+   const HEALTH_STAT_POOL_TYPE = 17;
+   // Health stat type - https://nativedb.red4ext.com/e/8958699713058621
+   const HEALTH_STAT_TYPE = 787;
+   // Additive modifier type - https://nativedb.red4ext.com/e/5896876661927857
+   const ADDITIVE_MODIFIER_TYPE = 0;
+
+   const setHealth = (value) => {
+     const player = mp.game.GetPlayer();
+     const playerGameId = player.GetEntityID();
+     const statePoolSystem = mp.game.ScriptGameInstance.GetStatPoolsSystem();
+
+     statePoolSystem.RequestSettingStatPoolValueIgnoreChangeMode(
+       playerGameId,
+       HEALTH_STAT_POOL_TYPE,
+       value,
+       new mp.game.gameObject(),
+       false,
+     );
+   };
+
+   const setMaxHealth = (value) => {
+     const player = mp.game.GetPlayer();
+     const playerGameId = player.GetEntityID();
+
+     mp.game.ScriptGameInstance.GetStatsSystem().RemoveAllModifiers(
+       playerGameId,
+       HEALTH_STAT_TYPE,
+       true,
+     );
+
+     const newStats = new mp.game.gameConstantStatModifierData_Deprecated();
+     newStats.statType = HEALTH_STAT_TYPE;
+     newStats.modifierType = ADDITIVE_MODIFIER_TYPE;
+     newStats.value = value;
+
+     mp.game.ScriptGameInstance.GetStatsSystem().AddModifier(
+       playerGameId,
+       newStats,
+     );
+
+     const statePoolSystem = mp.game.ScriptGameInstance.GetStatPoolsSystem();
+
+     statePoolSystem.RequestSettingStatPoolValueIgnoreChangeMode(
+       playerGameId,
+       HEALTH_STAT_POOL_TYPE,
+       value,
+       new mp.game.gameObject(),
+       true,
+     );
+   };
+   ```
+
+2. ## Implementing the Spawn Logic
+
+   To trigger a successful spawn, we must apply the health values, and invoke the client runtime's spawn methods.
+
+   ```js title="client.js"
+   const SPAWN_HEALTH = 300;
+   // V's apartment
+   const DEFAULT_SPAWN_LOCATION = [-1392.637329, 1271.536865, 123.082397, 1];
+
+   const spawnPlayer = (x, y, z, yaw = 1) => {
+     setMaxHealth(SPAWN_HEALTH);
+     setHealth(SPAWN_HEALTH);
+
+     mp.setSpawnDataLocalPlayer(x, y, z, yaw);
+     mp.spawnLocalPlayer();
+   };
+   ```
+
+3. ## Spawning on Game Load & Custom Commands
+
+   To make the player spawn immediately when the game finishes loading, wrap the `spawnPlayer` logic inside the `onceGameLoaded` event. Additionally, we will register a `spawn` console command so players can manually respawn if they die or get stuck.
+
+   ```js title="client.js"
+   // Automatically spawn when the world loads
+   mp.game.onceGameLoaded(() => {
+     spawnPlayer(...DEFAULT_SPAWN_LOCATION);
+   });
+
+   // Register console command
+   mp.commands.add('spawn', () => {
+     spawnPlayer(...DEFAULT_SPAWN_LOCATION);
+   });
+   ```
+
+   Now, when you connect to your server, you will automatically drop into the world with `300` health near V's apartment. If you need to reset, open your client console (`F8`) and type:
+
+   ```text
+   spawn
+   ```
+</Steps>
