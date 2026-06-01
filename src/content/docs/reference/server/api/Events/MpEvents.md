@@ -5,7 +5,7 @@ prev: false
 title: "MpEvents"
 ---
 
-Defined in: events.ts:555
+Defined in: events.ts:568
 
 Event system for subscribing, emitting, and handling multiplayer events.
 
@@ -17,20 +17,21 @@ Provides both strongly typed and generic event APIs.
 
 ### emit()
 
-```ts
-emit(eventName, ...args): void;
-```
+> **emit**(`eventName`, ...`args`): `void`
 
-Defined in: events.ts:601
+Defined in: events.ts:614
 
 Emit a shared custom event.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `eventName` | `string` |
-| ...`args` | `any`[] |
+##### eventName
+
+`string`
+
+##### args
+
+...`any`[]
 
 #### Returns
 
@@ -42,24 +43,27 @@ Emit a shared custom event.
 
 ### emitClient()
 
-```ts
-emitClient(
-   player, 
-   eventName, ...
-   args): void;
-```
+> **emitClient**(`player`, `eventName`, ...`args`): `void`
 
-Defined in: events.ts:608
+Defined in: events.ts:621
 
 Emit a client-side event from the server.
 
 #### Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `player` | `number` \| [`MpPlayer`](/reference/server/api/entities/mpplayer/) | Target player or player ID |
-| `eventName` | `string` | - |
-| ...`args` | `any`[] | - |
+##### player
+
+`number` \| [`MpPlayer`](/reference/server/api/entities/players/mpplayer/)
+
+Target player or player ID
+
+##### eventName
+
+`string`
+
+##### args
+
+...`any`[]
 
 #### Returns
 
@@ -73,11 +77,9 @@ Emit a client-side event from the server.
 
 #### Call Signature
 
-```ts
-off<E>(eventName, callback): void;
-```
+> **off**\<`E`\>(`eventName`, `callback`): `void`
 
-Defined in: events.ts:586
+Defined in: events.ts:599
 
 Unregister an event listener.
 
@@ -85,16 +87,21 @@ Works for both standard and [MpEvents.onClient](/reference/server/api/events/mpe
 
 ##### Type Parameters
 
-| Type Parameter | Description |
-| ------ | ------ |
-| `E` *extends* keyof [`MpEventsMap`](/reference/server/api/events/mpeventsmap/) | Event key from MpEventsMap |
+###### E
+
+`E` *extends* keyof [`MpEventsMap`](/reference/server/api/events/mpeventsmap/)
+
+Event key from MpEventsMap
 
 ##### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `eventName` | `E` |
-| `callback` | [`MpEventsMap`](/reference/server/api/events/mpeventsmap/)\[`E`\] |
+###### eventName
+
+`E`
+
+###### callback
+
+[`MpEventsMap`](/reference/server/api/events/mpeventsmap/)\[`E`\]
 
 ##### Returns
 
@@ -102,11 +109,9 @@ Works for both standard and [MpEvents.onClient](/reference/server/api/events/mpe
 
 #### Call Signature
 
-```ts
-off(eventName, callback): void;
-```
+> **off**(`eventName`, `callback`): `void`
 
-Defined in: events.ts:596
+Defined in: events.ts:609
 
 Unregister an event listener.
 
@@ -114,10 +119,13 @@ Works for both standard and [MpEvents.onClient](/reference/server/api/events/mpe
 
 ##### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `eventName` | `string` |
-| `callback` | (...`args`) => `void` |
+###### eventName
+
+`string`
+
+###### callback
+
+(...`args`) => `void`
 
 ##### Returns
 
@@ -131,26 +139,29 @@ Works for both standard and [MpEvents.onClient](/reference/server/api/events/mpe
 
 #### Call Signature
 
-```ts
-on<E>(eventName, callback): void;
-```
+> **on**\<`E`\>(`eventName`, `callback`): `void`
 
-Defined in: events.ts:561
+Defined in: events.ts:574
 
 Listen for a platform or custom event.
 
 ##### Type Parameters
 
-| Type Parameter | Description |
-| ------ | ------ |
-| `E` *extends* keyof [`MpEventsMap`](/reference/server/api/events/mpeventsmap/) | Event key from MpEventsMap |
+###### E
+
+`E` *extends* keyof [`MpEventsMap`](/reference/server/api/events/mpeventsmap/)
+
+Event key from MpEventsMap
 
 ##### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `eventName` | `E` |
-| `callback` | [`MpEventsMap`](/reference/server/api/events/mpeventsmap/)\[`E`\] |
+###### eventName
+
+`E`
+
+###### callback
+
+[`MpEventsMap`](/reference/server/api/events/mpeventsmap/)\[`E`\]
 
 ##### Returns
 
@@ -158,20 +169,21 @@ Listen for a platform or custom event.
 
 #### Call Signature
 
-```ts
-on(eventName, callback): void;
-```
+> **on**(`eventName`, `callback`): `void`
 
-Defined in: events.ts:566
+Defined in: events.ts:579
 
 Listen for a generic event.
 
 ##### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `eventName` | `string` |
-| `callback` | (...`args`) => `void` |
+###### eventName
+
+`string`
+
+###### callback
+
+(...`args`) => `void`
 
 ##### Returns
 
@@ -183,20 +195,25 @@ Listen for a generic event.
 
 ### onClient()
 
-```ts
-onClient(eventName, callback): void;
-```
+> **onClient**(`eventName`, `callback`): `void`
 
-Defined in: events.ts:574
+Defined in: events.ts:587
 
 Listen for a client-side event on the server.
 
 #### Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `eventName` | `string` | Event name |
-| `callback` | (`player`, ...`args`) => `void` | Function triggered with player context |
+##### eventName
+
+`string`
+
+Event name
+
+##### callback
+
+(`player`, ...`args`) => `void`
+
+Function triggered with player context
 
 #### Returns
 

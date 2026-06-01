@@ -15,9 +15,7 @@ Types of entities available in the multiplayer environment.
 
 ### GameObject
 
-```ts
-GameObject: 6;
-```
+> **GameObject**: `6`
 
 Defined in: entities.ts:18
 
@@ -27,9 +25,7 @@ Defined in: entities.ts:18
 
 ### Object
 
-```ts
-Object: 3;
-```
+> **Object**: `3`
 
 Defined in: entities.ts:15
 
@@ -39,9 +35,7 @@ Defined in: entities.ts:15
 
 ### Ped
 
-```ts
-Ped: 4;
-```
+> **Ped**: `4`
 
 Defined in: entities.ts:16
 
@@ -51,9 +45,7 @@ Defined in: entities.ts:16
 
 ### Pickup
 
-```ts
-Pickup: 5;
-```
+> **Pickup**: `5`
 
 Defined in: entities.ts:17
 
@@ -63,9 +55,7 @@ Defined in: entities.ts:17
 
 ### Player
 
-```ts
-Player: 1;
-```
+> **Player**: `1`
 
 Defined in: entities.ts:13
 
@@ -75,8 +65,6 @@ Defined in: entities.ts:13
 
 ### Vehicle
 
-```ts
-Vehicle: 2;
-```
+> **Vehicle**: `2`
 
 Defined in: entities.ts:14

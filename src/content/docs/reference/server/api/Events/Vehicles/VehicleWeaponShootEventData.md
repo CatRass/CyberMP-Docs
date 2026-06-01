@@ -5,9 +5,7 @@ prev: false
 title: "VehicleWeaponShootEventData"
 ---
 
-```ts
-type VehicleWeaponShootEventData = object;
-```
+> **VehicleWeaponShootEventData** = `object`
 
 Defined in: events.ts:194
 
@@ -17,9 +15,7 @@ Defined in: events.ts:194
 
 ### animHash
 
-```ts
-animHash: GameHash;
-```
+> **animHash**: [`GameHash`](/reference/server/api/hashes/gamehash/)
 
 Defined in: events.ts:200
 
@@ -29,9 +25,7 @@ Defined in: events.ts:200
 
 ### numBullets
 
-```ts
-numBullets: number;
-```
+> **numBullets**: `number`
 
 Defined in: events.ts:196
 
@@ -41,9 +35,7 @@ Defined in: events.ts:196
 
 ### offsetPosX
 
-```ts
-offsetPosX: number;
-```
+> **offsetPosX**: `number`
 
 Defined in: events.ts:204
 
@@ -53,9 +45,7 @@ Defined in: events.ts:204
 
 ### offsetPosY
 
-```ts
-offsetPosY: number;
-```
+> **offsetPosY**: `number`
 
 Defined in: events.ts:205
 
@@ -65,9 +55,7 @@ Defined in: events.ts:205
 
 ### offsetPosZ
 
-```ts
-offsetPosZ: number;
-```
+> **offsetPosZ**: `number`
 
 Defined in: events.ts:206
 
@@ -77,9 +65,7 @@ Defined in: events.ts:206
 
 ### slotHash
 
-```ts
-slotHash: GameHash;
-```
+> **slotHash**: [`GameHash`](/reference/server/api/hashes/gamehash/)
 
 Defined in: events.ts:199
 
@@ -89,9 +75,7 @@ Defined in: events.ts:199
 
 ### tracePosX
 
-```ts
-tracePosX: number;
-```
+> **tracePosX**: `number`
 
 Defined in: events.ts:207
 
@@ -101,9 +85,7 @@ Defined in: events.ts:207
 
 ### tracePosY
 
-```ts
-tracePosY: number;
-```
+> **tracePosY**: `number`
 
 Defined in: events.ts:208
 
@@ -113,9 +95,7 @@ Defined in: events.ts:208
 
 ### tracePosZ
 
-```ts
-tracePosZ: number;
-```
+> **tracePosZ**: `number`
 
 Defined in: events.ts:209
 
@@ -125,9 +105,7 @@ Defined in: events.ts:209
 
 ### type
 
-```ts
-type: number;
-```
+> **type**: `number`
 
 Defined in: events.ts:195
 
@@ -137,9 +115,7 @@ Defined in: events.ts:195
 
 ### vehicleType
 
-```ts
-vehicleType: number;
-```
+> **vehicleType**: `number`
 
 Defined in: events.ts:197
 
@@ -149,9 +125,7 @@ Defined in: events.ts:197
 
 ### waeponHash
 
-```ts
-waeponHash: GameHash;
-```
+> **waeponHash**: [`GameHash`](/reference/server/api/hashes/gamehash/)
 
 Defined in: events.ts:198
 
@@ -161,9 +135,7 @@ Defined in: events.ts:198
 
 ### weaponPosX
 
-```ts
-weaponPosX: number;
-```
+> **weaponPosX**: `number`
 
 Defined in: events.ts:201
 
@@ -173,9 +145,7 @@ Defined in: events.ts:201
 
 ### weaponPosY
 
-```ts
-weaponPosY: number;
-```
+> **weaponPosY**: `number`
 
 Defined in: events.ts:202
 
@@ -185,8 +155,6 @@ Defined in: events.ts:202
 
 ### weaponPosZ
 
-```ts
-weaponPosZ: number;
-```
+> **weaponPosZ**: `number`
 
 Defined in: events.ts:203

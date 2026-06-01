@@ -17,9 +17,7 @@ Defined in: objects.ts:27
 
 ### at()
 
-```ts
-at(entity): MpObject;
-```
+> **at**(`entity`): [`MpObject`](/reference/server/api/entities/objects/mpobject/)
 
 Defined in: entities.ts:110
 
@@ -27,9 +25,11 @@ Retrieves an entity by instance or ID.
 
 #### Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `entity` | `number` \| [`MpObject`](/reference/server/api/entities/objects/mpobject/) | Entity instance or ID |
+##### entity
+
+`number` \| [`MpObject`](/reference/server/api/entities/objects/mpobject/)
+
+Entity instance or ID
 
 #### Returns
 
@@ -51,17 +51,15 @@ If entity does not exist
 
 ### create()
 
-```ts
-create(options): MpObject;
-```
+> **create**(`options`): [`MpObject`](/reference/server/api/entities/objects/mpobject/)
 
 Defined in: objects.ts:28
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `options` | [`CreateObjectOptions`](/reference/server/api/entities/objects/createobjectoptions/) |
+##### options
+
+[`CreateObjectOptions`](/reference/server/api/entities/objects/createobjectoptions/)
 
 #### Returns
 
@@ -73,17 +71,15 @@ Defined in: objects.ts:28
 
 ### destroy()
 
-```ts
-destroy(entity): void;
-```
+> **destroy**(`entity`): `void`
 
 Defined in: objects.ts:29
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `entity` | `number` \| [`MpObject`](/reference/server/api/entities/objects/mpobject/) |
+##### entity
+
+`number` \| [`MpObject`](/reference/server/api/entities/objects/mpobject/)
 
 #### Returns
 
@@ -95,9 +91,7 @@ Defined in: objects.ts:29
 
 ### exists()
 
-```ts
-exists(entity): boolean;
-```
+> **exists**(`entity`): `boolean`
 
 Defined in: entities.ts:100
 
@@ -105,9 +99,11 @@ Checks if an entity exists.
 
 #### Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `entity` | `number` \| [`MpObject`](/reference/server/api/entities/objects/mpobject/) | Entity instance or ID |
+##### entity
+
+`number` \| [`MpObject`](/reference/server/api/entities/objects/mpobject/)
+
+Entity instance or ID
 
 #### Returns
 
@@ -125,9 +121,7 @@ True if entity exists
 
 ### toArray()
 
-```ts
-toArray(): MpObject[];
-```
+> **toArray**(): [`MpObject`](/reference/server/api/entities/objects/mpobject/)[]
 
 Defined in: objects.ts:30
 

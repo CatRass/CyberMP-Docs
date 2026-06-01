@@ -1,0 +1,444 @@
+---
+editUrl: false
+next: false
+prev: false
+title: "MpGame"
+---
+
+Defined in: game.d.ts:202
+
+Core CyberMP Game Interface linking subsystem instances, runtime overrides, using game natives, engine callbacks, and engine utility tasks.
+
+## Properties
+
+<a id="observe"></a>
+
+### observe
+
+> **observe**: [`ObserveFunction`](/reference/client/api/global/observefunction/)
+
+Defined in: game.d.ts:294
+
+Standard alias hook pointing to [observeBefore](/reference/client/api/global/mpgame/#observebefore). Evaluates logic prior to core target execution.
+
+#### See
+
+[ObserveFunction](/reference/client/api/global/observefunction/)
+
+***
+
+<a id="observeafter"></a>
+
+### observeAfter
+
+> **observeAfter**: [`ObserveFunction`](/reference/client/api/global/observefunction/)
+
+Defined in: game.d.ts:282
+
+Hooks an observation callback that runs immediately **after** the target native class method executes.
+
+#### See
+
+[ObserveFunction](/reference/client/api/global/observefunction/)
+
+***
+
+<a id="observeafterraw"></a>
+
+### observeAfterRaw
+
+> **observeAfterRaw**: [`ObserveFunction`](/reference/client/api/global/observefunction/)
+
+Defined in: game.d.ts:301
+
+Observes a method inside a selected class after execution. Can only invoke methods native to [MpGame](/reference/client/api/global/mpgame/).
+Should be used when it is crucial for performance that the function executes as fast as V8 allows.
+
+#### See
+
+[ObserveFunction](/reference/client/api/global/observefunction/)
+
+***
+
+<a id="observebefore"></a>
+
+### observeBefore
+
+> **observeBefore**: [`ObserveFunction`](/reference/client/api/global/observefunction/)
+
+Defined in: game.d.ts:288
+
+Hooks an observation callback that runs immediately **before** the target native class method executes.
+
+#### See
+
+[ObserveFunction](/reference/client/api/global/observefunction/)
+
+***
+
+<a id="observebeforeraw"></a>
+
+### observeBeforeRaw
+
+> **observeBeforeRaw**: [`ObserveFunction`](/reference/client/api/global/observefunction/)
+
+Defined in: game.d.ts:308
+
+Observes a method inside a selected class before execution. Can only invoke methods native to [MpGame](/reference/client/api/global/mpgame/).
+Should be used when it is crucial for performance that the function executes as fast as V8 allows.
+
+#### See
+
+[ObserveFunction](/reference/client/api/global/observefunction/)
+
+***
+
+<a id="observeraw"></a>
+
+### observeRaw
+
+> **observeRaw**: [`ObserveFunction`](/reference/client/api/global/observefunction/)
+
+Defined in: game.d.ts:314
+
+Standard alias hook pointing to [observeBeforeRaw](/reference/client/api/global/mpgame/#observebeforeraw). Evaluates high-performance raw logic prior to execution.
+
+#### See
+
+[ObserveFunction](/reference/client/api/global/observefunction/)
+
+***
+
+<a id="override"></a>
+
+### override
+
+> **override**: [`OverrideFunction`](/reference/client/api/global/overridefunction/)
+
+Defined in: game.d.ts:276
+
+Fully replaces a targeted class method with custom script logic.
+
+#### See
+
+[OverrideFunction](/reference/client/api/global/overridefunction/)
+
+***
+
+<a id="tweakdb"></a>
+
+### TweakDB
+
+> **TweakDB**: [`TweakDB`](/reference/client/api/natives/tweakdb/)
+
+Defined in: game.d.ts:206
+
+The global interface instance for TweakDB manipulation.
+
+## Methods
+
+<a id="addtoinventory"></a>
+
+### AddToInventory()
+
+> **AddToInventory**(`itemName`, `count`): `void`
+
+Defined in: game.d.ts:262
+
+Directly injects or appends an item template into the player's primary inventory framework.
+
+#### Parameters
+
+##### itemName
+
+`string`
+
+The specific TweakDB string ID of the item.
+
+##### count
+
+`number`
+
+Total item quantity stack to add.
+
+#### Returns
+
+`void`
+
+***
+
+<a id="fromvariant"></a>
+
+### fromVariant()
+
+> **fromVariant**\<`R`\>(`obj`): `R`
+
+Defined in: game.d.ts:331
+
+Deserializes a native engine container structure layout (`Variant`) back into raw accessible JavaScript object values.
+
+#### Type Parameters
+
+##### R
+
+`R` = `any`
+
+The expected target JavaScript shape format.
+
+#### Parameters
+
+##### obj
+
+`any`
+
+Variant payload container input from the game engine.
+
+#### Returns
+
+`R`
+
+The unwrapped JavaScript object structure data.
+
+***
+
+<a id="getdisplayresolution"></a>
+
+### getDisplayResolution()
+
+> **getDisplayResolution**(): \[`number`, `number`\]
+
+Defined in: game.d.ts:223
+
+Gets the rendering dimensions of the active screen display.
+
+#### Returns
+
+\[`number`, `number`\]
+
+A tuple format containing `[width, height]` in pixels.
+
+***
+
+<a id="gethashfromname"></a>
+
+### getHashFromName()
+
+> **getHashFromName**(`name`, `type`): `string`
+
+Defined in: game.d.ts:270
+
+Converts a plaintext string model or path identifier name directly into a stable 64-bit unsigned hash representation.
+
+#### Parameters
+
+##### name
+
+`string`
+
+Raw item asset or TweakDB blueprint name path string.
+
+##### type
+
+`"tweakdbid"` \| `"cname"`
+
+Parsing method mode targeting either a TweakDB path reference (`tweakdbid`) or an internal engine CName string hash (`cname`).
+
+#### Returns
+
+`string`
+
+The calculated hash string value.
+
+***
+
+<a id="getsingleton"></a>
+
+### getSingleton()
+
+> **getSingleton**\<`T`\>(`name`): `UnwrapClass`\<`MpClasses`\[`T`\]\>
+
+Defined in: game.d.ts:255
+
+Resolves and fetches an engine singleton class reference safely.
+
+#### Type Parameters
+
+##### T
+
+`T` *extends* keyof `MpClasses`
+
+The specific key class identifier inside `MpClasses`.
+
+#### Parameters
+
+##### name
+
+`T`
+
+The name identifier string of the singleton.
+
+#### Returns
+
+`UnwrapClass`\<`MpClasses`\[`T`\]\>
+
+The active unwrapped instance object of that designated class.
+
+***
+
+<a id="ongameloaded"></a>
+
+### onGameLoaded()
+
+> **onGameLoaded**(`callback`): `void`
+
+Defined in: game.d.ts:229
+
+Event hook that fires immediately when the underlying game session finishes initial loading structures.
+
+#### Parameters
+
+##### callback
+
+() => `void`
+
+Execution callback.
+
+#### Returns
+
+`void`
+
+***
+
+<a id="oninit"></a>
+
+### onInit()
+
+> **onInit**(`callback`): `void`
+
+Defined in: game.d.ts:241
+
+Event hook triggered during early initialization phase of the modding script runtime container.
+
+#### Parameters
+
+##### callback
+
+() => `void`
+
+Execution callback.
+
+#### Returns
+
+`void`
+
+***
+
+<a id="oninputkeyevent"></a>
+
+### onInputKeyEvent()
+
+> **onInputKeyEvent**(`callback`): `void`
+
+Defined in: game.d.ts:212
+
+Registers a callback listener tracking real-time keyboard or controller hardware input events.
+
+#### Parameters
+
+##### callback
+
+(`action`, `key`) => `void`
+
+Function invoked on keystrokes.
+
+#### Returns
+
+`void`
+
+***
+
+<a id="onlocalplayerspawned"></a>
+
+### onLocalPlayerSpawned()
+
+> **onLocalPlayerSpawned**(`callback`): `void`
+
+Defined in: game.d.ts:247
+
+Event hook that triggers immediately after the local user's player character object spawns in the world space.
+
+#### Parameters
+
+##### callback
+
+() => `void`
+
+Execution callback.
+
+#### Returns
+
+`void`
+
+***
+
+<a id="ontweak"></a>
+
+### onTweak()
+
+> **onTweak**(`callback`): `void`
+
+Defined in: game.d.ts:235
+
+Event hook that fires specifically when tweaks and TweakDB engine patches are loaded and safe to manipulate.
+
+#### Parameters
+
+##### callback
+
+() => `void`
+
+Execution callback.
+
+#### Returns
+
+`void`
+
+***
+
+<a id="tovariant"></a>
+
+### toVariant()
+
+> **toVariant**\<`R`\>(`obj`, `str`): `R`
+
+Defined in: game.d.ts:323
+
+Serializes a JavaScript runtime payload object structural value into a native engine container format (`Variant`).
+
+#### Type Parameters
+
+##### R
+
+`R` = `Record`\<`string`, `unknown`\>
+
+The expected return typing output blueprint shape.
+
+#### Parameters
+
+##### obj
+
+`any`
+
+Target entity object structure to convert.
+
+##### str
+
+`string`
+
+Native structural reflection mapping blueprint name string.
+
+#### Returns
+
+`R`
+
+The wrapped engine reference asset layout structure.

@@ -13,9 +13,7 @@ Defined in: events.ts:36
 
 ### ComboAttack1
 
-```ts
-ComboAttack1: 2;
-```
+> **ComboAttack1**: `2`
 
 Defined in: events.ts:38
 
@@ -25,9 +23,7 @@ Defined in: events.ts:38
 
 ### ComboAttack2
 
-```ts
-ComboAttack2: 3;
-```
+> **ComboAttack2**: `3`
 
 Defined in: events.ts:39
 
@@ -37,9 +33,7 @@ Defined in: events.ts:39
 
 ### CrouchAttack
 
-```ts
-CrouchAttack: 8;
-```
+> **CrouchAttack**: `8`
 
 Defined in: events.ts:44
 
@@ -49,9 +43,7 @@ Defined in: events.ts:44
 
 ### FinalAttack
 
-```ts
-FinalAttack: 5;
-```
+> **FinalAttack**: `5`
 
 Defined in: events.ts:41
 
@@ -61,9 +53,7 @@ Defined in: events.ts:41
 
 ### JumpAttack
 
-```ts
-JumpAttack: 6;
-```
+> **JumpAttack**: `6`
 
 Defined in: events.ts:42
 
@@ -73,9 +63,7 @@ Defined in: events.ts:42
 
 ### QuickMelee
 
-```ts
-QuickMelee: 1;
-```
+> **QuickMelee**: `1`
 
 Defined in: events.ts:37
 
@@ -85,9 +73,7 @@ Defined in: events.ts:37
 
 ### SprintAttack
 
-```ts
-SprintAttack: 7;
-```
+> **SprintAttack**: `7`
 
 Defined in: events.ts:43
 
@@ -97,8 +83,6 @@ Defined in: events.ts:43
 
 ### StrongAttack
 
-```ts
-StrongAttack: 4;
-```
+> **StrongAttack**: `4`
 
 Defined in: events.ts:40

@@ -5,9 +5,7 @@ prev: false
 title: "Vector3"
 ---
 
-```ts
-type Vector3 = [number, number, number];
-```
+> **Vector3** = \[`number`, `number`, `number`\]
 
 Defined in: shared.ts:7
 

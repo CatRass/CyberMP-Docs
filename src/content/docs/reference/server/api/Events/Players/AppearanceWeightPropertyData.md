@@ -5,9 +5,7 @@ prev: false
 title: "AppearanceWeightPropertyData"
 ---
 
-```ts
-type AppearanceWeightPropertyData = object;
-```
+> **AppearanceWeightPropertyData** = `object`
 
 Defined in: events.ts:136
 
@@ -17,9 +15,7 @@ Defined in: events.ts:136
 
 ### regionHash
 
-```ts
-regionHash: GameHash;
-```
+> **regionHash**: [`GameHash`](/reference/server/api/hashes/gamehash/)
 
 Defined in: events.ts:138
 
@@ -29,9 +25,7 @@ Defined in: events.ts:138
 
 ### targetHash
 
-```ts
-targetHash: GameHash;
-```
+> **targetHash**: [`GameHash`](/reference/server/api/hashes/gamehash/)
 
 Defined in: events.ts:137
 
@@ -41,8 +35,6 @@ Defined in: events.ts:137
 
 ### weight
 
-```ts
-weight: number;
-```
+> **weight**: `number`
 
 Defined in: events.ts:139

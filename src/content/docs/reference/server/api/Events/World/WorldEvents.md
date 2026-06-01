@@ -5,7 +5,7 @@ prev: false
 title: "WorldEvents"
 ---
 
-Defined in: events.ts:368
+Defined in: events.ts:384
 
 Events related to the world.
 
@@ -19,20 +19,21 @@ Events related to the world.
 
 ### doorStateChange()
 
-```ts
-doorStateChange(playerId, data): boolean | void;
-```
+> **doorStateChange**(`playerId`, `data`): `boolean` \| `void`
 
-Defined in: events.ts:372
+Defined in: events.ts:388
 
 Triggered when a any door's state changes.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
-| `data` | [`DoorStateChangeEventData`](/reference/server/api/events/world/doorstatechangeeventdata/) |
+##### playerId
+
+`number`
+
+##### data
+
+[`DoorStateChangeEventData`](/reference/server/api/events/world/doorstatechangeeventdata/)
 
 #### Returns
 
@@ -44,20 +45,21 @@ Triggered when a any door's state changes.
 
 ### explosion()
 
-```ts
-explosion(playerId, data): boolean | void;
-```
+> **explosion**(`playerId`, `data`): `boolean` \| `void`
 
-Defined in: events.ts:390
+Defined in: events.ts:406
 
 Triggered when an explosion occurs.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
-| `data` | [`ExplosionEventData`](/reference/server/api/events/world/explosioneventdata/) |
+##### playerId
+
+`number`
+
+##### data
+
+[`ExplosionEventData`](/reference/server/api/events/world/explosioneventdata/)
 
 #### Returns
 
@@ -69,20 +71,21 @@ Triggered when an explosion occurs.
 
 ### fire()
 
-```ts
-fire(playerId, data): boolean | void;
-```
+> **fire**(`playerId`, `data`): `boolean` \| `void`
 
-Defined in: events.ts:386
+Defined in: events.ts:402
 
 Triggered when a fire starts anywhere on map.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
-| `data` | [`FireEventData`](/reference/server/api/events/world/fireeventdata/) |
+##### playerId
+
+`number`
+
+##### data
+
+[`FireEventData`](/reference/server/api/events/world/fireeventdata/)
 
 #### Returns
 
@@ -90,24 +93,59 @@ Triggered when a fire starts anywhere on map.
 
 ***
 
+<a id="globalmetachange"></a>
+
+### globalMetaChange()
+
+> **globalMetaChange**(`id`, `key`, `oldValue`, `newValue`): `void`
+
+Defined in: events.ts:410
+
+Triggered when global meta changed
+
+#### Parameters
+
+##### id
+
+`string`
+
+##### key
+
+`string`
+
+##### oldValue
+
+`any`
+
+##### newValue
+
+`any`
+
+#### Returns
+
+`void`
+
+***
+
 <a id="liftstatechange"></a>
 
 ### liftStateChange()
 
-```ts
-liftStateChange(playerId, data): boolean | void;
-```
+> **liftStateChange**(`playerId`, `data`): `boolean` \| `void`
 
-Defined in: events.ts:379
+Defined in: events.ts:395
 
 Triggered when a any lift's state changes.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
-| `data` | [`LiftStateChangeEventData`](/reference/server/api/events/world/liftstatechangeeventdata/) |
+##### playerId
+
+`number`
+
+##### data
+
+[`LiftStateChangeEventData`](/reference/server/api/events/world/liftstatechangeeventdata/)
 
 #### Returns
 

@@ -5,9 +5,7 @@ prev: false
 title: "PlayerAppearanceChangeEventData"
 ---
 
-```ts
-type PlayerAppearanceChangeEventData = object;
-```
+> **PlayerAppearanceChangeEventData** = `object`
 
 Defined in: events.ts:145
 
@@ -17,9 +15,7 @@ Defined in: events.ts:145
 
 ### garments
 
-```ts
-garments: AppearancePropertyData[];
-```
+> **garments**: [`AppearancePropertyData`](/reference/server/api/events/players/appearancepropertydata/)[]
 
 Defined in: events.ts:147
 
@@ -29,9 +25,7 @@ Defined in: events.ts:147
 
 ### morphs
 
-```ts
-morphs: AppearancePropertyData[];
-```
+> **morphs**: [`AppearancePropertyData`](/reference/server/api/events/players/appearancepropertydata/)[]
 
 Defined in: events.ts:148
 
@@ -41,9 +35,7 @@ Defined in: events.ts:148
 
 ### skinneds
 
-```ts
-skinneds: AppearancePropertyData[];
-```
+> **skinneds**: [`AppearancePropertyData`](/reference/server/api/events/players/appearancepropertydata/)[]
 
 Defined in: events.ts:146
 
@@ -53,8 +45,6 @@ Defined in: events.ts:146
 
 ### weights
 
-```ts
-weights: AppearanceWeightPropertyData[];
-```
+> **weights**: [`AppearanceWeightPropertyData`](/reference/server/api/events/players/appearanceweightpropertydata/)[]
 
 Defined in: events.ts:149

@@ -5,9 +5,7 @@ prev: false
 title: "AppearancePropertyData"
 ---
 
-```ts
-type AppearancePropertyData = object;
-```
+> **AppearancePropertyData** = `object`
 
 Defined in: events.ts:125
 
@@ -17,9 +15,7 @@ Defined in: events.ts:125
 
 ### appearanceHash
 
-```ts
-appearanceHash: GameHash;
-```
+> **appearanceHash**: [`GameHash`](/reference/server/api/hashes/gamehash/)
 
 Defined in: events.ts:129
 
@@ -29,9 +25,7 @@ Defined in: events.ts:129
 
 ### chunkMask
 
-```ts
-chunkMask: GameHash;
-```
+> **chunkMask**: [`GameHash`](/reference/server/api/hashes/gamehash/)
 
 Defined in: events.ts:130
 
@@ -41,9 +35,7 @@ Defined in: events.ts:130
 
 ### isEnabed
 
-```ts
-isEnabed: boolean;
-```
+> **isEnabed**: `boolean`
 
 Defined in: events.ts:127
 
@@ -53,9 +45,7 @@ Defined in: events.ts:127
 
 ### meshType
 
-```ts
-meshType: number;
-```
+> **meshType**: `number`
 
 Defined in: events.ts:126
 
@@ -65,8 +55,6 @@ Defined in: events.ts:126
 
 ### pathToMesh
 
-```ts
-pathToMesh: GameHash;
-```
+> **pathToMesh**: [`GameHash`](/reference/server/api/hashes/gamehash/)
 
 Defined in: events.ts:128

@@ -14,14 +14,16 @@ Collection wrapper for managing multiple entities.
 - [`MpObjects`](/reference/server/api/entities/objects/mpobjects/)
 - [`MpPeds`](/reference/server/api/entities/peds/mppeds/)
 - [`MpPickups`](/reference/server/api/entities/pickups/mppickups/)
-- [`MpPlayers`](/reference/server/api/entities/mpplayers/)
+- [`MpPlayers`](/reference/server/api/entities/players/mpplayers/)
 - [`MpVehicles`](/reference/server/api/entities/vehicles/mpvehicles/)
 
 ## Type Parameters
 
-| Type Parameter | Default type | Description |
-| ------ | ------ | ------ |
-| `T` *extends* [`MpEntity`](/reference/server/api/entities/mpentity/) | [`MpEntity`](/reference/server/api/entities/mpentity/) | Specific entity type extending MpEntity |
+### T
+
+`T` *extends* [`MpEntity`](/reference/server/api/entities/mpentity/) = [`MpEntity`](/reference/server/api/entities/mpentity/)
+
+Specific entity type extending MpEntity
 
 ## Methods
 
@@ -29,9 +31,7 @@ Collection wrapper for managing multiple entities.
 
 ### at()
 
-```ts
-at(entity): T;
-```
+> **at**(`entity`): `T`
 
 Defined in: entities.ts:110
 
@@ -39,9 +39,11 @@ Retrieves an entity by instance or ID.
 
 #### Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `entity` | `number` \| `T` | Entity instance or ID |
+##### entity
+
+`number` \| `T`
+
+Entity instance or ID
 
 #### Returns
 
@@ -59,9 +61,7 @@ If entity does not exist
 
 ### exists()
 
-```ts
-exists(entity): boolean;
-```
+> **exists**(`entity`): `boolean`
 
 Defined in: entities.ts:100
 
@@ -69,9 +69,11 @@ Checks if an entity exists.
 
 #### Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `entity` | `number` \| `T` | Entity instance or ID |
+##### entity
+
+`number` \| `T`
+
+Entity instance or ID
 
 #### Returns
 

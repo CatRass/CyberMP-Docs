@@ -5,7 +5,7 @@ prev: false
 title: "PickupsEvents"
 ---
 
-Defined in: events.ts:455
+Defined in: events.ts:465
 
 Events related to Pickups
 
@@ -19,20 +19,21 @@ Events related to Pickups
 
 ### pickupChange()
 
-```ts
-pickupChange(playerId, data): boolean | void;
-```
+> **pickupChange**(`playerId`, `data`): `boolean` \| `void`
 
-Defined in: events.ts:459
+Defined in: events.ts:469
 
 Triggered when a pickup's state changes.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
-| `data` | [`PickupChangeEventData`](/reference/server/api/events/pickups/pickupchangeeventdata/) |
+##### playerId
+
+`number`
+
+##### data
+
+[`PickupChangeEventData`](/reference/server/api/events/pickups/pickupchangeeventdata/)
 
 #### Returns
 
@@ -44,19 +45,17 @@ Triggered when a pickup's state changes.
 
 ### pickupDespawn()
 
-```ts
-pickupDespawn(id): void;
-```
+> **pickupDespawn**(`id`): `void`
 
-Defined in: events.ts:479
+Defined in: events.ts:489
 
 Triggered when a pickup despawns.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `id` | `number` |
+##### id
+
+`number`
 
 #### Returns
 
@@ -68,20 +67,21 @@ Triggered when a pickup despawns.
 
 ### pickupDrop()
 
-```ts
-pickupDrop(playerId, data): boolean | void;
-```
+> **pickupDrop**(`playerId`, `data`): `boolean` \| `void`
 
-Defined in: events.ts:469
+Defined in: events.ts:479
 
 Triggered when a pickup is dropped.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
-| `data` | [`PickupCreateEventData`](/reference/server/api/events/pickups/pickupcreateeventdata/) |
+##### playerId
+
+`number`
+
+##### data
+
+[`PickupCreateEventData`](/reference/server/api/events/pickups/pickupcreateeventdata/)
 
 #### Returns
 
@@ -93,20 +93,21 @@ Triggered when a pickup is dropped.
 
 ### pickupRaise()
 
-```ts
-pickupRaise(playerId, data): boolean | void;
-```
+> **pickupRaise**(`playerId`, `data`): `boolean` \| `void`
 
-Defined in: events.ts:464
+Defined in: events.ts:474
 
 Triggered when a pickup is raised.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
-| `data` | [`PickupDespawnEventData`](/reference/server/api/events/pickups/pickupdespawneventdata/) |
+##### playerId
+
+`number`
+
+##### data
+
+[`PickupDespawnEventData`](/reference/server/api/events/pickups/pickupdespawneventdata/)
 
 #### Returns
 
@@ -118,19 +119,17 @@ Triggered when a pickup is raised.
 
 ### pickupSpawn()
 
-```ts
-pickupSpawn(id): void;
-```
+> **pickupSpawn**(`id`): `void`
 
-Defined in: events.ts:474
+Defined in: events.ts:484
 
 Triggered when a pickup spawns.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `id` | `number` |
+##### id
+
+`number`
 
 #### Returns
 

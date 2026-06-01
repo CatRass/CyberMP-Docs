@@ -5,8 +5,6 @@ prev: false
 title: "TweakDBID"
 ---
 
-```ts
-type TweakDBID = GameHash;
-```
+> **TweakDBID** = [`GameHash`](/reference/server/api/hashes/gamehash/)
 
 Defined in: shared.ts:33

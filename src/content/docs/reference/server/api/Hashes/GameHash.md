@@ -5,8 +5,6 @@ prev: false
 title: "GameHash"
 ---
 
-```ts
-type GameHash = bigint | number;
-```
+> **GameHash** = `bigint` \| `number`
 
 Defined in: shared.ts:29

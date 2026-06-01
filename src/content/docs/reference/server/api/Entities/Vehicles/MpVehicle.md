@@ -17,9 +17,7 @@ Defined in: vehicles.ts:18
 
 ### angularVelocity
 
-```ts
-readonly angularVelocity: Vector3;
-```
+> `readonly` **angularVelocity**: [`Vector3`](/reference/server/api/global/vector3/)
 
 Defined in: vehicles.ts:23
 
@@ -29,9 +27,7 @@ Defined in: vehicles.ts:23
 
 ### appearance
 
-```ts
-readonly appearance: GameHash;
-```
+> `readonly` **appearance**: [`GameHash`](/reference/server/api/hashes/gamehash/)
 
 Defined in: vehicles.ts:20
 
@@ -41,9 +37,7 @@ Defined in: vehicles.ts:20
 
 ### dimension
 
-```ts
-dimension: number;
-```
+> **dimension**: `number`
 
 Defined in: entities.ts:60
 
@@ -59,9 +53,7 @@ Virtual world dimension this entity belongs to
 
 ### exist
 
-```ts
-readonly exist: boolean;
-```
+> `readonly` **exist**: `boolean`
 
 Defined in: entities.ts:57
 
@@ -77,9 +69,7 @@ Whether the entity still exists in the world
 
 ### firstOwner
 
-```ts
-readonly firstOwner: MpPlayer;
-```
+> `readonly` **firstOwner**: [`MpPlayer`](/reference/server/api/entities/players/mpplayer/)
 
 Defined in: entities.ts:44
 
@@ -95,9 +85,7 @@ First player who synced this entity
 
 ### health
 
-```ts
-readonly health: number;
-```
+> `readonly` **health**: `number`
 
 Defined in: vehicles.ts:21
 
@@ -107,9 +95,7 @@ Defined in: vehicles.ts:21
 
 ### id
 
-```ts
-readonly id: number;
-```
+> `readonly` **id**: `number`
 
 Defined in: entities.ts:38
 
@@ -125,35 +111,25 @@ Unique entity identifier
 
 ### lastSeats
 
-```ts
-lastSeats: object;
-```
+> **lastSeats**: `object`
 
 Defined in: vehicles.ts:32
 
 #### driver
 
-```ts
-readonly driver: MpPlayer | null;
-```
+> `readonly` **driver**: [`MpPlayer`](/reference/server/api/entities/players/mpplayer/) \| `null`
 
 #### passenger
 
-```ts
-readonly passenger: MpPlayer | null;
-```
+> `readonly` **passenger**: [`MpPlayer`](/reference/server/api/entities/players/mpplayer/) \| `null`
 
 #### rearLeft
 
-```ts
-readonly rearLeft: MpPlayer | null;
-```
+> `readonly` **rearLeft**: [`MpPlayer`](/reference/server/api/entities/players/mpplayer/) \| `null`
 
 #### rearRight
 
-```ts
-readonly rearRight: MpPlayer | null;
-```
+> `readonly` **rearRight**: [`MpPlayer`](/reference/server/api/entities/players/mpplayer/) \| `null`
 
 ***
 
@@ -161,9 +137,7 @@ readonly rearRight: MpPlayer | null;
 
 ### model
 
-```ts
-readonly model: GameHash;
-```
+> `readonly` **model**: [`GameHash`](/reference/server/api/hashes/gamehash/)
 
 Defined in: vehicles.ts:19
 
@@ -173,9 +147,7 @@ Defined in: vehicles.ts:19
 
 ### owner
 
-```ts
-readonly owner: MpPlayer;
-```
+> **owner**: [`MpPlayer`](/reference/server/api/entities/players/mpplayer/)
 
 Defined in: entities.ts:41
 
@@ -191,9 +163,7 @@ Current owner of the entity sync
 
 ### position
 
-```ts
-readonly position: Vector3;
-```
+> `readonly` **position**: [`Vector3`](/reference/server/api/global/vector3/)
 
 Defined in: entities.ts:45
 
@@ -207,9 +177,7 @@ Defined in: entities.ts:45
 
 ### rotation
 
-```ts
-readonly rotation: Rotation;
-```
+> `readonly` **rotation**: [`Rotation`](/reference/server/api/global/rotation/)
 
 Defined in: entities.ts:46
 
@@ -223,35 +191,25 @@ Defined in: entities.ts:46
 
 ### seats
 
-```ts
-seats: object;
-```
+> **seats**: `object`
 
 Defined in: vehicles.ts:25
 
 #### driver
 
-```ts
-readonly driver: MpPlayer | null;
-```
+> `readonly` **driver**: [`MpPlayer`](/reference/server/api/entities/players/mpplayer/) \| `null`
 
 #### passenger
 
-```ts
-readonly passenger: MpPlayer | null;
-```
+> `readonly` **passenger**: [`MpPlayer`](/reference/server/api/entities/players/mpplayer/) \| `null`
 
 #### rearLeft
 
-```ts
-readonly rearLeft: MpPlayer | null;
-```
+> `readonly` **rearLeft**: [`MpPlayer`](/reference/server/api/entities/players/mpplayer/) \| `null`
 
 #### rearRight
 
-```ts
-readonly rearRight: MpPlayer | null;
-```
+> `readonly` **rearRight**: [`MpPlayer`](/reference/server/api/entities/players/mpplayer/) \| `null`
 
 ***
 
@@ -259,9 +217,7 @@ readonly rearRight: MpPlayer | null;
 
 ### streamingRadius
 
-```ts
-streamingRadius: number;
-```
+> **streamingRadius**: `number`
 
 Defined in: entities.ts:63
 
@@ -277,9 +233,7 @@ Distance at which this entity streams in/out
 
 ### type
 
-```ts
-readonly type: Vehicle;
-```
+> `readonly` **type**: [`Vehicle`](/reference/server/api/entities/entitytype/#vehicle)
 
 Defined in: entities.ts:54
 
@@ -295,9 +249,7 @@ Type of entity (see [EntityType](/reference/server/api/entities/entitytype/)).
 
 ### velocity
 
-```ts
-readonly velocity: Vector3;
-```
+> `readonly` **velocity**: [`Vector3`](/reference/server/api/global/vector3/)
 
 Defined in: vehicles.ts:22
 
@@ -307,9 +259,7 @@ Defined in: vehicles.ts:22
 
 ### yaw
 
-```ts
-readonly yaw: number;
-```
+> `readonly` **yaw**: `number`
 
 Defined in: entities.ts:49
 
@@ -325,9 +275,7 @@ Yaw angle in degrees
 
 ### destroy()
 
-```ts
-destroy(): void;
-```
+> **destroy**(): `void`
 
 Defined in: vehicles.ts:42
 
@@ -341,21 +289,19 @@ Defined in: vehicles.ts:42
 
 ### getLastPlayerInSeat()
 
-```ts
-getLastPlayerInSeat(seat): MpPlayer | null;
-```
+> **getLastPlayerInSeat**(`seat`): [`MpPlayer`](/reference/server/api/entities/players/mpplayer/) \| `null`
 
 Defined in: vehicles.ts:40
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `seat` | [`VehicleSeat`](/reference/server/api/entities/vehicles/vehicleseat/) |
+##### seat
+
+[`VehicleSeat`](/reference/server/api/entities/vehicles/vehicleseat/)
 
 #### Returns
 
-[`MpPlayer`](/reference/server/api/entities/mpplayer/) \| `null`
+[`MpPlayer`](/reference/server/api/entities/players/mpplayer/) \| `null`
 
 ***
 
@@ -363,9 +309,7 @@ Defined in: vehicles.ts:40
 
 ### getMeta()
 
-```ts
-getMeta<T>(key): T;
-```
+> **getMeta**\<`T`\>(`key`): `T`
 
 Defined in: entities.ts:75
 
@@ -373,15 +317,19 @@ Retrieves metadata stored on this entity.
 
 #### Type Parameters
 
-| Type Parameter | Default type | Description |
-| ------ | ------ | ------ |
-| `T` | `any` | Expected return type |
+##### T
+
+`T` = `any`
+
+Expected return type
 
 #### Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `key` | `string` | Metadata key |
+##### key
+
+`string`
+
+Metadata key
 
 #### Returns
 
@@ -405,21 +353,19 @@ const health = entity.getMeta<number>("health");
 
 ### getPlayerInSeat()
 
-```ts
-getPlayerInSeat(seat): MpPlayer | null;
-```
+> **getPlayerInSeat**(`seat`): [`MpPlayer`](/reference/server/api/entities/players/mpplayer/) \| `null`
 
 Defined in: vehicles.ts:39
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `seat` | [`VehicleSeat`](/reference/server/api/entities/vehicles/vehicleseat/) |
+##### seat
+
+[`VehicleSeat`](/reference/server/api/entities/vehicles/vehicleseat/)
 
 #### Returns
 
-[`MpPlayer`](/reference/server/api/entities/mpplayer/) \| `null`
+[`MpPlayer`](/reference/server/api/entities/players/mpplayer/) \| `null`
 
 ***
 
@@ -427,12 +373,7 @@ Defined in: vehicles.ts:39
 
 ### setMeta()
 
-```ts
-setMeta(
-   key, 
-   value, 
-   sync?): void;
-```
+> **setMeta**(`key`, `value`, `sync?`): `void`
 
 Defined in: entities.ts:84
 
@@ -440,11 +381,23 @@ Sets metadata on this entity.
 
 #### Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `key` | `string` | Metadata key |
-| `value` | `any` | Value to store |
-| `sync?` | `boolean` | Whether to synchronize with clients immediately |
+##### key
+
+`string`
+
+Metadata key
+
+##### value
+
+`any`
+
+Value to store
+
+##### sync?
+
+`boolean`
+
+Whether to synchronize with clients immediately
 
 #### Returns
 

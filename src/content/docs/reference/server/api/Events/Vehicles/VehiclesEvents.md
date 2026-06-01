@@ -5,7 +5,7 @@ prev: false
 title: "VehiclesEvents"
 ---
 
-Defined in: events.ts:397
+Defined in: events.ts:417
 
 Events related to Vehicles.
 
@@ -15,73 +15,25 @@ Events related to Vehicles.
 
 ## Methods
 
-<a id="entervehicle"></a>
-
-### enterVehicle()
-
-```ts
-enterVehicle(id, seat): void;
-```
-
-Defined in: events.ts:448
-
-Triggered when a player enters a vehicle.
-
-#### Parameters
-
-| Parameter | Type |
-| ------ | ------ |
-| `id` | `number` |
-| `seat` | [`VehicleSeat`](/reference/server/api/entities/vehicles/vehicleseat/) |
-
-#### Returns
-
-`void`
-
-***
-
-<a id="exitvehicle"></a>
-
-### exitVehicle()
-
-```ts
-exitVehicle(id): void;
-```
-
-Defined in: events.ts:443
-
-Triggered when a player exits a vehicle.
-
-#### Parameters
-
-| Parameter | Type |
-| ------ | ------ |
-| `id` | `number` |
-
-#### Returns
-
-`void`
-
-***
-
 <a id="vehiclecustomizationchange"></a>
 
 ### vehicleCustomizationChange()
 
-```ts
-vehicleCustomizationChange(playerId, data): void;
-```
+> **vehicleCustomizationChange**(`playerId`, `data`): `void`
 
-Defined in: events.ts:401
+Defined in: events.ts:421
 
 Triggered when a vehicle's customization changes (usually CrystalCoat).
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
-| `data` | [`VehicleCustomizationChangeEventData`](/reference/server/api/events/vehicles/vehiclecustomizationchangeeventdata/) |
+##### playerId
+
+`number`
+
+##### data
+
+[`VehicleCustomizationChangeEventData`](/reference/server/api/events/vehicles/vehiclecustomizationchangeeventdata/)
 
 #### Returns
 
@@ -93,19 +45,17 @@ Triggered when a vehicle's customization changes (usually CrystalCoat).
 
 ### vehicleDespawn()
 
-```ts
-vehicleDespawn(id): void;
-```
+> **vehicleDespawn**(`id`): `void`
 
-Defined in: events.ts:422
+Defined in: events.ts:442
 
 Triggered when a vehicle despawns.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `id` | `number` |
+##### id
+
+`number`
 
 #### Returns
 
@@ -117,20 +67,21 @@ Triggered when a vehicle despawns.
 
 ### vehicleDestructionChange()
 
-```ts
-vehicleDestructionChange(playerId, data): void;
-```
+> **vehicleDestructionChange**(`playerId`, `data`): `void`
 
-Defined in: events.ts:409
+Defined in: events.ts:429
 
 Triggered when a vehicle's destruction changes.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
-| `data` | [`VehicleDestructionChangeEventData`](/reference/server/api/events/vehicles/vehicledestructionchangeeventdata/) |
+##### playerId
+
+`number`
+
+##### data
+
+[`VehicleDestructionChangeEventData`](/reference/server/api/events/vehicles/vehicledestructionchangeeventdata/)
 
 #### Returns
 
@@ -142,20 +93,21 @@ Triggered when a vehicle's destruction changes.
 
 ### vehicleHittedByPlayer()
 
-```ts
-vehicleHittedByPlayer(id, data): boolean | void;
-```
+> **vehicleHittedByPlayer**(`id`, `data`): `boolean` \| `void`
 
-Defined in: events.ts:435
+Defined in: events.ts:455
 
 Triggered when a vehicle is hit by a player.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `id` | `number` |
-| `data` | `VehicleHittedByPlayerEventData` |
+##### id
+
+`number`
+
+##### data
+
+`VehicleHittedByPlayerEventData`
 
 #### Returns
 
@@ -167,19 +119,17 @@ Triggered when a vehicle is hit by a player.
 
 ### vehicleSpawn()
 
-```ts
-vehicleSpawn(id): void;
-```
+> **vehicleSpawn**(`id`): `void`
 
-Defined in: events.ts:417
+Defined in: events.ts:437
 
 Triggered when a vehicle spawns.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `id` | `number` |
+##### id
+
+`number`
 
 #### Returns
 
@@ -191,20 +141,21 @@ Triggered when a vehicle spawns.
 
 ### vehicleWeaponShoot()
 
-```ts
-vehicleWeaponShoot(id, data): boolean | void;
-```
+> **vehicleWeaponShoot**(`id`, `data`): `boolean` \| `void`
 
-Defined in: events.ts:427
+Defined in: events.ts:447
 
 Triggered when a vehicle's weapon shoots.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `id` | `number` |
-| `data` | [`VehicleWeaponShootEventData`](/reference/server/api/events/vehicles/vehicleweaponshooteventdata/) |
+##### id
+
+`number`
+
+##### data
+
+[`VehicleWeaponShootEventData`](/reference/server/api/events/vehicles/vehicleweaponshooteventdata/)
 
 #### Returns
 

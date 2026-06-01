@@ -17,9 +17,7 @@ Defined in: pickups.ts:16
 
 ### dimension
 
-```ts
-dimension: number;
-```
+> **dimension**: `number`
 
 Defined in: entities.ts:60
 
@@ -35,9 +33,7 @@ Virtual world dimension this entity belongs to
 
 ### exist
 
-```ts
-readonly exist: boolean;
-```
+> `readonly` **exist**: `boolean`
 
 Defined in: entities.ts:57
 
@@ -53,9 +49,7 @@ Whether the entity still exists in the world
 
 ### firstOwner
 
-```ts
-readonly firstOwner: MpPlayer;
-```
+> `readonly` **firstOwner**: [`MpPlayer`](/reference/server/api/entities/players/mpplayer/)
 
 Defined in: entities.ts:44
 
@@ -71,9 +65,7 @@ First player who synced this entity
 
 ### id
 
-```ts
-readonly id: number;
-```
+> `readonly` **id**: `number`
 
 Defined in: entities.ts:38
 
@@ -89,9 +81,7 @@ Unique entity identifier
 
 ### model
 
-```ts
-readonly model: GameHash;
-```
+> `readonly` **model**: [`GameHash`](/reference/server/api/hashes/gamehash/)
 
 Defined in: pickups.ts:17
 
@@ -101,9 +91,7 @@ Defined in: pickups.ts:17
 
 ### owner
 
-```ts
-readonly owner: MpPlayer;
-```
+> **owner**: [`MpPlayer`](/reference/server/api/entities/players/mpplayer/)
 
 Defined in: entities.ts:41
 
@@ -119,9 +107,7 @@ Current owner of the entity sync
 
 ### pickupType
 
-```ts
-readonly pickupType: PickupType;
-```
+> `readonly` **pickupType**: [`PickupType`](/reference/server/api/entities/pickups/pickuptype/)
 
 Defined in: pickups.ts:18
 
@@ -131,9 +117,7 @@ Defined in: pickups.ts:18
 
 ### position
 
-```ts
-readonly position: Vector3;
-```
+> `readonly` **position**: [`Vector3`](/reference/server/api/global/vector3/)
 
 Defined in: entities.ts:45
 
@@ -147,9 +131,7 @@ Defined in: entities.ts:45
 
 ### rotation
 
-```ts
-readonly rotation: Rotation;
-```
+> `readonly` **rotation**: [`Rotation`](/reference/server/api/global/rotation/)
 
 Defined in: entities.ts:46
 
@@ -163,9 +145,7 @@ Defined in: entities.ts:46
 
 ### streamingRadius
 
-```ts
-streamingRadius: number;
-```
+> **streamingRadius**: `number`
 
 Defined in: entities.ts:63
 
@@ -181,9 +161,7 @@ Distance at which this entity streams in/out
 
 ### type
 
-```ts
-readonly type: Pickup;
-```
+> `readonly` **type**: [`Pickup`](/reference/server/api/entities/entitytype/#pickup)
 
 Defined in: entities.ts:54
 
@@ -199,9 +177,7 @@ Type of entity (see [EntityType](/reference/server/api/entities/entitytype/)).
 
 ### yaw
 
-```ts
-readonly yaw: number;
-```
+> `readonly` **yaw**: `number`
 
 Defined in: entities.ts:49
 
@@ -217,9 +193,7 @@ Yaw angle in degrees
 
 ### destroy()
 
-```ts
-destroy(): void;
-```
+> **destroy**(): `void`
 
 Defined in: pickups.ts:20
 
@@ -233,9 +207,7 @@ Defined in: pickups.ts:20
 
 ### getMeta()
 
-```ts
-getMeta<T>(key): T;
-```
+> **getMeta**\<`T`\>(`key`): `T`
 
 Defined in: entities.ts:75
 
@@ -243,15 +215,19 @@ Retrieves metadata stored on this entity.
 
 #### Type Parameters
 
-| Type Parameter | Default type | Description |
-| ------ | ------ | ------ |
-| `T` | `any` | Expected return type |
+##### T
+
+`T` = `any`
+
+Expected return type
 
 #### Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `key` | `string` | Metadata key |
+##### key
+
+`string`
+
+Metadata key
 
 #### Returns
 
@@ -275,12 +251,7 @@ const health = entity.getMeta<number>("health");
 
 ### setMeta()
 
-```ts
-setMeta(
-   key, 
-   value, 
-   sync?): void;
-```
+> **setMeta**(`key`, `value`, `sync?`): `void`
 
 Defined in: entities.ts:84
 
@@ -288,11 +259,23 @@ Sets metadata on this entity.
 
 #### Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `key` | `string` | Metadata key |
-| `value` | `any` | Value to store |
-| `sync?` | `boolean` | Whether to synchronize with clients immediately |
+##### key
+
+`string`
+
+Metadata key
+
+##### value
+
+`any`
+
+Value to store
+
+##### sync?
+
+`boolean`
+
+Whether to synchronize with clients immediately
 
 #### Returns
 

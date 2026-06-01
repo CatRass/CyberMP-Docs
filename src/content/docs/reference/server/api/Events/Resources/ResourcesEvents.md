@@ -19,9 +19,7 @@ Events related to resources.
 
 ### anyResourceStart()
 
-```ts
-anyResourceStart(resourceName): void;
-```
+> **anyResourceStart**(`resourceName`): `void`
 
 Defined in: events.ts:267
 
@@ -29,9 +27,9 @@ Triggered when any resource starts.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `resourceName` | `string` |
+##### resourceName
+
+`string`
 
 #### Returns
 
@@ -43,9 +41,7 @@ Triggered when any resource starts.
 
 ### anyResourceStop()
 
-```ts
-anyResourceStop(resourceName): void;
-```
+> **anyResourceStop**(`resourceName`): `void`
 
 Defined in: events.ts:271
 
@@ -53,9 +49,9 @@ Triggered when any resource stops.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `resourceName` | `string` |
+##### resourceName
+
+`string`
 
 #### Returns
 
@@ -67,9 +63,7 @@ Triggered when any resource stops.
 
 ### anyServerResourceStart()
 
-```ts
-anyServerResourceStart(resourceName): void;
-```
+> **anyServerResourceStart**(`resourceName`): `void`
 
 Defined in: events.ts:275
 
@@ -77,9 +71,9 @@ Triggered when any server resource starts.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `resourceName` | `string` |
+##### resourceName
+
+`string`
 
 #### Returns
 
@@ -91,9 +85,7 @@ Triggered when any server resource starts.
 
 ### anyServerResourceStop()
 
-```ts
-anyServerResourceStop(resourceName): void;
-```
+> **anyServerResourceStop**(`resourceName`): `void`
 
 Defined in: events.ts:279
 
@@ -101,9 +93,9 @@ Triggered when any server resource stops.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `resourceName` | `string` |
+##### resourceName
+
+`string`
 
 #### Returns
 
@@ -115,9 +107,7 @@ Triggered when any server resource stops.
 
 ### resourcesRefresh()
 
-```ts
-resourcesRefresh(): void;
-```
+> **resourcesRefresh**(): `void`
 
 Defined in: events.ts:291
 
@@ -133,9 +123,7 @@ Triggered when resources are refreshed.
 
 ### resourceStart()
 
-```ts
-resourceStart(): void;
-```
+> **resourceStart**(): `void`
 
 Defined in: events.ts:283
 
@@ -151,9 +139,7 @@ Triggered when a resource starts.
 
 ### resourceStop()
 
-```ts
-resourceStop(): void;
-```
+> **resourceStop**(): `void`
 
 Defined in: events.ts:287
 

@@ -5,9 +5,7 @@ prev: false
 title: "ExplosionEventData"
 ---
 
-```ts
-type ExplosionEventData = Vector3Object & object;
-```
+> **ExplosionEventData** = [`Vector3Object`](/reference/server/api/events/world/vector3object/) & `object`
 
 Defined in: events.ts:115
 

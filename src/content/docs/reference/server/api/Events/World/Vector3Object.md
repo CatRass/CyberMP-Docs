@@ -5,9 +5,7 @@ prev: false
 title: "Vector3Object"
 ---
 
-```ts
-type Vector3Object = object;
-```
+> **Vector3Object** = `object`
 
 Defined in: events.ts:84
 
@@ -17,9 +15,7 @@ Defined in: events.ts:84
 
 ### posX
 
-```ts
-posX: number;
-```
+> **posX**: `number`
 
 Defined in: events.ts:85
 
@@ -29,9 +25,7 @@ Defined in: events.ts:85
 
 ### posY
 
-```ts
-posY: number;
-```
+> **posY**: `number`
 
 Defined in: events.ts:86
 
@@ -41,8 +35,6 @@ Defined in: events.ts:86
 
 ### posZ
 
-```ts
-posZ: number;
-```
+> **posZ**: `number`
 
 Defined in: events.ts:87

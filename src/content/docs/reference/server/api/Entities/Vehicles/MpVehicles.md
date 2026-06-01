@@ -17,9 +17,7 @@ Defined in: vehicles.ts:60
 
 ### at()
 
-```ts
-at(entity): MpVehicle;
-```
+> **at**(`entity`): [`MpVehicle`](/reference/server/api/entities/vehicles/mpvehicle/)
 
 Defined in: entities.ts:110
 
@@ -27,9 +25,11 @@ Retrieves an entity by instance or ID.
 
 #### Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `entity` | \| `number` \| [`MpVehicle`](/reference/server/api/entities/vehicles/mpvehicle/) | Entity instance or ID |
+##### entity
+
+`number` \| [`MpVehicle`](/reference/server/api/entities/vehicles/mpvehicle/)
+
+Entity instance or ID
 
 #### Returns
 
@@ -51,17 +51,15 @@ If entity does not exist
 
 ### create()
 
-```ts
-create(options): MpVehicle;
-```
+> **create**(`options`): [`MpVehicle`](/reference/server/api/entities/vehicles/mpvehicle/)
 
 Defined in: vehicles.ts:61
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `options` | `CreateVehicleOptions` |
+##### options
+
+`CreateVehicleOptions`
 
 #### Returns
 
@@ -73,17 +71,15 @@ Defined in: vehicles.ts:61
 
 ### destroy()
 
-```ts
-destroy(vehicle): void;
-```
+> **destroy**(`vehicle`): `void`
 
 Defined in: vehicles.ts:62
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `vehicle` | \| `number` \| [`MpVehicle`](/reference/server/api/entities/vehicles/mpvehicle/) |
+##### vehicle
+
+`number` \| [`MpVehicle`](/reference/server/api/entities/vehicles/mpvehicle/)
 
 #### Returns
 
@@ -95,9 +91,7 @@ Defined in: vehicles.ts:62
 
 ### exists()
 
-```ts
-exists(entity): boolean;
-```
+> **exists**(`entity`): `boolean`
 
 Defined in: entities.ts:100
 
@@ -105,9 +99,11 @@ Checks if an entity exists.
 
 #### Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `entity` | \| `number` \| [`MpVehicle`](/reference/server/api/entities/vehicles/mpvehicle/) | Entity instance or ID |
+##### entity
+
+`number` \| [`MpVehicle`](/reference/server/api/entities/vehicles/mpvehicle/)
+
+Entity instance or ID
 
 #### Returns
 
@@ -125,9 +121,7 @@ True if entity exists
 
 ### toArray()
 
-```ts
-toArray(): MpVehicle[];
-```
+> **toArray**(): [`MpVehicle`](/reference/server/api/entities/vehicles/mpvehicle/)[]
 
 Defined in: vehicles.ts:63
 

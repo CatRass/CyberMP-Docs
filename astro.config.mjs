@@ -8,6 +8,7 @@ import { createStarlightTypeDocPlugin } from 'starlight-typedoc';
 
 const [serverStarlightTypeDoc] = createStarlightTypeDocPlugin();
 const [clientStarlightTypeDoc] = createStarlightTypeDocPlugin();
+const [browserStarlightTypeDoc] = createStarlightTypeDocPlugin();
 
 // https://astro.build/config
 export default defineConfig({
@@ -68,6 +69,7 @@ export default defineConfig({
                   'reference/server/console',
                 ],
               },
+
               {
                 label: 'Client',
                 items: [
@@ -78,6 +80,16 @@ export default defineConfig({
                   },
                   'reference/client/console',
                   'reference/client/working-with-game-natives',
+                ],
+              },
+              {
+                label: 'Browser',
+                items: [
+                  {
+                    label: 'API',
+                    autogenerate: { directory: 'reference/browser/api' },
+                    collapsed: true,
+                  },
                 ],
               },
             ],
@@ -93,15 +105,18 @@ export default defineConfig({
             githubPages: false,
             hideGenerator: true,
             readme: 'none',
-            parametersFormat: 'table',
+            parametersFormat: 'list',
             router: 'category',
+            defaultCategory: 'Global',
             flattenOutputFiles: false,
             hidePageHeader: true,
             hidePageTitle: true,
             hideBreadcrumbs: true,
-            useCodeBlocks: true,
+            useCodeBlocks: false,
             classPropertiesFormat: 'table',
             typeDeclarationFormat: 'table',
+            interfacePropertiesFormat: 'list',
+            disableSources: false,
             useHTMLAnchors: true,
           },
         }),
@@ -112,17 +127,44 @@ export default defineConfig({
           tsconfig: 'tsconfig.typedoc.json',
           output: 'reference/client/api',
           typeDoc: {
+            githubPages: false,
             hideGenerator: true,
             readme: 'none',
-            parametersFormat: 'table',
+            parametersFormat: 'list',
             router: 'category',
-            flattenOutputFiles: true,
+            defaultCategory: 'Global',
+            flattenOutputFiles: false,
             hidePageHeader: true,
             hidePageTitle: true,
             hideBreadcrumbs: true,
-            useCodeBlocks: true,
+            useCodeBlocks: false,
             classPropertiesFormat: 'table',
             typeDeclarationFormat: 'table',
+            interfacePropertiesFormat: 'list',
+            disableSources: false,
+            useHTMLAnchors: true,
+          },
+        }),
+        browserStarlightTypeDoc({
+          entryPoints: ['./node_modules/@cybermp/browser-types/index.d.ts'],
+          tsconfig: 'tsconfig.typedoc.json',
+          output: 'reference/browser/api',
+          typeDoc: {
+            githubPages: false,
+            hideGenerator: true,
+            readme: 'none',
+            parametersFormat: 'list',
+            router: 'category',
+            defaultCategory: 'Global',
+            flattenOutputFiles: false,
+            hidePageHeader: true,
+            hidePageTitle: true,
+            hideBreadcrumbs: true,
+            useCodeBlocks: false,
+            classPropertiesFormat: 'table',
+            typeDeclarationFormat: 'table',
+            interfacePropertiesFormat: 'list',
+            disableSources: false,
             useHTMLAnchors: true,
           },
         }),

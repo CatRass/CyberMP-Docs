@@ -5,7 +5,7 @@ prev: false
 title: "MpEventsMap"
 ---
 
-Defined in: events.ts:539
+Defined in: events.ts:553
 
 ## Extends
 
@@ -17,9 +17,7 @@ Defined in: events.ts:539
 
 ### anyResourceStart()
 
-```ts
-anyResourceStart(resourceName): void;
-```
+> **anyResourceStart**(`resourceName`): `void`
 
 Defined in: events.ts:267
 
@@ -27,9 +25,9 @@ Triggered when any resource starts.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `resourceName` | `string` |
+##### resourceName
+
+`string`
 
 #### Returns
 
@@ -45,9 +43,7 @@ Triggered when any resource starts.
 
 ### anyResourceStop()
 
-```ts
-anyResourceStop(resourceName): void;
-```
+> **anyResourceStop**(`resourceName`): `void`
 
 Defined in: events.ts:271
 
@@ -55,9 +51,9 @@ Triggered when any resource stops.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `resourceName` | `string` |
+##### resourceName
+
+`string`
 
 #### Returns
 
@@ -73,9 +69,7 @@ Triggered when any resource stops.
 
 ### anyServerResourceStart()
 
-```ts
-anyServerResourceStart(resourceName): void;
-```
+> **anyServerResourceStart**(`resourceName`): `void`
 
 Defined in: events.ts:275
 
@@ -83,9 +77,9 @@ Triggered when any server resource starts.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `resourceName` | `string` |
+##### resourceName
+
+`string`
 
 #### Returns
 
@@ -101,9 +95,7 @@ Triggered when any server resource starts.
 
 ### anyServerResourceStop()
 
-```ts
-anyServerResourceStop(resourceName): void;
-```
+> **anyServerResourceStop**(`resourceName`): `void`
 
 Defined in: events.ts:279
 
@@ -111,9 +103,9 @@ Triggered when any server resource stops.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `resourceName` | `string` |
+##### resourceName
+
+`string`
 
 #### Returns
 
@@ -129,20 +121,21 @@ Triggered when any server resource stops.
 
 ### damage()
 
-```ts
-damage(playerId, data): boolean | void;
-```
+> **damage**(`playerId`, `data`): `boolean` \| `void`
 
-Defined in: events.ts:345
+Defined in: events.ts:357
 
 Triggered when a player takes damage.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
-| `data` | [`DamageEventData`](/reference/server/api/events/players/damageeventdata/) |
+##### playerId
+
+`number`
+
+##### data
+
+[`DamageEventData`](/reference/server/api/events/players/damageeventdata/)
 
 #### Returns
 
@@ -158,20 +151,21 @@ Triggered when a player takes damage.
 
 ### doorStateChange()
 
-```ts
-doorStateChange(playerId, data): boolean | void;
-```
+> **doorStateChange**(`playerId`, `data`): `boolean` \| `void`
 
-Defined in: events.ts:372
+Defined in: events.ts:388
 
 Triggered when a any door's state changes.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
-| `data` | [`DoorStateChangeEventData`](/reference/server/api/events/world/doorstatechangeeventdata/) |
+##### playerId
+
+`number`
+
+##### data
+
+[`DoorStateChangeEventData`](/reference/server/api/events/world/doorstatechangeeventdata/)
 
 #### Returns
 
@@ -183,53 +177,29 @@ Triggered when a any door's state changes.
 
 ***
 
-<a id="entervehicle"></a>
-
-### enterVehicle()
-
-```ts
-enterVehicle(id, seat): void;
-```
-
-Defined in: events.ts:448
-
-Triggered when a player enters a vehicle.
-
-#### Parameters
-
-| Parameter | Type |
-| ------ | ------ |
-| `id` | `number` |
-| `seat` | [`VehicleSeat`](/reference/server/api/entities/vehicles/vehicleseat/) |
-
-#### Returns
-
-`void`
-
-#### Inherited from
-
-[`VehiclesEvents`](/reference/server/api/events/vehicles/vehiclesevents/).[`enterVehicle`](/reference/server/api/events/vehicles/vehiclesevents/#entervehicle)
-
-***
-
 <a id="entitydespawn"></a>
 
 ### entityDespawn()
 
-```ts
-entityDespawn(id, type): void;
-```
+> **entityDespawn**(`id`, `type`): `void`
 
-Defined in: events.ts:515
+Defined in: events.ts:525
 
 Triggered when an entity despawns.
 
 #### Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `id` | `number` | The entity ID |
-| `type` | [`EntityType`](/reference/server/api/entities/entitytype/) | The entity type (see [EntityType](/reference/server/api/entities/entitytype/)) |
+##### id
+
+`number`
+
+The entity ID
+
+##### type
+
+[`EntityType`](/reference/server/api/entities/entitytype/)
+
+The entity type (see [EntityType](/reference/server/api/entities/entitytype/))
 
 #### Returns
 
@@ -241,24 +211,67 @@ Triggered when an entity despawns.
 
 ***
 
+<a id="entitymetachange"></a>
+
+### entityMetaChange()
+
+> **entityMetaChange**(`id`, `key`, `oldValue`, `newValue`): `void`
+
+Defined in: events.ts:547
+
+Triggered when any entity meta changed
+
+#### Parameters
+
+##### id
+
+`string`
+
+##### key
+
+`string`
+
+##### oldValue
+
+`any`
+
+##### newValue
+
+`any`
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+[`EntitiesEvents`](/reference/server/api/events/entities/entitiesevents/).[`entityMetaChange`](/reference/server/api/events/entities/entitiesevents/#entitymetachange)
+
+***
+
 <a id="entityspawn"></a>
 
 ### entitySpawn()
 
-```ts
-entitySpawn(id, type): void;
-```
+> **entitySpawn**(`id`, `type`): `void`
 
-Defined in: events.ts:507
+Defined in: events.ts:517
 
 Triggered when an entity spawns.
 
 #### Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `id` | `number` | The entity ID |
-| `type` | [`EntityType`](/reference/server/api/entities/entitytype/) | The entity type (see [EntityType](/reference/server/api/entities/entitytype/)) |
+##### id
+
+`number`
+
+The entity ID
+
+##### type
+
+[`EntityType`](/reference/server/api/entities/entitytype/)
+
+The entity type (see [EntityType](/reference/server/api/entities/entitytype/))
 
 #### Returns
 
@@ -270,52 +283,25 @@ Triggered when an entity spawns.
 
 ***
 
-<a id="exitvehicle"></a>
-
-### exitVehicle()
-
-```ts
-exitVehicle(id): void;
-```
-
-Defined in: events.ts:443
-
-Triggered when a player exits a vehicle.
-
-#### Parameters
-
-| Parameter | Type |
-| ------ | ------ |
-| `id` | `number` |
-
-#### Returns
-
-`void`
-
-#### Inherited from
-
-[`VehiclesEvents`](/reference/server/api/events/vehicles/vehiclesevents/).[`exitVehicle`](/reference/server/api/events/vehicles/vehiclesevents/#exitvehicle)
-
-***
-
 <a id="explosion"></a>
 
 ### explosion()
 
-```ts
-explosion(playerId, data): boolean | void;
-```
+> **explosion**(`playerId`, `data`): `boolean` \| `void`
 
-Defined in: events.ts:390
+Defined in: events.ts:406
 
 Triggered when an explosion occurs.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
-| `data` | [`ExplosionEventData`](/reference/server/api/events/world/explosioneventdata/) |
+##### playerId
+
+`number`
+
+##### data
+
+[`ExplosionEventData`](/reference/server/api/events/world/explosioneventdata/)
 
 #### Returns
 
@@ -331,20 +317,21 @@ Triggered when an explosion occurs.
 
 ### fire()
 
-```ts
-fire(playerId, data): boolean | void;
-```
+> **fire**(`playerId`, `data`): `boolean` \| `void`
 
-Defined in: events.ts:386
+Defined in: events.ts:402
 
 Triggered when a fire starts anywhere on map.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
-| `data` | [`FireEventData`](/reference/server/api/events/world/fireeventdata/) |
+##### playerId
+
+`number`
+
+##### data
+
+[`FireEventData`](/reference/server/api/events/world/fireeventdata/)
 
 #### Returns
 
@@ -360,19 +347,17 @@ Triggered when a fire starts anywhere on map.
 
 ### gameObjectDespawn()
 
-```ts
-gameObjectDespawn(id): void;
-```
+> **gameObjectDespawn**(`id`): `void`
 
-Defined in: events.ts:533
+Defined in: events.ts:543
 
 Triggered when a game object despawns.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `id` | `number` |
+##### id
+
+`number`
 
 #### Returns
 
@@ -388,19 +373,17 @@ Triggered when a game object despawns.
 
 ### gameObjectSpawn()
 
-```ts
-gameObjectSpawn(id): void;
-```
+> **gameObjectSpawn**(`id`): `void`
 
-Defined in: events.ts:529
+Defined in: events.ts:539
 
 Triggered when a game object spawns.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `id` | `number` |
+##### id
+
+`number`
 
 #### Returns
 
@@ -412,24 +395,63 @@ Triggered when a game object spawns.
 
 ***
 
+<a id="globalmetachange"></a>
+
+### globalMetaChange()
+
+> **globalMetaChange**(`id`, `key`, `oldValue`, `newValue`): `void`
+
+Defined in: events.ts:410
+
+Triggered when global meta changed
+
+#### Parameters
+
+##### id
+
+`string`
+
+##### key
+
+`string`
+
+##### oldValue
+
+`any`
+
+##### newValue
+
+`any`
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+[`WorldEvents`](/reference/server/api/events/world/worldevents/).[`globalMetaChange`](/reference/server/api/events/world/worldevents/#globalmetachange)
+
+***
+
 <a id="liftstatechange"></a>
 
 ### liftStateChange()
 
-```ts
-liftStateChange(playerId, data): boolean | void;
-```
+> **liftStateChange**(`playerId`, `data`): `boolean` \| `void`
 
-Defined in: events.ts:379
+Defined in: events.ts:395
 
 Triggered when a any lift's state changes.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
-| `data` | [`LiftStateChangeEventData`](/reference/server/api/events/world/liftstatechangeeventdata/) |
+##### playerId
+
+`number`
+
+##### data
+
+[`LiftStateChangeEventData`](/reference/server/api/events/world/liftstatechangeeventdata/)
 
 #### Returns
 
@@ -445,20 +467,21 @@ Triggered when a any lift's state changes.
 
 ### meleeAction()
 
-```ts
-meleeAction(playerId, data): boolean | void;
-```
+> **meleeAction**(`playerId`, `data`): `boolean` \| `void`
 
-Defined in: events.ts:349
+Defined in: events.ts:361
 
 Triggered when a player performs a melee action.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
-| `data` | [`MeleeActionEventData`](/reference/server/api/events/players/meleeactioneventdata/) |
+##### playerId
+
+`number`
+
+##### data
+
+[`MeleeActionEventData`](/reference/server/api/events/players/meleeactioneventdata/)
 
 #### Returns
 
@@ -474,19 +497,17 @@ Triggered when a player performs a melee action.
 
 ### objectDespawn()
 
-```ts
-objectDespawn(id): void;
-```
+> **objectDespawn**(`id`): `void`
 
-Defined in: events.ts:524
+Defined in: events.ts:534
 
 Triggered when an object despawns.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `id` | `number` |
+##### id
+
+`number`
 
 #### Returns
 
@@ -502,19 +523,17 @@ Triggered when an object despawns.
 
 ### objectSpawn()
 
-```ts
-objectSpawn(id): void;
-```
+> **objectSpawn**(`id`): `void`
 
-Defined in: events.ts:520
+Defined in: events.ts:530
 
 Triggered when an object spawns.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `id` | `number` |
+##### id
+
+`number`
 
 #### Returns
 
@@ -530,19 +549,17 @@ Triggered when an object spawns.
 
 ### pedDespawn()
 
-```ts
-pedDespawn(id): void;
-```
+> **pedDespawn**(`id`): `void`
 
-Defined in: events.ts:494
+Defined in: events.ts:504
 
 Triggered when a ped despawns.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `id` | `number` |
+##### id
+
+`number`
 
 #### Returns
 
@@ -558,19 +575,17 @@ Triggered when a ped despawns.
 
 ### pedSpawn()
 
-```ts
-pedSpawn(id): void;
-```
+> **pedSpawn**(`id`): `void`
 
-Defined in: events.ts:490
+Defined in: events.ts:500
 
 Triggered when a ped spawns.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `id` | `number` |
+##### id
+
+`number`
 
 #### Returns
 
@@ -586,20 +601,21 @@ Triggered when a ped spawns.
 
 ### pickupChange()
 
-```ts
-pickupChange(playerId, data): boolean | void;
-```
+> **pickupChange**(`playerId`, `data`): `boolean` \| `void`
 
-Defined in: events.ts:459
+Defined in: events.ts:469
 
 Triggered when a pickup's state changes.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
-| `data` | [`PickupChangeEventData`](/reference/server/api/events/pickups/pickupchangeeventdata/) |
+##### playerId
+
+`number`
+
+##### data
+
+[`PickupChangeEventData`](/reference/server/api/events/pickups/pickupchangeeventdata/)
 
 #### Returns
 
@@ -615,19 +631,17 @@ Triggered when a pickup's state changes.
 
 ### pickupDespawn()
 
-```ts
-pickupDespawn(id): void;
-```
+> **pickupDespawn**(`id`): `void`
 
-Defined in: events.ts:479
+Defined in: events.ts:489
 
 Triggered when a pickup despawns.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `id` | `number` |
+##### id
+
+`number`
 
 #### Returns
 
@@ -643,20 +657,21 @@ Triggered when a pickup despawns.
 
 ### pickupDrop()
 
-```ts
-pickupDrop(playerId, data): boolean | void;
-```
+> **pickupDrop**(`playerId`, `data`): `boolean` \| `void`
 
-Defined in: events.ts:469
+Defined in: events.ts:479
 
 Triggered when a pickup is dropped.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
-| `data` | [`PickupCreateEventData`](/reference/server/api/events/pickups/pickupcreateeventdata/) |
+##### playerId
+
+`number`
+
+##### data
+
+[`PickupCreateEventData`](/reference/server/api/events/pickups/pickupcreateeventdata/)
 
 #### Returns
 
@@ -672,20 +687,21 @@ Triggered when a pickup is dropped.
 
 ### pickupRaise()
 
-```ts
-pickupRaise(playerId, data): boolean | void;
-```
+> **pickupRaise**(`playerId`, `data`): `boolean` \| `void`
 
-Defined in: events.ts:464
+Defined in: events.ts:474
 
 Triggered when a pickup is raised.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
-| `data` | [`PickupDespawnEventData`](/reference/server/api/events/pickups/pickupdespawneventdata/) |
+##### playerId
+
+`number`
+
+##### data
+
+[`PickupDespawnEventData`](/reference/server/api/events/pickups/pickupdespawneventdata/)
 
 #### Returns
 
@@ -701,19 +717,17 @@ Triggered when a pickup is raised.
 
 ### pickupSpawn()
 
-```ts
-pickupSpawn(id): void;
-```
+> **pickupSpawn**(`id`): `void`
 
-Defined in: events.ts:474
+Defined in: events.ts:484
 
 Triggered when a pickup spawns.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `id` | `number` |
+##### id
+
+`number`
 
 #### Returns
 
@@ -729,9 +743,7 @@ Triggered when a pickup spawns.
 
 ### playerAppearanceChange()
 
-```ts
-playerAppearanceChange(playerId, data): boolean | void;
-```
+> **playerAppearanceChange**(`playerId`, `data`): `boolean` \| `void`
 
 Defined in: events.ts:330
 
@@ -739,10 +751,13 @@ Triggered when a player's appearance changes.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
-| `data` | [`PlayerAppearanceChangeEventData`](/reference/server/api/events/players/playerappearancechangeeventdata/) |
+##### playerId
+
+`number`
+
+##### data
+
+[`PlayerAppearanceChangeEventData`](/reference/server/api/events/players/playerappearancechangeeventdata/)
 
 #### Returns
 
@@ -758,9 +773,7 @@ Triggered when a player's appearance changes.
 
 ### playerConnected()
 
-```ts
-playerConnected(playerId, tempId): void;
-```
+> **playerConnected**(`playerId`, `tempId`): `void`
 
 Defined in: events.ts:306
 
@@ -768,10 +781,13 @@ Triggered when a player has connected.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
-| `tempId` | `string` |
+##### playerId
+
+`number`
+
+##### tempId
+
+`string`
 
 #### Returns
 
@@ -787,9 +803,7 @@ Triggered when a player has connected.
 
 ### playerConnecting()
 
-```ts
-playerConnecting(tempId, name): void;
-```
+> **playerConnecting**(`tempId`, `name`): `void`
 
 Defined in: events.ts:302
 
@@ -797,10 +811,13 @@ Triggered when a player is connecting.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `tempId` | `number` |
-| `name` | `string` |
+##### tempId
+
+`number`
+
+##### name
+
+`string`
 
 #### Returns
 
@@ -816,9 +833,7 @@ Triggered when a player is connecting.
 
 ### playerDeath()
 
-```ts
-playerDeath(playerId, data): void;
-```
+> **playerDeath**(`playerId`, `data`): `void`
 
 Defined in: events.ts:322
 
@@ -826,10 +841,13 @@ Triggered when a player dies.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
-| `data` | [`PlayerDeathEventData`](/reference/server/api/events/players/playerdeatheventdata/) |
+##### playerId
+
+`number`
+
+##### data
+
+[`PlayerDeathEventData`](/reference/server/api/events/players/playerdeatheventdata/)
 
 #### Returns
 
@@ -845,9 +863,7 @@ Triggered when a player dies.
 
 ### playerDespawn()
 
-```ts
-playerDespawn(playerId): void;
-```
+> **playerDespawn**(`playerId`): `void`
 
 Defined in: events.ts:318
 
@@ -855,9 +871,9 @@ Triggered when a player despawns.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
+##### playerId
+
+`number`
 
 #### Returns
 
@@ -873,9 +889,7 @@ Triggered when a player despawns.
 
 ### playerDisconnected()
 
-```ts
-playerDisconnected(playerId, reason): void;
-```
+> **playerDisconnected**(`playerId`, `reason`): `void`
 
 Defined in: events.ts:326
 
@@ -883,10 +897,13 @@ Triggered when a player disconnects.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
-| `reason` | `string` |
+##### playerId
+
+`number`
+
+##### reason
+
+`string`
 
 #### Returns
 
@@ -898,13 +915,75 @@ Triggered when a player disconnects.
 
 ***
 
+<a id="playerentervehicle"></a>
+
+### playerEnterVehicle()
+
+> **playerEnterVehicle**(`playerId`, `vehicleId`, `seat`): `void`
+
+Defined in: events.ts:349
+
+Triggered when a player enters a vehicle.
+
+#### Parameters
+
+##### playerId
+
+`number`
+
+##### vehicleId
+
+`number`
+
+##### seat
+
+[`VehicleSeat`](/reference/server/api/entities/vehicles/vehicleseat/)
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+[`PlayersEvents`](/reference/server/api/events/players/playersevents/).[`playerEnterVehicle`](/reference/server/api/events/players/playersevents/#playerentervehicle)
+
+***
+
+<a id="playerexitvehicle"></a>
+
+### playerExitVehicle()
+
+> **playerExitVehicle**(`playerId`, `vehicleId`): `void`
+
+Defined in: events.ts:345
+
+Triggered when a player exits a vehicle.
+
+#### Parameters
+
+##### playerId
+
+`number`
+
+##### vehicleId
+
+`number`
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+[`PlayersEvents`](/reference/server/api/events/players/playersevents/).[`playerExitVehicle`](/reference/server/api/events/players/playersevents/#playerexitvehicle)
+
+***
+
 <a id="playerhealing"></a>
 
 ### playerHealing()
 
-```ts
-playerHealing(playerId): boolean | void;
-```
+> **playerHealing**(`playerId`): `boolean` \| `void`
 
 Defined in: events.ts:337
 
@@ -912,9 +991,9 @@ Triggered when a player's healing.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
+##### playerId
+
+`number`
 
 #### Returns
 
@@ -930,9 +1009,7 @@ Triggered when a player's healing.
 
 ### playerKnockdown()
 
-```ts
-playerKnockdown(playerId): boolean | void;
-```
+> **playerKnockdown**(`playerId`): `boolean` \| `void`
 
 Defined in: events.ts:341
 
@@ -940,9 +1017,9 @@ Triggered when a player's knocked down.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
+##### playerId
+
+`number`
 
 #### Returns
 
@@ -954,13 +1031,49 @@ Triggered when a player's knocked down.
 
 ***
 
+<a id="playermetachange"></a>
+
+### playerMetaChange()
+
+> **playerMetaChange**(`id`, `key`, `oldValue`, `newValue`): `void`
+
+Defined in: events.ts:377
+
+Triggered when player meta changed
+
+#### Parameters
+
+##### id
+
+`string`
+
+##### key
+
+`string`
+
+##### oldValue
+
+`any`
+
+##### newValue
+
+`any`
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+[`PlayersEvents`](/reference/server/api/events/players/playersevents/).[`playerMetaChange`](/reference/server/api/events/players/playersevents/#playermetachange)
+
+***
+
 <a id="playerrespawn"></a>
 
 ### playerRespawn()
 
-```ts
-playerRespawn(playerId, data): void;
-```
+> **playerRespawn**(`playerId`, `data`): `void`
 
 Defined in: events.ts:314
 
@@ -968,10 +1081,13 @@ Triggered when a player respawns.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
-| `data` | [`Vector3Object`](/reference/server/api/events/world/vector3object/) |
+##### playerId
+
+`number`
+
+##### data
+
+[`Vector3Object`](/reference/server/api/events/world/vector3object/)
 
 #### Returns
 
@@ -987,9 +1103,7 @@ Triggered when a player respawns.
 
 ### playerSpawn()
 
-```ts
-playerSpawn(playerId): void;
-```
+> **playerSpawn**(`playerId`): `void`
 
 Defined in: events.ts:310
 
@@ -997,9 +1111,9 @@ Triggered when a player spawns.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
+##### playerId
+
+`number`
 
 #### Returns
 
@@ -1015,9 +1129,7 @@ Triggered when a player spawns.
 
 ### resourcesRefresh()
 
-```ts
-resourcesRefresh(): void;
-```
+> **resourcesRefresh**(): `void`
 
 Defined in: events.ts:291
 
@@ -1037,9 +1149,7 @@ Triggered when resources are refreshed.
 
 ### resourceStart()
 
-```ts
-resourceStart(): void;
-```
+> **resourceStart**(): `void`
 
 Defined in: events.ts:283
 
@@ -1059,9 +1169,7 @@ Triggered when a resource starts.
 
 ### resourceStop()
 
-```ts
-resourceStop(): void;
-```
+> **resourceStop**(): `void`
 
 Defined in: events.ts:287
 
@@ -1081,20 +1189,21 @@ Triggered when a resource stops.
 
 ### shootAction()
 
-```ts
-shootAction(playerId, data): boolean | void;
-```
+> **shootAction**(`playerId`, `data`): `boolean` \| `void`
 
-Defined in: events.ts:353
+Defined in: events.ts:365
 
 Triggered when a player performs a shoot action.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
-| `data` | [`ShootActionEventData`](/reference/server/api/events/players/shootactioneventdata/) |
+##### playerId
+
+`number`
+
+##### data
+
+[`ShootActionEventData`](/reference/server/api/events/players/shootactioneventdata/)
 
 #### Returns
 
@@ -1110,20 +1219,21 @@ Triggered when a player performs a shoot action.
 
 ### throwGrenade()
 
-```ts
-throwGrenade(playerId, data): boolean | void;
-```
+> **throwGrenade**(`playerId`, `data`): `boolean` \| `void`
 
-Defined in: events.ts:361
+Defined in: events.ts:373
 
 Triggered when a player throws a grenade.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
-| `data` | [`ThrowGrenadeEventData`](/reference/server/api/events/players/throwgrenadeeventdata/) |
+##### playerId
+
+`number`
+
+##### data
+
+[`ThrowGrenadeEventData`](/reference/server/api/events/players/throwgrenadeeventdata/)
 
 #### Returns
 
@@ -1139,20 +1249,21 @@ Triggered when a player throws a grenade.
 
 ### vehicleCustomizationChange()
 
-```ts
-vehicleCustomizationChange(playerId, data): void;
-```
+> **vehicleCustomizationChange**(`playerId`, `data`): `void`
 
-Defined in: events.ts:401
+Defined in: events.ts:421
 
 Triggered when a vehicle's customization changes (usually CrystalCoat).
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
-| `data` | [`VehicleCustomizationChangeEventData`](/reference/server/api/events/vehicles/vehiclecustomizationchangeeventdata/) |
+##### playerId
+
+`number`
+
+##### data
+
+[`VehicleCustomizationChangeEventData`](/reference/server/api/events/vehicles/vehiclecustomizationchangeeventdata/)
 
 #### Returns
 
@@ -1168,19 +1279,17 @@ Triggered when a vehicle's customization changes (usually CrystalCoat).
 
 ### vehicleDespawn()
 
-```ts
-vehicleDespawn(id): void;
-```
+> **vehicleDespawn**(`id`): `void`
 
-Defined in: events.ts:422
+Defined in: events.ts:442
 
 Triggered when a vehicle despawns.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `id` | `number` |
+##### id
+
+`number`
 
 #### Returns
 
@@ -1196,20 +1305,21 @@ Triggered when a vehicle despawns.
 
 ### vehicleDestructionChange()
 
-```ts
-vehicleDestructionChange(playerId, data): void;
-```
+> **vehicleDestructionChange**(`playerId`, `data`): `void`
 
-Defined in: events.ts:409
+Defined in: events.ts:429
 
 Triggered when a vehicle's destruction changes.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
-| `data` | [`VehicleDestructionChangeEventData`](/reference/server/api/events/vehicles/vehicledestructionchangeeventdata/) |
+##### playerId
+
+`number`
+
+##### data
+
+[`VehicleDestructionChangeEventData`](/reference/server/api/events/vehicles/vehicledestructionchangeeventdata/)
 
 #### Returns
 
@@ -1225,20 +1335,21 @@ Triggered when a vehicle's destruction changes.
 
 ### vehicleHittedByPlayer()
 
-```ts
-vehicleHittedByPlayer(id, data): boolean | void;
-```
+> **vehicleHittedByPlayer**(`id`, `data`): `boolean` \| `void`
 
-Defined in: events.ts:435
+Defined in: events.ts:455
 
 Triggered when a vehicle is hit by a player.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `id` | `number` |
-| `data` | `VehicleHittedByPlayerEventData` |
+##### id
+
+`number`
+
+##### data
+
+`VehicleHittedByPlayerEventData`
 
 #### Returns
 
@@ -1254,19 +1365,17 @@ Triggered when a vehicle is hit by a player.
 
 ### vehicleSpawn()
 
-```ts
-vehicleSpawn(id): void;
-```
+> **vehicleSpawn**(`id`): `void`
 
-Defined in: events.ts:417
+Defined in: events.ts:437
 
 Triggered when a vehicle spawns.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `id` | `number` |
+##### id
+
+`number`
 
 #### Returns
 
@@ -1282,20 +1391,21 @@ Triggered when a vehicle spawns.
 
 ### vehicleWeaponShoot()
 
-```ts
-vehicleWeaponShoot(id, data): boolean | void;
-```
+> **vehicleWeaponShoot**(`id`, `data`): `boolean` \| `void`
 
-Defined in: events.ts:427
+Defined in: events.ts:447
 
 Triggered when a vehicle's weapon shoots.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `id` | `number` |
-| `data` | [`VehicleWeaponShootEventData`](/reference/server/api/events/vehicles/vehicleweaponshooteventdata/) |
+##### id
+
+`number`
+
+##### data
+
+[`VehicleWeaponShootEventData`](/reference/server/api/events/vehicles/vehicleweaponshooteventdata/)
 
 #### Returns
 
@@ -1311,20 +1421,21 @@ Triggered when a vehicle's weapon shoots.
 
 ### weaponReload()
 
-```ts
-weaponReload(playerId, weaponHash): boolean | void;
-```
+> **weaponReload**(`playerId`, `weaponHash`): `boolean` \| `void`
 
-Defined in: events.ts:357
+Defined in: events.ts:369
 
 Triggered when a player reloads their weapon.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `playerId` | `number` |
-| `weaponHash` | [`GameHash`](/reference/server/api/hashes/gamehash/) |
+##### playerId
+
+`number`
+
+##### weaponHash
+
+[`GameHash`](/reference/server/api/hashes/gamehash/)
 
 #### Returns
 

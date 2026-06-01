@@ -13,9 +13,7 @@ Defined in: pickups.ts:7
 
 ### Clothes
 
-```ts
-Clothes: 1;
-```
+> **Clothes**: `1`
 
 Defined in: pickups.ts:8
 
@@ -25,9 +23,7 @@ Defined in: pickups.ts:8
 
 ### Other
 
-```ts
-Other: 3;
-```
+> **Other**: `3`
 
 Defined in: pickups.ts:10
 
@@ -37,8 +33,6 @@ Defined in: pickups.ts:10
 
 ### Weapon
 
-```ts
-Weapon: 2;
-```
+> **Weapon**: `2`
 
 Defined in: pickups.ts:9

@@ -17,9 +17,7 @@ Defined in: peds.ts:30
 
 ### at()
 
-```ts
-at(entity): MpPed;
-```
+> **at**(`entity`): [`MpPed`](/reference/server/api/entities/peds/mpped/)
 
 Defined in: entities.ts:110
 
@@ -27,9 +25,11 @@ Retrieves an entity by instance or ID.
 
 #### Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `entity` | `number` \| [`MpPed`](/reference/server/api/entities/peds/mpped/) | Entity instance or ID |
+##### entity
+
+`number` \| [`MpPed`](/reference/server/api/entities/peds/mpped/)
+
+Entity instance or ID
 
 #### Returns
 
@@ -51,17 +51,15 @@ If entity does not exist
 
 ### create()
 
-```ts
-create(options): MpPed;
-```
+> **create**(`options`): [`MpPed`](/reference/server/api/entities/peds/mpped/)
 
 Defined in: peds.ts:31
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `options` | [`CreatePedOptions`](/reference/server/api/entities/peds/createpedoptions/) |
+##### options
+
+[`CreatePedOptions`](/reference/server/api/entities/peds/createpedoptions/)
 
 #### Returns
 
@@ -73,17 +71,15 @@ Defined in: peds.ts:31
 
 ### destroy()
 
-```ts
-destroy(ped): void;
-```
+> **destroy**(`ped`): `void`
 
 Defined in: peds.ts:32
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `ped` | `number` \| [`MpPed`](/reference/server/api/entities/peds/mpped/) |
+##### ped
+
+`number` \| [`MpPed`](/reference/server/api/entities/peds/mpped/)
 
 #### Returns
 
@@ -95,9 +91,7 @@ Defined in: peds.ts:32
 
 ### exists()
 
-```ts
-exists(entity): boolean;
-```
+> **exists**(`entity`): `boolean`
 
 Defined in: entities.ts:100
 
@@ -105,9 +99,11 @@ Checks if an entity exists.
 
 #### Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `entity` | `number` \| [`MpPed`](/reference/server/api/entities/peds/mpped/) | Entity instance or ID |
+##### entity
+
+`number` \| [`MpPed`](/reference/server/api/entities/peds/mpped/)
+
+Entity instance or ID
 
 #### Returns
 
@@ -125,9 +121,7 @@ True if entity exists
 
 ### toArray()
 
-```ts
-toArray(): MpPed[];
-```
+> **toArray**(): [`MpPed`](/reference/server/api/entities/peds/mpped/)[]
 
 Defined in: peds.ts:33
 

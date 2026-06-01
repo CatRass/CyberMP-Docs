@@ -5,9 +5,7 @@ prev: false
 title: "CreatePedOptions"
 ---
 
-```ts
-type CreatePedOptions = object;
-```
+> **CreatePedOptions** = `object`
 
 Defined in: peds.ts:18
 
@@ -17,9 +15,7 @@ Defined in: peds.ts:18
 
 ### appearance
 
-```ts
-appearance: CName;
-```
+> **appearance**: [`CName`](/reference/server/api/hashes/cname/)
 
 Defined in: peds.ts:20
 
@@ -29,9 +25,7 @@ Defined in: peds.ts:20
 
 ### dimension?
 
-```ts
-optional dimension: number;
-```
+> `optional` **dimension?**: `number`
 
 Defined in: peds.ts:24
 
@@ -41,9 +35,7 @@ Defined in: peds.ts:24
 
 ### health?
 
-```ts
-optional health: number;
-```
+> `optional` **health?**: `number`
 
 Defined in: peds.ts:22
 
@@ -53,9 +45,7 @@ Defined in: peds.ts:22
 
 ### model
 
-```ts
-model: TweakDBID;
-```
+> **model**: [`GameHash`](/reference/server/api/hashes/gamehash/)
 
 Defined in: peds.ts:19
 
@@ -65,9 +55,7 @@ Defined in: peds.ts:19
 
 ### position
 
-```ts
-position: Vector3;
-```
+> **position**: [`Vector3`](/reference/server/api/global/vector3/)
 
 Defined in: peds.ts:21
 
@@ -77,8 +65,6 @@ Defined in: peds.ts:21
 
 ### yaw?
 
-```ts
-optional yaw: number;
-```
+> `optional` **yaw?**: `number`
 
 Defined in: peds.ts:23

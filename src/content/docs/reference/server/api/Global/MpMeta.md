@@ -5,7 +5,7 @@ prev: false
 title: "MpMeta"
 ---
 
-Defined in: meta.ts:8
+Defined in: meta.ts:7
 
 Sets/gets metadata for the any entity.
 
@@ -15,24 +15,25 @@ Sets/gets metadata for the any entity.
 
 ### getEntityMeta()
 
-```ts
-getEntityMeta<T>(entity, key): T;
-```
+> **getEntityMeta**\<`T`\>(`entity`, `key`): `T`
 
-Defined in: meta.ts:26
+Defined in: meta.ts:25
 
 #### Type Parameters
 
-| Type Parameter | Default type |
-| ------ | ------ |
-| `T` | `any` |
+##### T
+
+`T` = `any`
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `entity` | \| `number` \| [`MpEntity`](/reference/server/api/entities/mpentity/)\<[`EntityType`](/reference/server/api/entities/entitytype/)\> |
-| `key` | `string` |
+##### entity
+
+`number` \| [`MpEntity`](/reference/server/api/entities/mpentity/)\<[`EntityType`](/reference/server/api/entities/entitytype/)\>
+
+##### key
+
+`string`
 
 #### Returns
 
@@ -44,23 +45,21 @@ Defined in: meta.ts:26
 
 ### getGlobalMeta()
 
-```ts
-getGlobalMeta<T>(key): T;
-```
+> **getGlobalMeta**\<`T`\>(`key`): `T`
 
-Defined in: meta.ts:10
+Defined in: meta.ts:9
 
 #### Type Parameters
 
-| Type Parameter | Default type |
-| ------ | ------ |
-| `T` | `any` |
+##### T
+
+`T` = `any`
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `key` | `string` |
+##### key
+
+`string`
 
 #### Returns
 
@@ -72,24 +71,25 @@ Defined in: meta.ts:10
 
 ### getPlayerMeta()
 
-```ts
-getPlayerMeta<T>(player, key): T;
-```
+> **getPlayerMeta**\<`T`\>(`player`, `key`): `T`
 
-Defined in: meta.ts:18
+Defined in: meta.ts:17
 
 #### Type Parameters
 
-| Type Parameter | Default type |
-| ------ | ------ |
-| `T` | `any` |
+##### T
+
+`T` = `any`
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `player` | `number` \| [`MpPlayer`](/reference/server/api/entities/mpplayer/) |
-| `key` | `string` |
+##### player
+
+`number` \| [`MpPlayer`](/reference/server/api/entities/players/mpplayer/)
+
+##### key
+
+`string`
 
 #### Returns
 
@@ -101,24 +101,27 @@ Defined in: meta.ts:18
 
 ### setEntityMeta()
 
-```ts
-setEntityMeta(
-   entity, 
-   key, 
-   value, 
-   sync?): void;
-```
+> **setEntityMeta**(`entity`, `key`, `value`, `sync?`): `void`
 
-Defined in: meta.ts:20
+Defined in: meta.ts:19
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `entity` | \| `number` \| [`MpEntity`](/reference/server/api/entities/mpentity/)\<[`EntityType`](/reference/server/api/entities/entitytype/)\> |
-| `key` | `string` |
-| `value` | `any` |
-| `sync?` | `boolean` |
+##### entity
+
+`number` \| [`MpEntity`](/reference/server/api/entities/mpentity/)\<[`EntityType`](/reference/server/api/entities/entitytype/)\>
+
+##### key
+
+`string`
+
+##### value
+
+`any`
+
+##### sync?
+
+`boolean`
 
 #### Returns
 
@@ -130,22 +133,23 @@ Defined in: meta.ts:20
 
 ### setGlobalMeta()
 
-```ts
-setGlobalMeta(
-   key, 
-   value, 
-   sync?): void;
-```
+> **setGlobalMeta**(`key`, `value`, `sync?`): `void`
 
-Defined in: meta.ts:9
+Defined in: meta.ts:8
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `key` | `string` |
-| `value` | `any` |
-| `sync?` | `boolean` |
+##### key
+
+`string`
+
+##### value
+
+`any`
+
+##### sync?
+
+`boolean`
 
 #### Returns
 
@@ -157,24 +161,27 @@ Defined in: meta.ts:9
 
 ### setPlayerMeta()
 
-```ts
-setPlayerMeta(
-   player, 
-   key, 
-   value, 
-   sync?): void;
-```
+> **setPlayerMeta**(`player`, `key`, `value`, `sync?`): `void`
 
-Defined in: meta.ts:12
+Defined in: meta.ts:11
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `player` | `number` \| [`MpPlayer`](/reference/server/api/entities/mpplayer/) |
-| `key` | `string` |
-| `value` | `any` |
-| `sync?` | `boolean` |
+##### player
+
+`number` \| [`MpPlayer`](/reference/server/api/entities/players/mpplayer/)
+
+##### key
+
+`string`
+
+##### value
+
+`any`
+
+##### sync?
+
+`boolean`
 
 #### Returns
 

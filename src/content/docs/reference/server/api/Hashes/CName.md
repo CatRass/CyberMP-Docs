@@ -5,8 +5,6 @@ prev: false
 title: "CName"
 ---
 
-```ts
-type CName = GameHash;
-```
+> **CName** = [`GameHash`](/reference/server/api/hashes/gamehash/)
 
 Defined in: shared.ts:37

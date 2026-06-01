@@ -5,9 +5,7 @@ prev: false
 title: "CreateObjectOptions"
 ---
 
-```ts
-type CreateObjectOptions = object;
-```
+> **CreateObjectOptions** = `object`
 
 Defined in: objects.ts:16
 
@@ -17,9 +15,7 @@ Defined in: objects.ts:16
 
 ### dimension?
 
-```ts
-optional dimension: number;
-```
+> `optional` **dimension?**: `number`
 
 Defined in: objects.ts:21
 
@@ -29,9 +25,7 @@ Defined in: objects.ts:21
 
 ### dynamic?
 
-```ts
-optional dynamic: boolean;
-```
+> `optional` **dynamic?**: `boolean`
 
 Defined in: objects.ts:20
 
@@ -41,9 +35,7 @@ Defined in: objects.ts:20
 
 ### model
 
-```ts
-model: TweakDBID;
-```
+> **model**: [`GameHash`](/reference/server/api/hashes/gamehash/)
 
 Defined in: objects.ts:17
 
@@ -53,9 +45,7 @@ Defined in: objects.ts:17
 
 ### position
 
-```ts
-position: Vector3;
-```
+> **position**: [`Vector3`](/reference/server/api/global/vector3/)
 
 Defined in: objects.ts:18
 
@@ -65,8 +55,6 @@ Defined in: objects.ts:18
 
 ### yaw?
 
-```ts
-optional yaw: number;
-```
+> `optional` **yaw?**: `number`
 
 Defined in: objects.ts:19

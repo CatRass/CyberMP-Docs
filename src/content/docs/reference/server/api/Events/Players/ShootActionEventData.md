@@ -5,9 +5,7 @@ prev: false
 title: "ShootActionEventData"
 ---
 
-```ts
-type ShootActionEventData = Vector3Object & object;
-```
+> **ShootActionEventData** = [`Vector3Object`](/reference/server/api/events/world/vector3object/) & `object`
 
 Defined in: events.ts:59
 

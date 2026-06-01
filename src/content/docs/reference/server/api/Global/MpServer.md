@@ -5,7 +5,7 @@ prev: false
 title: "MpServer"
 ---
 
-Defined in: mp.ts:64
+Defined in: mp.ts:62
 
 ## Properties
 
@@ -13,11 +13,9 @@ Defined in: mp.ts:64
 
 ### commands
 
-```ts
-commands: MpCommands;
-```
+> **commands**: [`MpCommands`](/reference/server/api/global/mpcommands/)
 
-Defined in: mp.ts:68
+Defined in: mp.ts:66
 
 ***
 
@@ -25,11 +23,9 @@ Defined in: mp.ts:68
 
 ### config
 
-```ts
-config: ServerConfig;
-```
+> **config**: [`ServerConfig`](/reference/server/api/global/config/serverconfig/)
 
-Defined in: mp.ts:92
+Defined in: mp.ts:90
 
 ***
 
@@ -37,11 +33,9 @@ Defined in: mp.ts:92
 
 ### entities
 
-```ts
-entities: MpEntities;
-```
+> **entities**: [`MpEntities`](/reference/server/api/entities/mpentities/)
 
-Defined in: mp.ts:69
+Defined in: mp.ts:67
 
 ***
 
@@ -49,11 +43,9 @@ Defined in: mp.ts:69
 
 ### events
 
-```ts
-events: MpEvents;
-```
+> **events**: [`MpEvents`](/reference/server/api/events/mpevents/)
 
-Defined in: mp.ts:65
+Defined in: mp.ts:63
 
 ***
 
@@ -61,11 +53,9 @@ Defined in: mp.ts:65
 
 ### hashes
 
-```ts
-hashes: MpHashes;
-```
+> **hashes**: [`MpHashes`](/reference/server/api/global/mphashes/)
 
-Defined in: mp.ts:75
+Defined in: mp.ts:73
 
 ***
 
@@ -73,11 +63,9 @@ Defined in: mp.ts:75
 
 ### meta
 
-```ts
-meta: MpMeta;
-```
+> **meta**: [`MpMeta`](/reference/server/api/global/mpmeta/)
 
-Defined in: mp.ts:66
+Defined in: mp.ts:64
 
 ***
 
@@ -85,11 +73,9 @@ Defined in: mp.ts:66
 
 ### MpEntity
 
-```ts
-MpEntity: Class<MpEntity<EntityType>>;
-```
+> **MpEntity**: `Class`\<[`MpEntity`](/reference/server/api/entities/mpentity/)\<[`EntityType`](/reference/server/api/entities/entitytype/)\>\>
 
-Defined in: mp.ts:80
+Defined in: mp.ts:78
 
 ***
 
@@ -97,11 +83,9 @@ Defined in: mp.ts:80
 
 ### MpObject
 
-```ts
-MpObject: Class<MpObject>;
-```
+> **MpObject**: `Class`\<[`MpObject`](/reference/server/api/entities/objects/mpobject/)\>
 
-Defined in: mp.ts:84
+Defined in: mp.ts:82
 
 ***
 
@@ -109,11 +93,9 @@ Defined in: mp.ts:84
 
 ### MpPed
 
-```ts
-MpPed: Class<MpPed>;
-```
+> **MpPed**: `Class`\<[`MpPed`](/reference/server/api/entities/peds/mpped/)\>
 
-Defined in: mp.ts:83
+Defined in: mp.ts:81
 
 ***
 
@@ -121,11 +103,9 @@ Defined in: mp.ts:83
 
 ### MpPickup
 
-```ts
-MpPickup: Class<MpPickup>;
-```
+> **MpPickup**: `Class`\<[`MpPickup`](/reference/server/api/entities/pickups/mppickup/)\>
 
-Defined in: mp.ts:81
+Defined in: mp.ts:79
 
 ***
 
@@ -133,11 +113,9 @@ Defined in: mp.ts:81
 
 ### MpPlayer
 
-```ts
-MpPlayer: Class<MpPlayer>;
-```
+> **MpPlayer**: `Class`\<[`MpPlayer`](/reference/server/api/entities/players/mpplayer/)\>
 
-Defined in: mp.ts:79
+Defined in: mp.ts:77
 
 ***
 
@@ -145,11 +123,9 @@ Defined in: mp.ts:79
 
 ### MpVehicle
 
-```ts
-MpVehicle: Class<MpVehicle>;
-```
+> **MpVehicle**: `Class`\<[`MpVehicle`](/reference/server/api/entities/vehicles/mpvehicle/)\>
 
-Defined in: mp.ts:82
+Defined in: mp.ts:80
 
 ***
 
@@ -157,11 +133,9 @@ Defined in: mp.ts:82
 
 ### objects
 
-```ts
-objects: MpObjects;
-```
+> **objects**: [`MpObjects`](/reference/server/api/entities/objects/mpobjects/)
 
-Defined in: mp.ts:72
+Defined in: mp.ts:70
 
 ***
 
@@ -169,11 +143,9 @@ Defined in: mp.ts:72
 
 ### peds
 
-```ts
-peds: MpPeds;
-```
+> **peds**: [`MpPeds`](/reference/server/api/entities/peds/mppeds/)
 
-Defined in: mp.ts:74
+Defined in: mp.ts:72
 
 ***
 
@@ -181,11 +153,9 @@ Defined in: mp.ts:74
 
 ### pickups
 
-```ts
-pickups: MpPickups;
-```
+> **pickups**: [`MpPickups`](/reference/server/api/entities/pickups/mppickups/)
 
-Defined in: mp.ts:73
+Defined in: mp.ts:71
 
 ***
 
@@ -193,11 +163,9 @@ Defined in: mp.ts:73
 
 ### players
 
-```ts
-players: MpPlayers;
-```
+> **players**: [`MpPlayers`](/reference/server/api/entities/players/mpplayers/)
 
-Defined in: mp.ts:71
+Defined in: mp.ts:69
 
 ***
 
@@ -205,11 +173,9 @@ Defined in: mp.ts:71
 
 ### resources
 
-```ts
-resources: MpResources;
-```
+> **resources**: [`MpResources`](/reference/server/api/global/mpresources/)
 
-Defined in: mp.ts:67
+Defined in: mp.ts:65
 
 ***
 
@@ -217,11 +183,9 @@ Defined in: mp.ts:67
 
 ### vehicles
 
-```ts
-vehicles: MpVehicles;
-```
+> **vehicles**: [`MpVehicles`](/reference/server/api/entities/vehicles/mpvehicles/)
 
-Defined in: mp.ts:70
+Defined in: mp.ts:68
 
 ## Methods
 
@@ -229,11 +193,9 @@ Defined in: mp.ts:70
 
 ### cancelEvent()
 
-```ts
-cancelEvent(): void;
-```
+> **cancelEvent**(): `void`
 
-Defined in: mp.ts:77
+Defined in: mp.ts:75
 
 #### Returns
 
@@ -245,11 +207,9 @@ Defined in: mp.ts:77
 
 ### isServer()
 
-```ts
-isServer(): boolean;
-```
+> **isServer**(): `boolean`
 
-Defined in: mp.ts:90
+Defined in: mp.ts:88
 
 Checks if the code is running on the server.
 

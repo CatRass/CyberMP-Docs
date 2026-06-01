@@ -5,7 +5,7 @@ prev: false
 title: "PedEvents"
 ---
 
-Defined in: events.ts:486
+Defined in: events.ts:496
 
 Events related to Peds.
 
@@ -19,19 +19,17 @@ Events related to Peds.
 
 ### pedDespawn()
 
-```ts
-pedDespawn(id): void;
-```
+> **pedDespawn**(`id`): `void`
 
-Defined in: events.ts:494
+Defined in: events.ts:504
 
 Triggered when a ped despawns.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `id` | `number` |
+##### id
+
+`number`
 
 #### Returns
 
@@ -43,19 +41,17 @@ Triggered when a ped despawns.
 
 ### pedSpawn()
 
-```ts
-pedSpawn(id): void;
-```
+> **pedSpawn**(`id`): `void`
 
-Defined in: events.ts:490
+Defined in: events.ts:500
 
 Triggered when a ped spawns.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `id` | `number` |
+##### id
+
+`number`
 
 #### Returns
 

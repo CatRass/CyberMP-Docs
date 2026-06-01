@@ -5,9 +5,7 @@ prev: false
 title: "PickupDespawnEventData"
 ---
 
-```ts
-type PickupDespawnEventData = object;
-```
+> **PickupDespawnEventData** = `object`
 
 Defined in: events.ts:243
 
@@ -17,9 +15,7 @@ Defined in: events.ts:243
 
 ### isBag
 
-```ts
-isBag: boolean;
-```
+> **isBag**: `boolean`
 
 Defined in: events.ts:246
 
@@ -29,9 +25,7 @@ Defined in: events.ts:246
 
 ### pickupHash
 
-```ts
-pickupHash: GameHash;
-```
+> **pickupHash**: [`GameHash`](/reference/server/api/hashes/gamehash/)
 
 Defined in: events.ts:245
 
@@ -41,8 +35,6 @@ Defined in: events.ts:245
 
 ### pickupNetId
 
-```ts
-pickupNetId: number;
-```
+> **pickupNetId**: `number`
 
 Defined in: events.ts:244

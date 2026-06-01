@@ -5,9 +5,7 @@ prev: false
 title: "DamageEventData"
 ---
 
-```ts
-type DamageEventData = object;
-```
+> **DamageEventData** = `object`
 
 Defined in: events.ts:10
 
@@ -19,9 +17,7 @@ Data describing a damage event between players.
 
 ### compName
 
-```ts
-compName: string;
-```
+> **compName**: `string`
 
 Defined in: events.ts:25
 
@@ -31,9 +27,7 @@ Defined in: events.ts:25
 
 ### damageType
 
-```ts
-damageType: number;
-```
+> **damageType**: `number`
 
 Defined in: events.ts:11
 
@@ -43,9 +37,7 @@ Defined in: events.ts:11
 
 ### damageValues
 
-```ts
-damageValues: number[];
-```
+> **damageValues**: `number`[]
 
 Defined in: events.ts:23
 
@@ -55,9 +47,7 @@ Defined in: events.ts:23
 
 ### dismembermentParts
 
-```ts
-dismembermentParts: any[];
-```
+> **dismembermentParts**: `any`[]
 
 Defined in: events.ts:26
 
@@ -67,9 +57,7 @@ Defined in: events.ts:26
 
 ### flags
 
-```ts
-flags: number[];
-```
+> **flags**: `number`[]
 
 Defined in: events.ts:24
 
@@ -79,9 +67,7 @@ Defined in: events.ts:24
 
 ### hitComponent
 
-```ts
-hitComponent: number;
-```
+> **hitComponent**: `number`
 
 Defined in: events.ts:16
 
@@ -91,9 +77,7 @@ Defined in: events.ts:16
 
 ### hitDirectionX
 
-```ts
-hitDirectionX: number;
-```
+> **hitDirectionX**: `number`
 
 Defined in: events.ts:20
 
@@ -103,9 +87,7 @@ Defined in: events.ts:20
 
 ### hitDirectionY
 
-```ts
-hitDirectionY: number;
-```
+> **hitDirectionY**: `number`
 
 Defined in: events.ts:21
 
@@ -115,9 +97,7 @@ Defined in: events.ts:21
 
 ### hitDirectionZ
 
-```ts
-hitDirectionZ: number;
-```
+> **hitDirectionZ**: `number`
 
 Defined in: events.ts:22
 
@@ -127,9 +107,7 @@ Defined in: events.ts:22
 
 ### hitPositionX
 
-```ts
-hitPositionX: number;
-```
+> **hitPositionX**: `number`
 
 Defined in: events.ts:17
 
@@ -139,9 +117,7 @@ Defined in: events.ts:17
 
 ### hitPositionY
 
-```ts
-hitPositionY: number;
-```
+> **hitPositionY**: `number`
 
 Defined in: events.ts:18
 
@@ -151,9 +127,7 @@ Defined in: events.ts:18
 
 ### hitPositionZ
 
-```ts
-hitPositionZ: number;
-```
+> **hitPositionZ**: `number`
 
 Defined in: events.ts:19
 
@@ -163,9 +137,7 @@ Defined in: events.ts:19
 
 ### hitReactionZones
 
-```ts
-hitReactionZones: any[];
-```
+> **hitReactionZones**: `any`[]
 
 Defined in: events.ts:27
 
@@ -175,9 +147,7 @@ Defined in: events.ts:27
 
 ### hitShapeNames
 
-```ts
-hitShapeNames: string[];
-```
+> **hitShapeNames**: `string`[]
 
 Defined in: events.ts:29
 
@@ -187,9 +157,7 @@ Defined in: events.ts:29
 
 ### hitShapeTypes
 
-```ts
-hitShapeTypes: any[];
-```
+> **hitShapeTypes**: `any`[]
 
 Defined in: events.ts:28
 
@@ -199,9 +167,7 @@ Defined in: events.ts:28
 
 ### killerId
 
-```ts
-killerId: number;
-```
+> **killerId**: `number`
 
 Defined in: events.ts:14
 
@@ -211,9 +177,7 @@ Defined in: events.ts:14
 
 ### physicsMaterials
 
-```ts
-physicsMaterials: string[];
-```
+> **physicsMaterials**: `string`[]
 
 Defined in: events.ts:30
 
@@ -223,9 +187,7 @@ Defined in: events.ts:30
 
 ### totalDamage
 
-```ts
-totalDamage: number;
-```
+> **totalDamage**: `number`
 
 Defined in: events.ts:13
 
@@ -235,9 +197,7 @@ Defined in: events.ts:13
 
 ### victimId
 
-```ts
-victimId: number;
-```
+> **victimId**: `number`
 
 Defined in: events.ts:15
 
@@ -247,8 +207,6 @@ Defined in: events.ts:15
 
 ### weaponHash
 
-```ts
-weaponHash: GameHash;
-```
+> **weaponHash**: [`GameHash`](/reference/server/api/hashes/gamehash/)
 
 Defined in: events.ts:12

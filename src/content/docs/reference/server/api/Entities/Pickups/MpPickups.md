@@ -17,9 +17,7 @@ Defined in: pickups.ts:37
 
 ### at()
 
-```ts
-at(entity): MpPickup;
-```
+> **at**(`entity`): [`MpPickup`](/reference/server/api/entities/pickups/mppickup/)
 
 Defined in: entities.ts:110
 
@@ -27,9 +25,11 @@ Retrieves an entity by instance or ID.
 
 #### Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `entity` | `number` \| [`MpPickup`](/reference/server/api/entities/pickups/mppickup/) | Entity instance or ID |
+##### entity
+
+`number` \| [`MpPickup`](/reference/server/api/entities/pickups/mppickup/)
+
+Entity instance or ID
 
 #### Returns
 
@@ -51,17 +51,15 @@ If entity does not exist
 
 ### create()
 
-```ts
-create(options): MpPickup;
-```
+> **create**(`options`): [`MpPickup`](/reference/server/api/entities/pickups/mppickup/)
 
 Defined in: pickups.ts:38
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `options` | [`CreatePickupOptions`](/reference/server/api/entities/pickups/createpickupoptions/) |
+##### options
+
+[`CreatePickupOptions`](/reference/server/api/entities/pickups/createpickupoptions/)
 
 #### Returns
 
@@ -73,9 +71,7 @@ Defined in: pickups.ts:38
 
 ### exists()
 
-```ts
-exists(entity): boolean;
-```
+> **exists**(`entity`): `boolean`
 
 Defined in: entities.ts:100
 
@@ -83,9 +79,11 @@ Checks if an entity exists.
 
 #### Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `entity` | `number` \| [`MpPickup`](/reference/server/api/entities/pickups/mppickup/) | Entity instance or ID |
+##### entity
+
+`number` \| [`MpPickup`](/reference/server/api/entities/pickups/mppickup/)
+
+Entity instance or ID
 
 #### Returns
 

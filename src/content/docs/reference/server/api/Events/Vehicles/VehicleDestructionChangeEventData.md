@@ -5,9 +5,7 @@ prev: false
 title: "VehicleDestructionChangeEventData"
 ---
 
-```ts
-type VehicleDestructionChangeEventData = object;
-```
+> **VehicleDestructionChangeEventData** = `object`
 
 Defined in: events.ts:183
 
@@ -17,9 +15,7 @@ Defined in: events.ts:183
 
 ### brokenGlass
 
-```ts
-brokenGlass: number;
-```
+> **brokenGlass**: `number`
 
 Defined in: events.ts:185
 
@@ -29,9 +25,7 @@ Defined in: events.ts:185
 
 ### brokenLights
 
-```ts
-brokenLights: number;
-```
+> **brokenLights**: `number`
 
 Defined in: events.ts:186
 
@@ -41,9 +35,7 @@ Defined in: events.ts:186
 
 ### flatTire
 
-```ts
-flatTire: number;
-```
+> **flatTire**: `number`
 
 Defined in: events.ts:187
 
@@ -53,9 +45,7 @@ Defined in: events.ts:187
 
 ### vehicleID
 
-```ts
-vehicleID: number;
-```
+> **vehicleID**: `number`
 
 Defined in: events.ts:184
 
@@ -65,8 +55,6 @@ Defined in: events.ts:184
 
 ### windshieldShattered
 
-```ts
-windshieldShattered: boolean;
-```
+> **windshieldShattered**: `boolean`
 
 Defined in: events.ts:188

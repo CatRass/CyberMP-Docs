@@ -5,9 +5,7 @@ prev: false
 title: "CreatePickupOptions"
 ---
 
-```ts
-type CreatePickupOptions = object;
-```
+> **CreatePickupOptions** = `object`
 
 Defined in: pickups.ts:26
 
@@ -17,9 +15,7 @@ Defined in: pickups.ts:26
 
 ### dimension?
 
-```ts
-optional dimension: number;
-```
+> `optional` **dimension?**: `number`
 
 Defined in: pickups.ts:31
 
@@ -29,9 +25,7 @@ Defined in: pickups.ts:31
 
 ### model
 
-```ts
-model: TweakDBID;
-```
+> **model**: [`GameHash`](/reference/server/api/hashes/gamehash/)
 
 Defined in: pickups.ts:27
 
@@ -41,9 +35,7 @@ Defined in: pickups.ts:27
 
 ### position
 
-```ts
-position: Vector3;
-```
+> **position**: [`Vector3`](/reference/server/api/global/vector3/)
 
 Defined in: pickups.ts:29
 
@@ -53,9 +45,7 @@ Defined in: pickups.ts:29
 
 ### type
 
-```ts
-type: PickupType;
-```
+> **type**: [`PickupType`](/reference/server/api/entities/pickups/pickuptype/)
 
 Defined in: pickups.ts:28
 
@@ -65,8 +55,6 @@ Defined in: pickups.ts:28
 
 ### yaw?
 
-```ts
-optional yaw: number;
-```
+> `optional` **yaw?**: `number`
 
 Defined in: pickups.ts:30

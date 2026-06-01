@@ -5,9 +5,7 @@ prev: false
 title: "VehicleCustomizationChangeEventData"
 ---
 
-```ts
-type VehicleCustomizationChangeEventData = object;
-```
+> **VehicleCustomizationChangeEventData** = `object`
 
 Defined in: events.ts:162
 
@@ -17,9 +15,7 @@ Defined in: events.ts:162
 
 ### hashAppearance
 
-```ts
-hashAppearance: GameHash;
-```
+> **hashAppearance**: [`GameHash`](/reference/server/api/hashes/gamehash/)
 
 Defined in: events.ts:177
 
@@ -29,9 +25,7 @@ Defined in: events.ts:177
 
 ### isDisabledVehCustomizationByDamage
 
-```ts
-isDisabledVehCustomizationByDamage: boolean;
-```
+> **isDisabledVehCustomizationByDamage**: `boolean`
 
 Defined in: events.ts:165
 
@@ -41,9 +35,7 @@ Defined in: events.ts:165
 
 ### isEnabledVehCustomization
 
-```ts
-isEnabledVehCustomization: boolean;
-```
+> **isEnabledVehCustomization**: `boolean`
 
 Defined in: events.ts:164
 
@@ -53,9 +45,7 @@ Defined in: events.ts:164
 
 ### isVehicleWasCustomized
 
-```ts
-isVehicleWasCustomized: boolean;
-```
+> **isVehicleWasCustomized**: `boolean`
 
 Defined in: events.ts:163
 
@@ -65,9 +55,7 @@ Defined in: events.ts:163
 
 ### lightsColorDefined
 
-```ts
-lightsColorDefined: boolean;
-```
+> **lightsColorDefined**: `boolean`
 
 Defined in: events.ts:166
 
@@ -77,9 +65,7 @@ Defined in: events.ts:166
 
 ### lightsColorHue
 
-```ts
-lightsColorHue: number;
-```
+> **lightsColorHue**: `number`
 
 Defined in: events.ts:167
 
@@ -89,9 +75,7 @@ Defined in: events.ts:167
 
 ### primaryColorB
 
-```ts
-primaryColorB: number;
-```
+> **primaryColorB**: `number`
 
 Defined in: events.ts:170
 
@@ -101,9 +85,7 @@ Defined in: events.ts:170
 
 ### primaryColorDefined
 
-```ts
-primaryColorDefined: boolean;
-```
+> **primaryColorDefined**: `boolean`
 
 Defined in: events.ts:171
 
@@ -113,9 +95,7 @@ Defined in: events.ts:171
 
 ### primaryColorG
 
-```ts
-primaryColorG: number;
-```
+> **primaryColorG**: `number`
 
 Defined in: events.ts:169
 
@@ -125,9 +105,7 @@ Defined in: events.ts:169
 
 ### primaryColorR
 
-```ts
-primaryColorR: number;
-```
+> **primaryColorR**: `number`
 
 Defined in: events.ts:168
 
@@ -137,9 +115,7 @@ Defined in: events.ts:168
 
 ### secondaryColorB
 
-```ts
-secondaryColorB: number;
-```
+> **secondaryColorB**: `number`
 
 Defined in: events.ts:174
 
@@ -149,9 +125,7 @@ Defined in: events.ts:174
 
 ### secondaryColorDefined
 
-```ts
-secondaryColorDefined: boolean;
-```
+> **secondaryColorDefined**: `boolean`
 
 Defined in: events.ts:175
 
@@ -161,9 +135,7 @@ Defined in: events.ts:175
 
 ### secondaryColorG
 
-```ts
-secondaryColorG: number;
-```
+> **secondaryColorG**: `number`
 
 Defined in: events.ts:173
 
@@ -173,9 +145,7 @@ Defined in: events.ts:173
 
 ### secondaryColorR
 
-```ts
-secondaryColorR: number;
-```
+> **secondaryColorR**: `number`
 
 Defined in: events.ts:172
 
@@ -185,8 +155,6 @@ Defined in: events.ts:172
 
 ### vehicleID
 
-```ts
-vehicleID: number;
-```
+> **vehicleID**: `number`
 
 Defined in: events.ts:176

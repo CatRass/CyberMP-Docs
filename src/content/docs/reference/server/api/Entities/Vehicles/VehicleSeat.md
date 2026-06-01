@@ -13,9 +13,7 @@ Defined in: vehicles.ts:8
 
 ### Driver
 
-```ts
-Driver: 0;
-```
+> **Driver**: `0`
 
 Defined in: vehicles.ts:9
 
@@ -25,9 +23,7 @@ Defined in: vehicles.ts:9
 
 ### Passenger
 
-```ts
-Passenger: 1;
-```
+> **Passenger**: `1`
 
 Defined in: vehicles.ts:10
 
@@ -37,9 +33,7 @@ Defined in: vehicles.ts:10
 
 ### RearLeft
 
-```ts
-RearLeft: 2;
-```
+> **RearLeft**: `2`
 
 Defined in: vehicles.ts:11
 
@@ -49,8 +43,6 @@ Defined in: vehicles.ts:11
 
 ### RearRight
 
-```ts
-RearRight: 3;
-```
+> **RearRight**: `3`
 
 Defined in: vehicles.ts:12

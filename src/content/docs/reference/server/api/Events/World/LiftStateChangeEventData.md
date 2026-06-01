@@ -5,9 +5,7 @@ prev: false
 title: "LiftStateChangeEventData"
 ---
 
-```ts
-type LiftStateChangeEventData = Vector3Object & object;
-```
+> **LiftStateChangeEventData** = [`Vector3Object`](/reference/server/api/events/world/vector3object/) & `object`
 
 Defined in: events.ts:103
 

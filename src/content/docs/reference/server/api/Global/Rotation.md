@@ -5,9 +5,7 @@ prev: false
 title: "Rotation"
 ---
 
-```ts
-type Rotation = [number, number, number];
-```
+> **Rotation** = \[`number`, `number`, `number`\]
 
 Defined in: shared.ts:24
 

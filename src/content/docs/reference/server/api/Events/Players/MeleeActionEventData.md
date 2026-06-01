@@ -5,9 +5,7 @@ prev: false
 title: "MeleeActionEventData"
 ---
 
-```ts
-type MeleeActionEventData = Vector3Object & object;
-```
+> **MeleeActionEventData** = [`Vector3Object`](/reference/server/api/events/world/vector3object/) & `object`
 
 Defined in: events.ts:50
 

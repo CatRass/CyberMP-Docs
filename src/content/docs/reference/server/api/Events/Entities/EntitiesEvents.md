@@ -5,7 +5,7 @@ prev: false
 title: "EntitiesEvents"
 ---
 
-Defined in: events.ts:500
+Defined in: events.ts:510
 
 ## Extended by
 
@@ -17,20 +17,59 @@ Defined in: events.ts:500
 
 ### entityDespawn()
 
-```ts
-entityDespawn(id, type): void;
-```
+> **entityDespawn**(`id`, `type`): `void`
 
-Defined in: events.ts:515
+Defined in: events.ts:525
 
 Triggered when an entity despawns.
 
 #### Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `id` | `number` | The entity ID |
-| `type` | [`EntityType`](/reference/server/api/entities/entitytype/) | The entity type (see [EntityType](/reference/server/api/entities/entitytype/)) |
+##### id
+
+`number`
+
+The entity ID
+
+##### type
+
+[`EntityType`](/reference/server/api/entities/entitytype/)
+
+The entity type (see [EntityType](/reference/server/api/entities/entitytype/))
+
+#### Returns
+
+`void`
+
+***
+
+<a id="entitymetachange"></a>
+
+### entityMetaChange()
+
+> **entityMetaChange**(`id`, `key`, `oldValue`, `newValue`): `void`
+
+Defined in: events.ts:547
+
+Triggered when any entity meta changed
+
+#### Parameters
+
+##### id
+
+`string`
+
+##### key
+
+`string`
+
+##### oldValue
+
+`any`
+
+##### newValue
+
+`any`
 
 #### Returns
 
@@ -42,20 +81,25 @@ Triggered when an entity despawns.
 
 ### entitySpawn()
 
-```ts
-entitySpawn(id, type): void;
-```
+> **entitySpawn**(`id`, `type`): `void`
 
-Defined in: events.ts:507
+Defined in: events.ts:517
 
 Triggered when an entity spawns.
 
 #### Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `id` | `number` | The entity ID |
-| `type` | [`EntityType`](/reference/server/api/entities/entitytype/) | The entity type (see [EntityType](/reference/server/api/entities/entitytype/)) |
+##### id
+
+`number`
+
+The entity ID
+
+##### type
+
+[`EntityType`](/reference/server/api/entities/entitytype/)
+
+The entity type (see [EntityType](/reference/server/api/entities/entitytype/))
 
 #### Returns
 
@@ -67,19 +111,17 @@ Triggered when an entity spawns.
 
 ### gameObjectDespawn()
 
-```ts
-gameObjectDespawn(id): void;
-```
+> **gameObjectDespawn**(`id`): `void`
 
-Defined in: events.ts:533
+Defined in: events.ts:543
 
 Triggered when a game object despawns.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `id` | `number` |
+##### id
+
+`number`
 
 #### Returns
 
@@ -91,19 +133,17 @@ Triggered when a game object despawns.
 
 ### gameObjectSpawn()
 
-```ts
-gameObjectSpawn(id): void;
-```
+> **gameObjectSpawn**(`id`): `void`
 
-Defined in: events.ts:529
+Defined in: events.ts:539
 
 Triggered when a game object spawns.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `id` | `number` |
+##### id
+
+`number`
 
 #### Returns
 
@@ -115,19 +155,17 @@ Triggered when a game object spawns.
 
 ### objectDespawn()
 
-```ts
-objectDespawn(id): void;
-```
+> **objectDespawn**(`id`): `void`
 
-Defined in: events.ts:524
+Defined in: events.ts:534
 
 Triggered when an object despawns.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `id` | `number` |
+##### id
+
+`number`
 
 #### Returns
 
@@ -139,19 +177,17 @@ Triggered when an object despawns.
 
 ### objectSpawn()
 
-```ts
-objectSpawn(id): void;
-```
+> **objectSpawn**(`id`): `void`
 
-Defined in: events.ts:520
+Defined in: events.ts:530
 
 Triggered when an object spawns.
 
 #### Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `id` | `number` |
+##### id
+
+`number`
 
 #### Returns
 

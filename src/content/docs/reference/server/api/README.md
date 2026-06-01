@@ -5,17 +5,11 @@ prev: false
 title: "@cybermp/server-types"
 ---
 
-## Commands
-
-- [MpCommands](/reference/server/api/commands/mpcommands/)
-
 ## Entities
 
 - [EntityType](/reference/server/api/entities/entitytype/)
 - [MpEntities](/reference/server/api/entities/mpentities/)
 - [MpEntity](/reference/server/api/entities/mpentity/)
-- [MpPlayer](/reference/server/api/entities/mpplayer/)
-- [MpPlayers](/reference/server/api/entities/mpplayers/)
 - [MpAnyEntity](/reference/server/api/entities/mpanyentity/)
 
 ## Entities/Objects
@@ -36,6 +30,11 @@ title: "@cybermp/server-types"
 - [MpPickup](/reference/server/api/entities/pickups/mppickup/)
 - [MpPickups](/reference/server/api/entities/pickups/mppickups/)
 - [CreatePickupOptions](/reference/server/api/entities/pickups/createpickupoptions/)
+
+## Entities/Players
+
+- [MpPlayer](/reference/server/api/entities/players/mpplayer/)
+- [MpPlayers](/reference/server/api/entities/players/mpplayers/)
 
 ## Entities/Vehicles
 
@@ -98,25 +97,25 @@ title: "@cybermp/server-types"
 
 ## Global
 
+- [MpCommands](/reference/server/api/global/mpcommands/)
+- [MpHashes](/reference/server/api/global/mphashes/)
 - [MpMeta](/reference/server/api/global/mpmeta/)
+- [MpResources](/reference/server/api/global/mpresources/)
 - [MpServer](/reference/server/api/global/mpserver/)
+- [MpVoiceChat](/reference/server/api/global/mpvoicechat/)
 - [Rotation](/reference/server/api/global/rotation/)
-- [ServerConfig](/reference/server/api/global/serverconfig/)
 - [Vector3](/reference/server/api/global/vector3/)
 - [Vector4](/reference/server/api/global/vector4/)
 
+## Global/Config
+
+- [CoreConfig](/reference/server/api/global/config/coreconfig/)
+- [CoreConfigOverrides](/reference/server/api/global/config/coreconfigoverrides/)
+- [ServerConfig](/reference/server/api/global/config/serverconfig/)
+
 ## Hashes
 
-- [MpHashes](/reference/server/api/hashes/mphashes/)
 - [CName](/reference/server/api/hashes/cname/)
 - [GameHash](/reference/server/api/hashes/gamehash/)
 - [ResRef](/reference/server/api/hashes/resref/)
 - [TweakDBID](/reference/server/api/hashes/tweakdbid/)
-
-## Resources
-
-- [MpResources](/reference/server/api/resources/mpresources/)
-
-## VoiceChat
-
-- [MpVoiceChat](/reference/server/api/voicechat/mpvoicechat/)

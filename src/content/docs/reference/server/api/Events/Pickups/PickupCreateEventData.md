@@ -5,9 +5,7 @@ prev: false
 title: "PickupCreateEventData"
 ---
 
-```ts
-type PickupCreateEventData = Vector3Object & object;
-```
+> **PickupCreateEventData** = [`Vector3Object`](/reference/server/api/events/world/vector3object/) & `object`
 
 Defined in: events.ts:252
 

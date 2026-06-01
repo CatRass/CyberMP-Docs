@@ -5,9 +5,7 @@ prev: false
 title: "PlayerDeathEventData"
 ---
 
-```ts
-type PlayerDeathEventData = object;
-```
+> **PlayerDeathEventData** = `object`
 
 Defined in: events.ts:155
 
@@ -17,8 +15,6 @@ Defined in: events.ts:155
 
 ### killerId?
 
-```ts
-optional killerId: number;
-```
+> `optional` **killerId?**: `number`
 
 Defined in: events.ts:156

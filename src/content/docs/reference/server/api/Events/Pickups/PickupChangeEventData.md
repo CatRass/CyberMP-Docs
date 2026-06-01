@@ -5,9 +5,7 @@ prev: false
 title: "PickupChangeEventData"
 ---
 
-```ts
-type PickupChangeEventData = object;
-```
+> **PickupChangeEventData** = `object`
 
 Defined in: events.ts:234
 
@@ -17,9 +15,7 @@ Defined in: events.ts:234
 
 ### pickupHash
 
-```ts
-pickupHash: GameHash;
-```
+> **pickupHash**: [`GameHash`](/reference/server/api/hashes/gamehash/)
 
 Defined in: events.ts:236
 
@@ -29,9 +25,7 @@ Defined in: events.ts:236
 
 ### pickupHashes
 
-```ts
-pickupHashes: GameHash[];
-```
+> **pickupHashes**: [`GameHash`](/reference/server/api/hashes/gamehash/)[]
 
 Defined in: events.ts:237
 
@@ -41,8 +35,6 @@ Defined in: events.ts:237
 
 ### pickupNetId
 
-```ts
-pickupNetId: number;
-```
+> **pickupNetId**: `number`
 
 Defined in: events.ts:235

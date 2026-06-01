@@ -5,9 +5,7 @@ prev: false
 title: "ThrowGrenadeEventData"
 ---
 
-```ts
-type ThrowGrenadeEventData = object;
-```
+> **ThrowGrenadeEventData** = `object`
 
 Defined in: events.ts:67
 
@@ -17,9 +15,7 @@ Defined in: events.ts:67
 
 ### accelerationZ
 
-```ts
-accelerationZ: number;
-```
+> **accelerationZ**: `number`
 
 Defined in: events.ts:71
 
@@ -29,9 +25,7 @@ Defined in: events.ts:71
 
 ### aimposX
 
-```ts
-aimposX: number;
-```
+> **aimposX**: `number`
 
 Defined in: events.ts:76
 
@@ -41,9 +35,7 @@ Defined in: events.ts:76
 
 ### aimposY
 
-```ts
-aimposY: number;
-```
+> **aimposY**: `number`
 
 Defined in: events.ts:77
 
@@ -53,9 +45,7 @@ Defined in: events.ts:77
 
 ### aimposZ
 
-```ts
-aimposZ: number;
-```
+> **aimposZ**: `number`
 
 Defined in: events.ts:78
 
@@ -65,9 +55,7 @@ Defined in: events.ts:78
 
 ### forwardX
 
-```ts
-forwardX: number;
-```
+> **forwardX**: `number`
 
 Defined in: events.ts:73
 
@@ -77,9 +65,7 @@ Defined in: events.ts:73
 
 ### forwardY
 
-```ts
-forwardY: number;
-```
+> **forwardY**: `number`
 
 Defined in: events.ts:74
 
@@ -89,9 +75,7 @@ Defined in: events.ts:74
 
 ### forwardZ
 
-```ts
-forwardZ: number;
-```
+> **forwardZ**: `number`
 
 Defined in: events.ts:75
 
@@ -101,9 +85,7 @@ Defined in: events.ts:75
 
 ### initialVelocity
 
-```ts
-initialVelocity: number;
-```
+> **initialVelocity**: `number`
 
 Defined in: events.ts:72
 
@@ -113,9 +95,7 @@ Defined in: events.ts:72
 
 ### isQuickThrow
 
-```ts
-isQuickThrow: boolean;
-```
+> **isQuickThrow**: `boolean`
 
 Defined in: events.ts:70
 
@@ -125,9 +105,7 @@ Defined in: events.ts:70
 
 ### type
 
-```ts
-type: number;
-```
+> **type**: `number`
 
 Defined in: events.ts:69
 
@@ -137,8 +115,6 @@ Defined in: events.ts:69
 
 ### weaponHash
 
-```ts
-weaponHash: GameHash;
-```
+> **weaponHash**: [`GameHash`](/reference/server/api/hashes/gamehash/)
 
 Defined in: events.ts:68
