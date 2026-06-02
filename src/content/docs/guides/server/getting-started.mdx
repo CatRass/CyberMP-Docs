@@ -17,7 +17,7 @@ There are two ways to run CyberMP Server:
             Pull the latest server image:
 
             ```shell
-            docker pull ghcr.io/cyber-mp/server:latest
+            docker pull cybermp/server:latest
             ```
         </TabItem>
         <TabItem label="Binary">
@@ -77,7 +77,7 @@ There are two ways to run CyberMP Server:
                   --mount type=bind,source="$(pwd)"/resources,target=/cybermp/resources \
                   -p 2077:2077/tcp \
                   -p 2077:2077/udp \
-                  ghcr.io/cyber-mp/server:latest
+                  cybermp/server:latest
                   ```
               </TabItem>
               <TabItem label="Docker compose">
@@ -86,7 +86,7 @@ There are two ways to run CyberMP Server:
                   ```yaml title="docker-compose.yml"
                   services:
                     server:
-                      image: ghcr.io/cyber-mp/server:latest
+                      image: cybermp/server:latest
                       stdin_open: true
                       tty: true
                       volumes:

@@ -39,6 +39,7 @@ export default defineConfig({
                 items: [
                   'guides/client/spawning-player',
                   'guides/client/teleporting-player',
+                  'guides/client/events',
                 ],
               },
               {

@@ -1,0 +1,90 @@
+---
+title: Working with Events
+description: Learn how to manage local, server, and UI events on the client side.
+slug: guides/client/events
+---
+import { Steps } from '@astrojs/starlight/components';
+
+The [`mp.events`](/reference/client/api/events/mpevents) API is the primary communication bridge for your client side code. It allows you to track engine lifecycles, communicate with the server, interact with your browser UI (CEF), and manage console commands.
+
+In this guide, we will break down the different ways you can route and handle events on the client.
+
+<Steps>
+1. ## Custom & Platform Events
+
+   You can use [`mp.events.on`](/reference/client/api/events/mpevents#on) to listen to both built-in platform events (like resource lifecycle changes and entity streaming) and custom events that you define. Use [`mp.events.emit`](/reference/client/api/events/mpevents#emit) to trigger your own local events.
+
+   ```js title="client.js"
+   // 1. Platform Event: Triggers when this resource fully loads
+   mp.events.on('resourceStart', () => {
+     console.log('The client resource has successfully started.');
+   });
+
+   // 2. Platform Event: Triggers when a vehicle enters the local player's radius
+   mp.events.on('vehicleStreamIn', (netID, gameID) => {
+     console.log(`Vehicle streamed in - NetID: ${netID}, GameID: ${gameID}`);
+   });
+
+   // 3. Custom Local Event: Listening for a user-defined event
+   mp.events.on('myCustomLocalEvent', (data) => {
+     console.log('Received local data:', data);
+   });
+
+   // Triggering the custom local event across your client script
+   mp.events.emit('myCustomLocalEvent', 'Hello local script!');
+   ```
+
+2. ## Communicating with the Server
+
+    You can send payloads to your server scripts using [`emitServer`](/reference/client/api/events/mpevents#emitserver) and listen to incoming network packets using [`onServer`](/reference/client/api/events/mpevents#onserver).
+    ```js title="client.js"
+    // Sending an event to the server with arbitrary arguments
+    mp.events.emitServer('requestVehicleSpawn', 'v_sport', -1392.6, 1271.5, 123.0);
+
+    // Listening for an event dispatched from the server
+    mp.events.onServer('serverNotification', (message) => {
+        console.log(`[Server]: ${message}`);
+    });
+
+    ```
+
+3. ## Interacting with the UI (CEF)
+
+    If you are building custom user interfaces using web technologies, you will use the Chromium Embedded Framework (CEF) bridge. `mp.events` handles tracking browser frame lifecycles and passing data back and forth.
+    ```js title="client.js"
+    // Built-in CEF Event: Fires when the browser finishes parsing the document
+    mp.events.onCef('domReady', (frameName) => {
+        console.log(`Browser frame '${frameName}' is ready to receive data.`);
+
+        // Send data straight into the web application execution loop
+        mp.events.emitCef('initializeDashboard', { playerName: 'V', initialHealth: 300 });
+    });
+
+    // Built-in CEF Event: Catch loading errors
+    mp.events.onCef('loadingFailed', (error) => {
+        console.error(`CEF Load Failed in ${error.frameName}: ${error.message} at line ${error.line}`);
+    });
+
+    // Custom CEF Event: Listen for notifications dispatched from your web app UI
+    mp.events.onCef('uiButtonPressed', (buttonId) => {
+        console.log(`Player clicked UI button: ${buttonId}`);
+    });
+
+    ```
+
+4. ## Cleanup and Commands
+    Memory management is important in client scripts. If you no longer need an event listener, you can remove it using [`mp.events.off`](/reference/client/api/events/mpevents#off), this also works for [`mp.events.onServer`](/reference/client/api/events/mpevents#onserver) and [`mp.events.onCef`](/reference/client/api/events/mpevents#oncef).
+    ```js title="client.js"
+    // Defining a named callback function
+    const handlePlayerStream = (netID, gameID) => {
+        console.log(`Player ${netID} streamed in.`);
+    };
+
+    // Binding the event
+    mp.events.on('remotePlayerStreamIn', handlePlayerStream);
+
+    // Later, unbinding the event when it is no longer needed
+    mp.events.off('remotePlayerStreamIn', handlePlayerStream);
+
+    ```
+</Steps>
