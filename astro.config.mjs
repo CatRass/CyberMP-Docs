@@ -19,20 +19,22 @@ export default defineConfig({
         starlightSidebarTopics([
           {
             label: 'Guides and recipes',
-            link: '/guides/server/getting-started',
+            link: '/guides/getting-started',
             icon: 'open-book',
             items: [
-              {
-                label: 'Server',
-                items: ['guides/server/getting-started'],
-              },
+              'guides/getting-started',
               {
                 label: 'Resources',
                 items: [
                   'guides/resources/creating-resource',
                   'guides/resources/interacting-with-resources',
                   'guides/resources/live-updates',
+                  'guides/resources/adding-resource-files',
                 ],
+              },
+              {
+                label: 'Server',
+                items: [],
               },
               {
                 label: 'Client',
@@ -40,6 +42,7 @@ export default defineConfig({
                   'guides/client/spawning-player',
                   'guides/client/teleporting-player',
                   'guides/client/events',
+                  'guides/client/first-cef-ui',
                 ],
               },
               {
@@ -205,6 +208,6 @@ export default defineConfig({
     },
   },
   redirects: {
-    '/': '/guides/server/getting-started',
+    '/': '/guides/getting-started',
   },
 });
