@@ -34,7 +34,7 @@ export default defineConfig({
               },
               {
                 label: 'Server',
-                items: [],
+                items: ['guides/server/events'],
               },
               {
                 label: 'Client',

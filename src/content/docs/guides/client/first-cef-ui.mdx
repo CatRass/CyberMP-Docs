@@ -17,12 +17,12 @@ In this guide, you will learn how to instantiate your first CEF web view and est
 
    <Tabs syncKey="cef-init-method">
      <TabItem label="Via resource.toml">
-       Add the `ui_page` parameter pointing to your local entry HTML file. The runtime will automatically initialize it when the resource loads.
+       Add the `cef_url` parameter pointing to your local entry HTML file. The runtime will automatically initialize it when the resource loads.
 
        ```toml title="resource.toml"
        client_script = './client.js'
        server_script = './server.js'
-       ui_page = './ui/index.html'
+       cef_url = './ui/index.html'
        file = ["./ui/index.html"]
        ```
      </TabItem>

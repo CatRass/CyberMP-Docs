@@ -1,0 +1,89 @@
+---
+title: Working with Events
+description: Learn how to manage platform lifecycles, handle client packets, and sync network data on the server side.
+slug: guides/server/events
+---
+The server-side [`mp.events`](/reference/server/api/events/mpevents/) API manages game world lifecycles and coordinates communication across the network. It allows you to monitor player connections, track state changes like combat and vehicles, catch incoming client-side payloads, and broadcast data back out to network players.
+
+In this guide, you will learn how to structure and manage events on your server.
+
+## Platform & Custom Server Events
+
+Use [`mp.events.on`](/reference/server/api/events/mpevents#on) to hook into built-in game platform lifecycle events (such as players connecting, dying, or interacting with vehicles) as well as custom server-to-server events.
+
+```js title="server.js"
+// 1. Platform Event: Handle new incoming player connections
+mp.events.on('playerConnected', (playerId, tempId) => {
+    console.log(`Player connected - assigned Network ID: ${playerId}`);
+});
+
+// 2. Platform Event: Track player deaths and log combat analytics
+mp.events.on('playerDeath', (playerId, data) => {
+    if (data.killerId) {
+      console.log(`Player ${playerId} was flatlined by Killer ID: ${data.killerId}`);
+    } else {
+      console.log(`Player ${playerId} flatlined due to environmental damage.`);
+    }
+});
+
+// 3. Custom Server Event: Triggered internally within server scripts
+mp.events.on('logServerActivity', (action, details) => {
+    console.log(`[Activity Log] Action: ${action} | ${details}`);
+});
+
+// Emit the custom event inside your server environment
+mp.events.emit('logServerActivity', 'Database', 'Initial connection established.');
+
+```
+
+## Handling Packets from Clients
+
+When a client code transmits an event over the network socket using [`emitServer`](/reference/client/api/events/mpevents#emitserver), the server catches it using [`mp.events.onClient`](/reference/server/api/events/mpevents#onclient).
+> **Note:** The server-side callback automatically injects the sending **`player` context object** as the first argument, ensuring you always securely know which client initiated the request.
+
+
+```js title="server.js"
+// Catching a vehicle spawn request from a client script
+mp.events.onClient('requestVehicleSpawn', (player, modelHash, x, y, z) => {
+  console.log(`Player ${player.nickname} (${player.id}) requested to spawn: ${modelHash}`);
+
+  // Your vehicle creation logic goes here...
+});
+
+```
+
+## Emitting Events to Clients
+
+To push messages, UI updates, or state sync packets back down across the network to the players, use [`mp.events.emitClient`](/reference/server/api/events/mpevents#emitclient). This function requires you to specify the target player (either via their active [`MpPlayer`](/reference/server/api/entities/players/mpplayer/) instance object or their raw numerical `playerId`) as the very first parameter.
+```js title="server.js"
+// Listen for a player spawning into the world
+mp.events.on('playerSpawn', (playerId) => {
+  // Direct a welcome alert exclusively to the player who just spawned
+  mp.events.emitClient(playerId, 'serverNotification', 'Welcome back to Night City.');
+});
+
+// Example: Notifying a vehicle owner when their car is damaged
+mp.events.on('vehicleHittedByPlayer', (vehicleId, data) => {
+  if (data.byOwner) {
+    // Send an event back down to the driver's client application context
+    mp.events.emitClient(data.instigatorID, 'uiNotification', 'You damaged your own vehicle!');
+  }
+});
+
+```
+
+## Cleaning Up Event Handlers
+
+To prevent memory leaks or repeating execution routines inside dynamic or hot-reloaded modules, detach your active event listeners using [`mp.events.off`](/reference/server/api/events/mpevents#off). This cleanup method works interchangeably for both [`mp.events.on`](/reference/server/api/events/mpevents#on) and custom [`mp.events.onClient`](/reference/server/api/events/mpevents#onclient) network listeners.
+```js title="server.js"
+// Define a named tracking handler function
+const trackExplosions = (playerId, data) => {
+  console.log(`Explosion tracked at coordinate cluster: [${data.posX}, ${data.posY}]`);
+};
+
+// Register the active event listener hook
+mp.events.on('explosion', trackExplosions);
+
+// Unregister the handler loop later when it is no longer required
+mp.events.off('explosion', trackExplosions);
+```
