@@ -103,7 +103,7 @@ In this guide, you will learn how to instantiate your first CEF web view and est
 
    ```js title="client.js"
    // Create a command to display the UI and capture input routing priority
-   mp.events.addCommand('ui', (id, args) => {
+   mp.commands.add('ui', (id, args) => {
      // Ensure the URL is correctly set if not using resource.toml initialization
      mp.cef.setUrl('./ui/index.html');
 
@@ -114,7 +114,7 @@ In this guide, you will learn how to instantiate your first CEF web view and est
    });
 
    // Create a command to clear focus and return control to the game view
-   mp.events.addCommand('closeui', () => {
+   mp.commands.add('closeui', () => {
      mp.cef.setFocus(false, false);
      console.log('UI Unfocused. Active focus status:', mp.cef.isInFocus());
    });

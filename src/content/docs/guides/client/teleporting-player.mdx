@@ -88,12 +88,12 @@ In this guide, you will learn how to build a reusable teleportation function, ha
     To test your new logic, let's register a couple of chat commands via `mp.commands.add`. We will add an `afterlife` command to teleport the player directly to the Afterlife club, and a `close-menu` command for utility.
     ```js title="client.js"
     // Teleports the player to the Afterlife club coordinates
-    mp.events.addCommand('afterlife', () => {
+    mp.commands.add('afterlife', () => {
         teleportPlayer(-1456.893433, 1038.277222, 16.825035, 1);
     });
     
     // Utility command to manually close stuck UI menus
-    mp.events.addCommand('close-menu', () => {
+    mp.commands.add('close-menu', () => {
         closeAllMenus();
     });
     ```
