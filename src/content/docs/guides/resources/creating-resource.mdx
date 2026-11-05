@@ -1,10 +1,9 @@
 ---
 title: Creating resources
 description: .
-slug: guides/resources/creating-resource
 ---
-import { FileTree } from '@astrojs/starlight/components';
-import { Steps } from '@astrojs/starlight/components';
+import { FileTree, Tabs, TabItem, Steps } from '@astrojs/starlight/components';
+import { SCRIPT_LANG_TAB_SYNC_KEY } from '../../../../lib/const';
 
 This tutorial will guide you through creating a simple "Hello World" resource to learn the basic structure of CyberMP resource scripting.
 
@@ -27,25 +26,53 @@ By the end of this guide, you will have a resource that prints a message to the 
     - Inside the `hello_world` folder, create a file named `resource.toml`.
     - Paste the following configuration into the file:
 
-    ```toml title="resource.toml"
-    client_script = './client.js'
-    server_script = './server.js'
-    ```
+    <Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+        <TabItem label="JS">
+            ```toml title="resource.toml"
+            client_script = './client.js'
+            server_script = './server.js'
+            ```
+        </TabItem>
+        <TabItem label="Lua">
+            ```toml title="resource.toml"
+            client_script = './client.lua'
+            server_script = './server.lua'
+            ```
+        </TabItem>
+    </Tabs>
 
 3. ## Write the Script
 
     Now, create the actual logic for your resource.
 
-    - In the same folder, create a two files `client.js` and `server.js`
-    - Add the following code:
 
-    ```js title="server.js" ins={1}
-    console.log('Hello World from CyberMP Server!');
-    ```
+    <Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+        <TabItem label="JS">
+            - In the same folder, create a two files `client.js` and `server.js`
+            - Add the following code:
 
-    ```js title="client.js" ins={1}
-    console.log('Hello World from CyberMP Client!');
-    ```
+            ```js title="server.js" ins={1}
+            console.log('Hello World from CyberMP Server!');
+            ```
+
+            ```js title="client.js" ins={1}
+            console.log('Hello World from CyberMP Client!');
+            ```
+        </TabItem>
+        <TabItem label="Lua">
+            - In the same folder, create a two files `client.lua` and `server.lua`
+            - Add the following code:
+
+            ```js title="server.lua" ins={1}
+            print('Hello World from CyberMP Server!')
+            ```
+
+            ```js title="client.lua" ins={1}
+            print('Hello World from CyberMP Client!')
+            ```
+        </TabItem>
+    </Tabs>
+
 
 4. ## Load the Resource
 
@@ -70,15 +97,31 @@ By the end of this guide, you will have a resource that prints a message to the 
 
 5. ## Verify the Result
 
-    Your final structure should look something like this:
-    <FileTree>
-        - resources
-            - hello_world
-                - server.js
-                - client.js
-                - resource.toml
-        - server.toml
-    </FileTree>
+
+    <Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+        <TabItem label="JS">
+            Your final structure should look something like this:
+            <FileTree>
+                - resources
+                    - hello_world
+                        - server.js
+                        - client.js
+                        - resource.toml
+                - server.toml
+            </FileTree>
+        </TabItem>
+        <TabItem label="Lua">
+            Your final structure should look something like this:
+            <FileTree>
+                - resources
+                    - hello_world
+                        - server.lua
+                        - client.lua
+                        - resource.toml
+                - server.toml
+            </FileTree>
+        </TabItem>
+    </Tabs>
 
     Start your server. If everything is configured correctly, you will see your message in the console logs during the initialization phase:
 

@@ -1,7 +1,6 @@
 ---
-title: RPC
+title: Typescript
 description: Learn hotreload for CyberMP
-slug: guides/general/rpc
 ---
 
 TODO

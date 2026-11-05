@@ -1,10 +1,11 @@
 // @ts-check
-import starlight from '@astrojs/starlight';
-import { defineConfig } from 'astro/config';
-import { pluginCollapsible } from 'expressive-code-collapsible';
-import starlightSidebarTopics from 'starlight-sidebar-topics';
-import starlightThemeNext from 'starlight-theme-next';
-import { createStarlightTypeDocPlugin } from 'starlight-typedoc';
+import starlight from "@astrojs/starlight";
+import { defineConfig } from "astro/config";
+import { pluginCollapsible } from "expressive-code-collapsible";
+import starlightSidebarTopics from "starlight-sidebar-topics";
+import starlightThemeNext from "starlight-theme-next";
+import { createStarlightTypeDocPlugin } from "starlight-typedoc";
+import mermaid from "astro-mermaid";
 
 const [serverStarlightTypeDoc] = createStarlightTypeDocPlugin();
 const [clientStarlightTypeDoc] = createStarlightTypeDocPlugin();
@@ -12,85 +13,86 @@ const [browserStarlightTypeDoc] = createStarlightTypeDocPlugin();
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://docs.cyber.mp',
+  site: "https://docs.cyber.mp",
   integrations: [
     starlight({
       plugins: [
         starlightSidebarTopics([
           {
-            label: 'Guides and recipes',
-            link: '/guides/getting-started',
-            icon: 'open-book',
+            label: "Guides and recipes",
+            link: "/guides/introduction",
+            icon: "open-book",
             items: [
-              'guides/getting-started',
+              "guides/introduction",
+              "guides/getting-started",
               {
-                label: 'Resources',
+                label: "Resources",
                 items: [
-                  'guides/resources/creating-resource',
-                  'guides/resources/interacting-with-resources',
-                  'guides/resources/live-updates',
-                  'guides/resources/adding-resource-files',
+                  "guides/resources/introduction",
+                  "guides/resources/creating-resource",
+                  "guides/resources/interacting-with-resources",
+                  "guides/resources/live-updates",
+                  "guides/resources/adding-resource-files",
                 ],
               },
               {
-                label: 'Server',
-                items: ['guides/server/events'],
+                label: "Server",
+                items: ["guides/server/events"],
               },
               {
-                label: 'Client',
+                label: "Client",
                 items: [
-                  'guides/client/spawning-player',
-                  'guides/client/teleporting-player',
-                  'guides/client/events',
-                  'guides/client/first-cef-ui',
+                  "guides/client/spawning-player",
+                  "guides/client/teleporting-player",
+                  "guides/client/events",
+                  "guides/client/first-cef-ui",
                 ],
               },
               {
-                label: 'General',
+                label: "Recipes",
                 items: [
-                  'guides/general/type-safety',
-                  'guides/general/hotreload',
-                  'guides/general/rpc',
+                  "guides/recipes/typescript",
+                  "guides/recipes/hotreload",
                 ],
               },
             ],
           },
           {
-            label: 'Reference',
-            link: '/reference/server/configuration',
-            icon: 'information',
+            label: "Reference",
+            link: "/reference/server/configuration",
+            icon: "information",
             items: [
               {
-                label: 'Server',
+                label: "Server",
                 items: [
                   {
-                    label: 'API',
-                    autogenerate: { directory: 'reference/server/api' },
+                    label: "JS API",
+                    autogenerate: { directory: "reference/server/api" },
                     collapsed: true,
                   },
-                  'reference/server/configuration',
-                  'reference/server/console',
+                  "reference/server/configuration",
+                  "reference/server/console",
                 ],
               },
 
               {
-                label: 'Client',
+                label: "Client",
                 items: [
                   {
-                    label: 'API',
-                    autogenerate: { directory: 'reference/client/api' },
+                    label: "JS API",
+                    autogenerate: { directory: "reference/client/api" },
                     collapsed: true,
                   },
-                  'reference/client/console',
-                  'reference/client/working-with-game-natives',
+                  "reference/client/console",
+                  "reference/client/working-with-game-natives",
                 ],
               },
               {
-                label: 'Browser',
+                label: "Browser",
                 items: [
                   {
-                    label: 'API',
-                    autogenerate: { directory: 'reference/browser/api' },
+                    label: "JS API",
+                    autogenerate: { directory: "reference/browser/api" },
                     collapsed: true,
                   },
                 ],
@@ -101,72 +103,72 @@ export default defineConfig({
         // starlightLinksValidatorPlugin(),
         starlightThemeNext(),
         serverStarlightTypeDoc({
-          entryPoints: ['./node_modules/@cybermp/server-types/src/index.ts'],
-          tsconfig: 'tsconfig.typedoc.json',
-          output: 'reference/server/api',
+          entryPoints: ["./node_modules/@cybermp/server-types/src/index.ts"],
+          tsconfig: "tsconfig.typedoc.json",
+          output: "reference/server/api",
           typeDoc: {
             githubPages: false,
             hideGenerator: true,
-            readme: 'none',
-            parametersFormat: 'list',
-            router: 'category',
-            defaultCategory: 'Global',
+            readme: "none",
+            parametersFormat: "list",
+            router: "category",
+            defaultCategory: "Global",
             flattenOutputFiles: false,
             hidePageHeader: true,
             hidePageTitle: true,
             hideBreadcrumbs: true,
             useCodeBlocks: false,
-            classPropertiesFormat: 'table',
-            typeDeclarationFormat: 'table',
-            interfacePropertiesFormat: 'list',
+            classPropertiesFormat: "table",
+            typeDeclarationFormat: "table",
+            interfacePropertiesFormat: "list",
             disableSources: false,
             useHTMLAnchors: true,
           },
         }),
         clientStarlightTypeDoc({
           entryPoints: [
-            './node_modules/@cybermp/client-types/precomputed/index.d.ts',
+            "./node_modules/@cybermp/client-types/precomputed/index.d.ts",
           ],
-          tsconfig: 'tsconfig.typedoc.json',
-          output: 'reference/client/api',
+          tsconfig: "tsconfig.typedoc.json",
+          output: "reference/client/api",
           typeDoc: {
             githubPages: false,
             hideGenerator: true,
-            readme: 'none',
-            parametersFormat: 'list',
-            router: 'category',
-            defaultCategory: 'Global',
+            readme: "none",
+            parametersFormat: "list",
+            router: "category",
+            defaultCategory: "Global",
             flattenOutputFiles: false,
             hidePageHeader: true,
             hidePageTitle: true,
             hideBreadcrumbs: true,
             useCodeBlocks: false,
-            classPropertiesFormat: 'table',
-            typeDeclarationFormat: 'table',
-            interfacePropertiesFormat: 'list',
+            classPropertiesFormat: "table",
+            typeDeclarationFormat: "table",
+            interfacePropertiesFormat: "list",
             disableSources: false,
             useHTMLAnchors: true,
           },
         }),
         browserStarlightTypeDoc({
-          entryPoints: ['./node_modules/@cybermp/browser-types/index.d.ts'],
-          tsconfig: 'tsconfig.typedoc.json',
-          output: 'reference/browser/api',
+          entryPoints: ["./node_modules/@cybermp/browser-types/index.d.ts"],
+          tsconfig: "tsconfig.typedoc.json",
+          output: "reference/browser/api",
           typeDoc: {
             githubPages: false,
             hideGenerator: true,
-            readme: 'none',
-            parametersFormat: 'list',
-            router: 'category',
-            defaultCategory: 'Global',
+            readme: "none",
+            parametersFormat: "list",
+            router: "category",
+            defaultCategory: "Global",
             flattenOutputFiles: false,
             hidePageHeader: true,
             hidePageTitle: true,
             hideBreadcrumbs: true,
             useCodeBlocks: false,
-            classPropertiesFormat: 'table',
-            typeDeclarationFormat: 'table',
-            interfacePropertiesFormat: 'list',
+            classPropertiesFormat: "table",
+            typeDeclarationFormat: "table",
+            interfacePropertiesFormat: "list",
             disableSources: false,
             useHTMLAnchors: true,
           },
@@ -175,31 +177,35 @@ export default defineConfig({
       expressiveCode: {
         plugins: [pluginCollapsible({ lineThreshold: 25, previewLines: 10 })],
       },
-      title: 'CyberMP Docs',
+      title: "CyberMP Docs",
       credits: false,
       components: {
-        ThemeSelect: './src/components/starlight/theme-select.astro',
+        ThemeSelect: "./src/components/starlight/theme-select.astro",
       },
       logo: {
-        src: './src/assets/logo.svg',
+        src: "./src/assets/logo.svg",
         replacesTitle: true,
       },
-      customCss: ['./src/styles/global.css'],
+      customCss: ["./src/styles/global.css"],
       social: [
         {
-          icon: 'github',
-          label: 'GitHub',
-          href: 'https://github.com/cyber-mp',
+          icon: "github",
+          label: "GitHub",
+          href: "https://github.com/cyber-mp",
         },
         {
-          icon: 'discord',
-          label: 'Discord',
-          href: 'https://discord.cyber.mp',
+          icon: "discord",
+          label: "Discord",
+          href: "https://discord.cyber.mp",
         },
       ],
       editLink: {
-        baseUrl: 'https://github.com/cyber-mp/cybermp-docs/edit/main',
+        baseUrl: "https://github.com/cyber-mp/cybermp-docs/edit/main",
       },
+    }),
+    mermaid({
+      theme: "base",
+      autoTheme: true,
     }),
   ],
   vite: {
@@ -208,6 +214,6 @@ export default defineConfig({
     },
   },
   redirects: {
-    '/': '/guides/getting-started',
+    "/": "/guides/introduction",
   },
 });

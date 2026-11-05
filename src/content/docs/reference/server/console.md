@@ -1,7 +1,6 @@
 ---
 title: Console
 description: .
-slug: reference/server/console
 ---
 
 The CyberMP Server console is an interactive command-line interface (CLI) that allows you to control server resources and execute administrative commands in real-time.

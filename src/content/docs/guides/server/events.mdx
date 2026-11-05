@@ -1,7 +1,6 @@
 ---
 title: Working with Events
 description: Learn how to manage platform lifecycles, handle client packets, and sync network data on the server side.
-slug: guides/server/events
 ---
 The server-side [`mp.events`](/reference/server/api/events/mpevents/) API manages game world lifecycles and coordinates communication across the network. It allows you to monitor player connections, track state changes like combat and vehicles, catch incoming client-side payloads, and broadcast data back out to network players.
 
@@ -74,7 +73,7 @@ mp.events.on('vehicleHittedByPlayer', (vehicleId, data) => {
 
 ## Cleaning Up Event Handlers
 
-To prevent memory leaks or repeating execution routines inside dynamic or hot-reloaded modules, detach your active event listeners using [`mp.events.off`](/reference/server/api/events/mpevents#off). This cleanup method works interchangeably for both [`mp.events.on`](/reference/server/api/events/mpevents#on) and custom [`mp.events.onClient`](/reference/server/api/events/mpevents#onclient) network listeners.
+To prevent memory leaks or repeating execution routines inside dynamic modules, detach your active event listeners using [`mp.events.off`](/reference/server/api/events/mpevents#off). This cleanup method works interchangeably for both [`mp.events.on`](/reference/server/api/events/mpevents#on) and custom [`mp.events.onClient`](/reference/server/api/events/mpevents#onclient) network listeners.
 ```js title="server.js"
 // Define a named tracking handler function
 const trackExplosions = (playerId, data) => {
@@ -87,3 +86,24 @@ mp.events.on('explosion', trackExplosions);
 // Unregister the handler loop later when it is no longer required
 mp.events.off('explosion', trackExplosions);
 ```
+
+## Communicating with CEF (Browser UI)
+
+Using standard events, the server cannot communicate directly with a player's CEF (Chromium Embedded Framework) browser instance. Because CEF views are isolated within the local client environment, all server-to-CEF communication must be routed through the client script first.
+
+To send data from the server to a player's UI using standard events, you must set up a bridge event on the client that catches the server payload and forwards it to the browser:
+
+```js title="server.js"
+mp.events.emitClient(playerId, 'browser:updateInventory', inventoryData);
+```
+
+```js title="client.js"
+mp.events.onServer('browser:updateInventory', (inventoryData) => {
+  mp.events.emitCef("updateInventory", inventoryData);
+});
+```
+
+:::tip
+Writing boilerplate proxy listeners on the client for every UI interaction quickly becomes tedious.
+This limitation is solved by the RPC (Remote Procedure Call) system, which allows the server and CEF to invoke functions and exchange data directly without manually writing client-side bridge events.
+:::

@@ -1,9 +1,9 @@
 ---
 title: Live updates
 description: CyberMP Server Configuration
-slug: guides/resources/live-updates
 ---
-import { Steps } from '@astrojs/starlight/components';
+import { Tabs, TabItem, Steps } from '@astrojs/starlight/components';
+import { SCRIPT_LANG_TAB_SYNC_KEY } from '../../../../lib/const';
 
 One of the most powerful features of the CyberMP Server is the ability to update your scripts without restarting the entire server process. This is essential for fast iteration and debugging.
 
@@ -17,13 +17,24 @@ One of the most powerful features of the CyberMP Server is the ability to update
 <Steps>
     1. #### Modify the Script
 
-        Open `resources/hello_world/server.js` and add a new line of code:
+        <Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+            <TabItem label="JS">
+                Open `resources/hello_world/server.js` and add a new line of code:
 
-        ```js title="server.js" ins={2-3}
-        console.log('Hello World from CyberMP Server!');
-        // New test log:
-        console.log("The resource has been updated live!");
-        ```
+                ```js title="server.js" ins={2}
+                console.log('Hello World from CyberMP Server!');
+                console.log("The resource has been updated live!");
+                ```
+            </TabItem>
+            <TabItem label="Lua">
+                 Open `resources/hello_world/server.lua` and add a new line of code:
+
+                ```js title="server.lua" ins={2}
+                print("Hello World from CyberMP Server!")
+                print("The resource has been updated live!")
+                ```
+            </TabItem>
+        </Tabs>
 
     2. #### Issue the Restart Command
         In your Server Console, execute the restart command followed by your resource folder name:

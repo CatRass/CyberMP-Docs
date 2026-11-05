@@ -4,7 +4,6 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev --host",
-    "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"
@@ -16,7 +15,9 @@
   "dependencies": {
     "@astrojs/starlight": "^0.35.3",
     "astro": "^5.18.2",
+    "astro-mermaid": "^2.2.0",
     "expressive-code-collapsible": "^0.1.0",
+    "mermaid": "^12.3.0",
     "sharp": "^0.34.5",
     "starlight-links-validator": "^0.17.2",
     "starlight-sidebar-topics": "^0.6.2",
@@ -29,6 +30,7 @@
     "@biomejs/biome": "2.4.11",
     "@cybermp/browser-types": "^2.0.0",
     "@cybermp/client-types": "^2.2.2",
-    "@cybermp/server-types": "^3.2.4"
+    "@cybermp/server-types": "^3.2.4",
+    "typescript": "^6.0.3"
   }
 }

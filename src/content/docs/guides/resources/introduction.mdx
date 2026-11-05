@@ -1,0 +1,49 @@
+---
+title: Introduction to resources
+---
+import { FileTree, Tabs, TabItem } from '@astrojs/starlight/components';
+import { SCRIPT_LANG_TAB_SYNC_KEY } from '../../../../lib/const';
+
+## What are resources
+
+Resources are a fundamental part of the CyberMP server. They consist of modular files, assets, data, and game scripts executed on both the server-side and client-side. These resources provide custom features, gameplay mechanics, and content within the CyberMP multiplayer environment.
+
+Resources are organized in subfolders within the `resources/` directory located at the root of the CyberMP server. Each resource folder acts as an isolated package containing specific files and scripts that contribute to the server's overall operation and gameplay experience.
+
+## Structure
+
+The `resources/` directory contains all the resources currently installed on the server. Each resource is contained within its own subfolder and requires a configuration manifest (such as `resource.toml`) to be present.
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+    <TabItem label="JS">
+        <FileTree>
+        - resources
+            - freeroam
+                - client
+                    - index.js
+                - server
+                    - index.js
+                - resource.toml
+        - server.toml
+        </FileTree>
+    </TabItem>
+    <TabItem label="Lua">
+        <FileTree>
+        - resources
+            - freeroam
+                - client
+                    - index.lua
+                - server
+                    - index.lua
+                - resource.toml
+        - server.toml
+        </FileTree>
+    </TabItem>
+</Tabs>
+
+
+Within the provided example, the `freeroam` directory represents a single resource on the server, containing the following components:
+
+* **client:** Contains all client-side scripts and UI files that are downloaded and executed on the player's machine.
+* **server:** Contains all server-side scripts, database logic, and synchronization rules executed directly by the host server.
+* **resource.toml:** Defines the configuration settings, entry points, dependencies, and metadata for the resource.
