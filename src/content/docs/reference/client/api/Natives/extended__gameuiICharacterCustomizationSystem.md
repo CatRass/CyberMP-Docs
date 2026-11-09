@@ -5,7 +5,7 @@ prev: false
 title: "extended__gameuiICharacterCustomizationSystem"
 ---
 
-Defined in: game.d.ts:374
+Defined in: game.d.ts:427
 
 Extended by CyberMP `gameuiICharacterCustomizationSystem` class
 
@@ -17,7 +17,7 @@ Extended by CyberMP `gameuiICharacterCustomizationSystem` class
 
 > **OnPlayerGenderChanged**(`gender`): `void`
 
-Defined in: game.d.ts:386
+Defined in: game.d.ts:439
 
 Callback fired immediately following successful adjustments to player character gender states.
 
@@ -41,7 +41,7 @@ The incoming target modified gender enumeration value.
 
 > **SetPlayerGender**(`gender`, `savedPos?`): `void`
 
-Defined in: game.d.ts:380
+Defined in: game.d.ts:433
 
 Updates player's gender state representation variables directly inside system profiles.
 

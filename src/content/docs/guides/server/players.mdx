@@ -1,0 +1,439 @@
+---
+title: Working with Players
+description: Learn how to manage connected players, track lifecycles, inspect player state, and handle combat on the server.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { SCRIPT_LANG_TAB_SYNC_KEY } from '../../../../lib/const';
+
+The server provides APIs to interact with connected players in Night City. You can monitor lifecycle stages (connection, spawning, death, disconnection), read real-time state (health, position, vehicle occupancy), transmit private network events, and enforce moderation.
+
+In this guide, you will learn how to access players, track their lifecycles, inspect their state, and handle combat interactions.
+
+---
+
+{/* ## Player Connection Lifecycle
+
+When a client launches and connects to the server, several platform events fire in a distinct sequence:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Client
+    participant Server as Server Events
+    participant World as World State
+
+    Client->>Server: playerConnecting (tempId, nickname)
+    Note over Server: Authentication, whitelist, IP checks
+    Server->>World: Allocate network slot
+    Server->>Server: playerConnected (playerId, tempId)
+    Client->>Server: playerSpawn (playerId)
+    Note over Server: Initialize stats, weapons, inventory
+    alt Player Dies
+        Client->>Server: playerDeath (playerId, data)
+        Client->>Server: playerRespawn (playerId, position)
+    end
+    Client->>Server: playerDisconnected (playerId, reason)
+    Server->>World: Remove player
+```*/}
+
+### 1. Connection & Spawning
+
+Listen for connection and spawn events:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    // 1. Connection attempt
+    mp.events.on('playerConnecting', (tempId, name) => {
+      console.log(`[Connect Request] Incoming connection: ${name} (TempID: ${tempId})`);
+    });
+
+    // 2. Connection finalized: Permanent network ID assigned
+    mp.events.on('playerConnected', (playerId, tempId) => {
+      const player = mp.players.at(playerId);
+      console.log(`[Connected] ${player.nickname} joined with ID: ${playerId}`);
+
+      // Send a private welcome packet to the client
+      player.emit('chat:addMessage', `Welcome to Night City, ${player.nickname}!`);
+    });
+
+    // 3. Player spawned in the game world
+    mp.events.on('playerSpawn', (playerId) => {
+      const player = mp.players.at(playerId);
+      console.log(`[Spawn] Player ${player.nickname} (${playerId}) spawned at:`, player.position);
+
+      player.dimension = 0;
+      player.streamingRadius = 250;
+    });
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    -- 1. Connection attempt
+    mp.events.on('playerConnecting', function(tempId, name)
+      print(string.format("[Connect Request] Incoming connection: %s (TempID: %s)", name, tempId))
+    end)
+
+    -- 2. Connection finalized: Permanent network ID assigned
+    mp.events.on('playerConnected', function(playerId, tempId)
+      local player = mp.players.at(playerId)
+      print(string.format("[Connected] %s joined with ID: %s", player.nickname, playerId))
+
+      -- Send a private welcome packet to the client
+      player:emit('chat:addMessage', string.format("Welcome to Night City, %s!", player.nickname))
+    end)
+
+    -- 3. Player spawned in the game world
+    mp.events.on('playerSpawn', function(playerId)
+      local player = mp.players.at(playerId)
+      print(string.format("[Spawn] Player %s (%s) spawned", player.nickname, playerId))
+
+      player.dimension = 0
+      player.streamingRadius = 250
+    end)
+    ```
+  </TabItem>
+</Tabs>
+
+### 2. Death, Respawn, and Disconnect
+
+Track player flatlining, respawning, and leaving the server:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    // Player dies
+    mp.events.on('playerDeath', (playerId, data) => {
+      const victim = mp.players.at(playerId);
+
+      if (data.killerId) {
+        const killer = mp.players.exists(data.killerId) ? mp.players.at(data.killerId) : null;
+        const killerName = killer ? killer.nickname : `ID ${data.killerId}`;
+        console.log(`[Death] ${victim.nickname} was flatlined by ${killerName}.`);
+      } else {
+        console.log(`[Death] ${victim.nickname} died of environmental damage.`);
+      }
+    });
+
+    // Player respawns back into the world
+    mp.events.on('playerRespawn', (playerId, data) => {
+      const player = mp.players.at(playerId);
+      console.log(`[Respawn] ${player.nickname} respawned at [${data.posX}, ${data.posY}, ${data.posZ}]`);
+    });
+
+    // Player disconnects
+    mp.events.on('playerDisconnected', (playerId, reason) => {
+      console.log(`[Disconnect] Player ${playerId} disconnected. Reason: ${reason}`);
+    });
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    -- Player dies
+    mp.events.on('playerDeath', function(playerId, data)
+      local victim = mp.players.at(playerId)
+
+      if data.killerId then
+        local killerName = mp.players.exists(data.killerId) and mp.players.at(data.killerId).nickname or string.format("ID %s", data.killerId)
+        print(string.format("[Death] %s was flatlined by %s.", victim.nickname, killerName))
+      else
+        print(string.format("[Death] %s died of environmental damage.", victim.nickname))
+      end
+    end)
+
+    -- Player respawns back into the world
+    mp.events.on('playerRespawn', function(playerId, data)
+      local player = mp.players.at(playerId)
+      print(string.format("[Respawn] %s respawned at [%s, %s, %s]", player.nickname, data.posX, data.posY, data.posZ))
+    end)
+
+    -- Player disconnects
+    mp.events.on('playerDisconnected', function(playerId, reason)
+      print(string.format("[Disconnect] Player %s disconnected. Reason: %s", playerId, reason))
+    end)
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Accessing and Finding Players
+
+The `mp.players` helper lets you check player existence and retrieve player references:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    // Verify existence before retrieving
+    if (mp.players.exists(targetId)) {
+      const targetPlayer = mp.players.at(targetId);
+      console.log(`Found player: ${targetPlayer.nickname}`);
+    }
+
+    // Convert active players to an array for iteration
+    const allPlayers = mp.players.toArray();
+    console.log(`Active players count: ${allPlayers.length}`);
+
+    // Helper: Find player by numeric ID or partial nickname
+    function findPlayer(query) {
+      const numericId = Number(query);
+      if (!Number.isNaN(numericId) && mp.players.exists(numericId)) {
+        return mp.players.at(numericId);
+      }
+
+      const term = String(query).toLowerCase();
+      return mp.players.toArray().find((p) => p.nickname.toLowerCase().includes(term)) || null;
+    }
+    ```
+
+    :::note
+    In JavaScript, entity objects returned by `mp.players.at()` or event callbacks are syntax-sugar wrappers over internal function calls. Because new wrapper objects are created dynamically, two references to the same player will never share the same object identity (`playerA === playerB` is `false`). Always compare players by their unique numeric ID:
+    ```js
+    if (playerA.id === playerB.id) { ... }
+    ```
+    :::
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    -- Verify existence before retrieving
+    if mp.players.exists(targetId) then
+      local targetPlayer = mp.players.at(targetId)
+      print(string.format("Found player: %s", targetPlayer.nickname))
+    end
+
+    -- Iterate active players
+    local allPlayers = mp.players.toArray()
+    print(string.format("Active players count: %s", #allPlayers))
+
+    -- Helper: Find player by numeric ID or partial nickname
+    function findPlayer(query)
+      local numericId = tonumber(query)
+      if numericId and mp.players.exists(numericId) then
+        return mp.players.at(numericId)
+      end
+
+      local term = string.lower(tostring(query))
+      for _, p in ipairs(mp.players.toArray()) do
+        if string.find(string.lower(p.nickname), term, 1, true) then
+          return p
+        end
+      end
+      return nil
+    end
+    ```
+  </TabItem>
+</Tabs>
+
+
+
+---
+
+## Player Properties
+
+Player objects expose synchronized properties describing their current state in the game world:
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| `id` | `number` | Unique network identifier assigned by the server. |
+| `nickname` | `string` | Display name of the player. |
+| `health` | `number` | Health points of the player. |
+| `position` | `[x, y, z]` | Coordinates array in world space. |
+| `rotation` | `[pitch, roll, yaw]` | Euler angles rotation array. |
+| `yaw` | `number` | Heading / yaw angle in degrees. |
+| `velocity` | `[x, y, z]` | Movement velocity vector. |
+| `ping` | `number` | Network latency in milliseconds. |
+| `ip` | `string` | Remote IP address. |
+| `dimension` | `number` | Virtual world / dimension instance ID (default `0`). |
+| `streamingRadius` | `number` | Streaming boundary distance for nearby entities. |
+| `vehicle` | object \| `nil` | The vehicle currently occupied by the player, or `null`/`nil`. |
+| `lastVehicle` | object \| `nil` | The vehicle previously occupied by the player before exiting. |
+| `exist` | `boolean` | True if the player is currently valid and in the world. |
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    function logPlayerSnapshot(player) {
+      const [x, y, z] = player.position;
+      console.log(`--- Snapshot for ${player.nickname} (ID: ${player.id}) ---`);
+      console.log(`Position: [${x.toFixed(2)}, ${y.toFixed(2)}, ${z.toFixed(2)}] (Yaw: ${player.yaw.toFixed(1)}°)`);
+      console.log(`Health: ${player.health} | Ping: ${player.ping}ms | IP: ${player.ip}`);
+
+      if (player.vehicle) {
+        console.log(`Currently seated in Vehicle ID: ${player.vehicle.id}`);
+      }
+    }
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    function logPlayerSnapshot(player)
+      local pos = player.position
+      print(string.format("--- Snapshot for %s (ID: %s) ---", player.nickname, player.id))
+      print(string.format("Position: [%.2f, %.2f, %.2f] (Yaw: %.1f°)", pos[1], pos[2], pos[3], player.yaw))
+      print(string.format("Health: %s | Ping: %sms | IP: %s", player.health, player.ping, player.ip))
+
+      if player.vehicle then
+        print(string.format("Currently seated in Vehicle ID: %s", player.vehicle.id))
+      end
+    end
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Interacting with Players
+
+### Emitting Private Client Events
+
+To send an event directly to a player, call `emit` on the player object or `mp.events.emitClient`:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    // Send private notifications or UI updates
+    player.emit('ui:showNotification', {
+      title: 'Contract Completed',
+      amount: 2500
+    });
+
+    player.emit('hud:updateBalance', 15000);
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    -- Send private notifications or UI updates
+    player:emit('ui:showNotification', {
+      title = 'Contract Completed',
+      amount = 2500
+    })
+
+    player:emit('hud:updateBalance', 15000)
+    ```
+  </TabItem>
+</Tabs>
+
+### Moderation: Kicking and Muting
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    // Disconnect a player with an optional reason
+    player.kick('Exploiting game mechanics');
+
+    // Mute player's voice transmission
+    player.mute();
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    -- Disconnect a player with an optional reason
+    player:kick('Exploiting game mechanics')
+
+    -- Mute player's voice transmission
+    player:mute()
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Tracking Combat & Weapons
+
+The server receives synchronized events when players take damage or fire weapons:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    // Handle damage
+    mp.events.on('damage', (victimId, data) => {
+      const victim = mp.players.at(victimId);
+      console.log(`[Damage] ${victim.nickname} took ${data.totalDamage} damage.`);
+      console.log(`Weapon Hash: ${data.weaponHash} | Damage Type: ${data.damageType}`);
+    });
+
+    // Weapon fired
+    mp.events.on('shootAction', (playerId, data) => {
+      console.log(`Player ${playerId} fired weapon ${data.weaponHash} at [${data.posX}, ${data.posY}, ${data.posZ}]`);
+    });
+
+    // Melee attack
+    mp.events.on('meleeAction', (playerId, data) => {
+      console.log(`Player ${playerId} performed melee action type: ${data.type}`);
+    });
+
+    // Grenade thrown
+    mp.events.on('throwGrenade', (playerId, data) => {
+      console.log(`Player ${playerId} threw grenade (QuickThrow: ${data.isQuickThrow})`);
+    });
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    -- Handle damage
+    mp.events.on('damage', function(victimId, data)
+      local victim = mp.players.at(victimId)
+      print(string.format("[Damage] %s took %s damage.", victim.nickname, data.totalDamage))
+      print(string.format("Weapon Hash: %s | Damage Type: %s", data.weaponHash, data.damageType))
+    end)
+
+    -- Weapon fired
+    mp.events.on('shootAction', function(playerId, data)
+      print(string.format("Player %s fired weapon %s at [%s, %s, %s]", playerId, data.weaponHash, data.posX, data.posY, data.posZ))
+    end)
+
+    -- Melee attack
+    mp.events.on('meleeAction', function(playerId, data)
+      print(string.format("Player %s performed melee action type: %s", playerId, data.type))
+    end)
+
+    -- Grenade thrown
+    mp.events.on('throwGrenade', function(playerId, data)
+      print(string.format("Player %s threw grenade (QuickThrow: %s)", playerId, tostring(data.isQuickThrow)))
+    end)
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Virtual Dimensions
+
+Dimensions isolate players into virtual instances. Entities in different dimensions cannot see, collide with, or interact with each other.
+
+- **Dimension `0`:** Default shared public world.
+- **Dimension `> 0`:** Private instances (e.g. apartment interiors, instanced missions).
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    // Enter private instance
+    function enterApartment(player, apartmentId) {
+      player.dimension = 1000 + apartmentId;
+      player.emit('chat:addMessage', `Entered private apartment #${apartmentId}.`);
+    }
+
+    // Return to public world
+    function exitApartment(player) {
+      player.dimension = 0;
+      player.emit('chat:addMessage', 'Returned to public street.');
+    }
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    -- Enter private instance
+    function enterApartment(player, apartmentId)
+      player.dimension = 1000 + apartmentId
+      player:emit('chat:addMessage', string.format("Entered private apartment #%s.", apartmentId))
+    end
+
+    -- Return to public world
+    function exitApartment(player)
+      player.dimension = 0
+      player:emit('chat:addMessage', 'Returned to public street.')
+    end
+    ```
+  </TabItem>
+</Tabs>

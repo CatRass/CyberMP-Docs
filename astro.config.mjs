@@ -37,7 +37,15 @@ export default defineConfig({
               },
               {
                 label: "Server",
-                items: ["guides/server/events"],
+                items: [
+                  "guides/server/players",
+                  "guides/server/vehicles",
+                  "guides/server/entities",
+                  "guides/server/events",
+                  "guides/server/commands",
+                  "guides/server/meta",
+                  "guides/server/hashes",
+                ],
               },
               {
                 label: "Client",
@@ -46,6 +54,11 @@ export default defineConfig({
                   "guides/client/teleporting-player",
                   "guides/client/events",
                   "guides/client/first-cef-ui",
+                  "guides/client/lifecycle",
+                  "guides/client/observes",
+                  "guides/client/overrides",
+                  "guides/client/network-and-local",
+                  "guides/client/discord",
                 ],
               },
               {
@@ -53,6 +66,7 @@ export default defineConfig({
                 items: [
                   "guides/recipes/typescript",
                   "guides/recipes/hotreload",
+                  "guides/recipes/rpc",
                 ],
               },
             ],
@@ -95,6 +109,15 @@ export default defineConfig({
                     autogenerate: { directory: "reference/browser/api" },
                     collapsed: true,
                   },
+                ],
+              },
+              {
+                label: "Lua API",
+                items: [
+                  "reference/lua/overview",
+                  "reference/lua/server",
+                  "reference/lua/client",
+                  "reference/lua/shared",
                 ],
               },
             ],

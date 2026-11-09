@@ -5,7 +5,7 @@ prev: false
 title: "MpResources"
 ---
 
-Defined in: resources.ts:1
+Defined in: resources.ts:8
 
 ## Methods
 
@@ -15,7 +15,7 @@ Defined in: resources.ts:1
 
 > **getCurrentName**(): `string`
 
-Defined in: resources.ts:27
+Defined in: resources.ts:50
 
 Gets the current resource's name.
 
@@ -27,51 +27,13 @@ Resource name.
 
 ***
 
-<a id="getmetadata"></a>
-
-### getMetadata()
-
-> **getMetadata**(`resourceName`, `keyName`, `index`): `string`
-
-Defined in: resources.ts:36
-
-Gets metadata from a resource manifest.
-
-#### Parameters
-
-##### resourceName
-
-`string`
-
-Resource name.
-
-##### keyName
-
-`string`
-
-Metadata key.
-
-##### index
-
-`number`
-
-Index (if multiple values exist).
-
-#### Returns
-
-`string`
-
-Metadata string.
-
-***
-
 <a id="getstate"></a>
 
 ### getState()
 
-> **getState**(`resourceName`): `string`
+> **getState**(`resourceName`): [`ResourceState`](/reference/server/api/global/resourcestate/)
 
-Defined in: resources.ts:7
+Defined in: resources.ts:21
 
 Gets the current state of a resource.
 
@@ -85,9 +47,35 @@ The resource to check.
 
 #### Returns
 
-`string`
+[`ResourceState`](/reference/server/api/global/resourcestate/)
 
 Resource state as string.
+
+***
+
+<a id="gettoml"></a>
+
+### getTOML()
+
+> **getTOML**(`name`): `string`
+
+Defined in: resources.ts:14
+
+Retrieves the raw string contents of a specified TOML configuration file.
+
+#### Parameters
+
+##### name
+
+`string`
+
+The name or identifier key of the target TOML resource.
+
+#### Returns
+
+`string`
+
+The raw TOML formatted configuration string.
 
 ***
 
@@ -97,7 +85,7 @@ Resource state as string.
 
 > **loadFile**(`resourceName`, `pathToResource`): `string`
 
-Defined in: resources.ts:44
+Defined in: resources.ts:58
 
 Reads a file inside a resource and returns its contents.
 
@@ -123,19 +111,39 @@ File content as string.
 
 ***
 
+<a id="refresh"></a>
+
+### refresh()
+
+> **refresh**(): `void`
+
+Defined in: resources.ts:44
+
+Re-indexes all resources
+
+#### Returns
+
+`void`
+
+***
+
 <a id="restart"></a>
 
 ### restart()
 
 > **restart**(`resourceName`): `void`
 
-Defined in: resources.ts:21
+Defined in: resources.ts:39
+
+Restarts a specific resource by name.
 
 #### Parameters
 
 ##### resourceName
 
 `string`
+
+Name of the resource to stop.
 
 #### Returns
 
@@ -149,7 +157,7 @@ Defined in: resources.ts:21
 
 > **start**(`resourceName`): `void`
 
-Defined in: resources.ts:13
+Defined in: resources.ts:27
 
 Starts a specific resource by name.
 
@@ -173,7 +181,7 @@ Name of the resource to start.
 
 > **stop**(`resourceName`): `void`
 
-Defined in: resources.ts:19
+Defined in: resources.ts:33
 
 Stops a specific resource by name.
 

@@ -1,0 +1,121 @@
+---
+title: Overriding Game Methods
+description: Learn how to intercept, replace, or chain REDengine method calls using method overrides in JavaScript and Lua.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { SCRIPT_LANG_TAB_SYNC_KEY } from '../../../../lib/const';
+
+Unlike passive observers, method overrides (`mp.override` / `mp.game.override`) completely intercept REDengine method invocations. An override function has full control over execution: it can invoke the original method, modify incoming parameters, return a custom result, or prevent the method from executing entirely.
+
+In this guide, you will learn how to intercept game functions, manage execution chains with `wrappedMethod`, and handle return values.
+
+:::important[Prerequisite]
+Overriding game methods requires enabling game natives in your `resource.toml`:
+```toml title="resource.toml"
+use_game_natives = true
+```
+:::
+
+---
+
+## Registering a Method Override
+
+Overrides are registered inside the `onInit` lifecycle stage when game classes become available:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="client.js"
+    mp.game.onInit(() => {
+      // Intercept the player death logic
+      mp.game.override('PlayerPuppet', 'OnDeath', (self, evt, wrappedMethod) => {
+        console.log('[Override] Intercepted PlayerPuppet.OnDeath');
+
+        // Call wrappedMethod to allow the original chain to continue:
+        return wrappedMethod(evt);
+      });
+    });
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="client.lua"
+    mp.registerGameState('onInit', function()
+      -- Intercept the player death logic
+      mp.override('PlayerPuppet', 'OnDeath', function(self, evt, wrappedMethod)
+        print("[Override] Intercepted PlayerPuppet.OnDeath")
+
+        -- Call wrappedMethod to allow the original chain to continue:
+        return wrappedMethod(evt)
+      end)
+    end)
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## The Continuation Function (`wrappedMethod`)
+
+The last parameter passed to your override callback is the continuation function `wrappedMethod`.
+
+- **Chaining Execution:** Calling `wrappedMethod(...)` invokes the next registered override or the vanilla game function.
+- **Do Not Pass `self`:** When invoking `wrappedMethod(arg1, arg2)`, omit the `self` reference. The bridge already maintains the internal instance context.
+- **Blocking Execution:** Omitting `wrappedMethod(...)` completely cancels the vanilla method logic.
+- **Synchronous Execution Only:** Overrides run synchronously. Never mark the callback `async` or return a Promise; the game engine expects immediate C++ return types.
+
+---
+
+## Blocking Game Features (Example)
+
+To disable or override specific vanilla gameplay mechanics (such as vehicle summoning restrictions or encumbrance), return custom values directly without invoking `wrappedMethod`:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="client.js"
+    mp.game.onInit(() => {
+      // Force vehicle summoning to always be permitted
+      // Signature suffix specifies overload: IsSummoningVehiclesRestricted;GameInstance
+      mp.game.override(
+        'VehicleSystem',
+        'IsSummoningVehiclesRestricted;GameInstance',
+        (gameInstance, wrappedMethod) => {
+          return false; // Vehicle summoning is never restricted
+        }
+      );
+    });
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="client.lua"
+    mp.registerGameState('onInit', function()
+      -- Force vehicle summoning to always be permitted
+      -- Signature suffix specifies overload: IsSummoningVehiclesRestricted;GameInstance
+      mp.override(
+        'VehicleSystem',
+        'IsSummoningVehiclesRestricted;GameInstance',
+        function(gameInstance, wrappedMethod)
+          return false -- Vehicle summoning is never restricted
+        end
+      )
+    end)
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Handling Methods with Out Parameters
+
+For game methods that return output parameters (`out` values in REDscript), return the primary result followed by the out values:
+
+- **Single Out Parameter:** Return an array `[result, out1]`.
+- **Multiple Out Parameters:** Return `[result, out1, out2, ...]`.
+- **Void Return with Out Parameters:** Return `[out1, out2]`.
+
+---
+
+## Best Practices & Cleanup
+
+1. **Avoid Multiple Registrations:** Register overrides once during `onInit`. Avoid re-registering overrides repeatedly inside `onGameLoaded`.
+2. **Dynamic Toggling:** If you need to enable or disable an override conditionally at runtime, check an internal boolean flag inside the callback and call `return wrappedMethod(...)` when inactive.
+3. **Automatic Cleanup:** All registered overrides are cleaned up and unregistered automatically when the resource is stopped or restarted.

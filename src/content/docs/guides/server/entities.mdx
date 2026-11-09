@@ -1,0 +1,277 @@
+---
+title: 'World Entities: Objects, Peds, and Pickups'
+description: Learn how to create, stream, and manage static and dynamic world entities such as game objects, NPC peds, and item pickups.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { SCRIPT_LANG_TAB_SYNC_KEY } from '../../../../lib/const';
+
+In CyberMP, interactive elements in the game world share core networking attributes such as positions, dimensions, and streaming distances. Beyond players and vehicles, the server runtime provides dedicated managers for:
+
+- **Game Objects (`mp.objects`):** Static or dynamic physical props, barricades, furniture, and custom scene structures.
+- **Peds (`mp.peds`):** Non-Player Characters (NPCs) with custom appearances and health pools.
+- **Pickups (`mp.pickups`):** Collectible items, weapons, clothing bags, or loot containers.
+
+In this guide, you will learn how to spawn and manage these world entities.
+
+---
+
+## Entity Types & Shared Attributes
+
+World entities share core spatial and networking properties:
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| `id` | `number` | Unique numeric identifier for the entity across the server. |
+| `type` | `number` | Entity type identifier (Player: 1, Vehicle: 2, Object: 3, Ped: 4, Pickup: 5, GameObject: 6). |
+| `position` | `[x, y, z]` | Current 3D coordinates array in world space. |
+| `rotation` | `[pitch, roll, yaw]` | Orientation Euler angles array. |
+| `yaw` | `number` | Heading angle in degrees. |
+| `dimension` | `number` | Virtual world / dimension instance ID. |
+| `streamingRadius` | `number` | Distance in meters at which clients will stream this entity. |
+| `exist` | `boolean` | True if the entity is active in the world. |
+
+---
+
+## Working with Objects
+
+Game objects allow placing props, barriers, dynamic physics items, and custom scene decorations into Night City.
+
+### Spawning Objects
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    // 1. Resolve hash for an in-game asset
+    const barrierHash = mp.hashes.cname('base\\gameplay\\devices\\barriers\\road_barrier_a.ent');
+
+    // 2. Create the object
+    const barrier = mp.objects.create({
+      model: barrierHash,
+      position: [-1400.5, 1280.0, 122.5],
+      yaw: 45.0,
+      dynamic: false,
+      dimension: 0
+    });
+
+    console.log(`Placed Barrier Object #${barrier.id}`);
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    -- 1. Resolve hash for an in-game asset
+    local barrierHash = mp.hashes.cname('base\\gameplay\\devices\\barriers\\road_barrier_a.ent')
+
+    -- 2. Create the object
+    local barrier = mp.objects.create({
+      model = barrierHash,
+      position = {-1400.5, 1280.0, 122.5},
+      yaw = 45.0,
+      dynamic = false, -- Set to true if the prop should react to physical collisions and gravity
+      dimension = 0
+    })
+
+    print(string.format("Placed Barrier Object #%s", barrier.id))
+    ```
+  </TabItem>
+</Tabs>
+
+### Destroying Objects
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    // Destroy an object
+    barrier.destroy();
+    // or: mp.objects.destroy(objectId);
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    -- Destroy an object
+    barrier:destroy()
+    -- or: mp.objects.destroy(objectId)
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Working with Peds (NPCs)
+
+The `mp.peds` manager enables spawning ambient civilians, enemies, quest givers, or vendors.
+
+### Spawning Peds
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    const vendorModel = mp.hashes.tweakdbid('Character.afterlife_bartender');
+    const vendorAppearance = mp.hashes.cname('afterlife_bartender_default');
+
+    const bartender = mp.peds.create({
+      model: vendorModel,
+      appearance: vendorAppearance,
+      position: [-1456.8, 1038.2, 16.8],
+      yaw: 180.0,
+      health: 200,
+      dimension: 0
+    });
+
+    console.log(`Spawned Bartender Ped #${bartender.id}`);
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    local vendorModel = mp.hashes.tweakdbid('Character.afterlife_bartender')
+    local vendorAppearance = mp.hashes.cname('afterlife_bartender_default')
+
+    local bartender = mp.peds.create({
+      model = vendorModel,
+      appearance = vendorAppearance,
+      position = {-1456.8, 1038.2, 16.8},
+      yaw = 180.0,
+      health = 200,
+      dimension = 0
+    })
+
+    print(string.format("Spawned Bartender Ped #%s", bartender.id))
+    ```
+  </TabItem>
+</Tabs>
+
+### Inspecting and Destroying Peds
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    // Inspect ped
+    console.log(`Ped health: ${bartender.health}`);
+
+    // Destroy ped
+    bartender.destroy();
+    // or: mp.peds.destroy(pedId);
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    -- Inspect ped
+    print(string.format("Ped health: %s", bartender.health))
+
+    -- Destroy ped
+    bartender:destroy()
+    -- or: mp.peds.destroy(pedId)
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Working with Pickups
+
+Pickups represent interactive items, weapon drops, and collectible packages that appear physically on the ground.
+
+| Pickup Type | Value | Description |
+| :--- | :--- | :--- |
+| Clothes | `1` | Clothing and cosmetic apparel pickups. |
+| Weapon | `2` | Firearms, blades, and heavy weapons. |
+| Other | `3` | Consumables, quest items, and miscellaneous props. |
+
+### Spawning Pickups
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    const katanaHash = mp.hashes.tweakdbid('Items.Preset_Katana_Military');
+
+    const droppedWeapon = mp.pickups.create({
+      model: katanaHash,
+      type: 2, // 1 = Clothes, 2 = Weapon, 3 = Other
+      position: [-1395.0, 1275.0, 123.0],
+      yaw: 0,
+      dimension: 0
+    });
+
+    console.log(`Created Katana Pickup #${droppedWeapon.id}`);
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    local katanaHash = mp.hashes.tweakdbid('Items.Preset_Katana_Military')
+
+    local droppedWeapon = mp.pickups.create({
+      model = katanaHash,
+      type = 2, -- 1 = Clothes, 2 = Weapon, 3 = Other
+      position = {-1395.0, 1275.0, 123.0},
+      yaw = 0,
+      dimension = 0
+    })
+
+    print(string.format("Created Katana Pickup #%s", droppedWeapon.id))
+    ```
+  </TabItem>
+</Tabs>
+
+### Tracking Pickup Interactions
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    // Player picked up an item
+    mp.events.on('pickupRaise', (playerId, data) => {
+      const player = mp.players.at(playerId);
+      console.log(`Player ${player.nickname} picked up: ${data.pickupHash} (NetID: ${data.pickupNetId})`);
+    });
+
+    // Item dropped to the ground
+    mp.events.on('pickupDrop', (playerId, data) => {
+      console.log(`Player ${playerId} dropped item ${data.pickupHash}`);
+    });
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    -- Player picked up an item
+    mp.events.on('pickupRaise', function(playerId, data)
+      local player = mp.players.at(playerId)
+      print(string.format("Player %s picked up: %s (NetID: %s)", player.nickname, data.pickupHash, data.pickupNetId))
+    end)
+
+    -- Item dropped to the ground
+    mp.events.on('pickupDrop', function(playerId, data)
+      print(string.format("Player %s dropped item %s", playerId, data.pickupHash))
+    end)
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Global Entity Events
+
+To listen to lifecycle changes across all entity types simultaneously, use `entitySpawn` and `entityDespawn`:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    mp.events.on('entitySpawn', (entityId, type) => {
+      console.log(`[Entity Spawn] Type: ${type} | ID: ${entityId}`);
+    });
+
+    mp.events.on('entityDespawn', (entityId, type) => {
+      console.log(`[Entity Despawn] ID: ${entityId}`);
+    });
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    mp.events.on('entitySpawn', function(entityId, type)
+      print(string.format("[Entity Spawn] Type: %s | ID: %s", type, entityId))
+    end)
+
+    mp.events.on('entityDespawn', function(entityId, type)
+      print(string.format("[Entity Despawn] ID: %s", entityId))
+    end)
+    ```
+  </TabItem>
+</Tabs>

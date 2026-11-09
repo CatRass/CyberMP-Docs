@@ -1,0 +1,138 @@
+---
+title: Working with Hashes
+description: Learn how to generate and handle REDengine CName, TweakDBID, and ResRef hashes for vehicles, items, and world entities.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { SCRIPT_LANG_TAB_SYNC_KEY } from '../../../../lib/const';
+
+In Cyberpunk 2077's REDengine, internal resources, items, vehicles, bones, and symbolic names are identified by 64-bit numerical hashes rather than plain text strings. CyberMP exposes the `mp.hashes` helper utility to generate these hashes at runtime.
+
+In this guide, you will learn the different hash types, how to generate them, and where they are used across the server API in JavaScript and Lua.
+
+---
+
+## Hash Types in REDengine
+
+| Hash Type | Helper Function | Common Use Cases |
+| :--- | :--- | :--- |
+| **TweakDBID** | `mp.hashes.tweakdbid(path)` | Vehicles, weapons, armor items, characters, perks, stat modifiers. |
+| **CName** | `mp.hashes.cname(name)` | Entity appearances, body components, bone names, animation flags. |
+| **ResRef** | `mp.hashes.resref(path)` | File resource paths (`.ent`, `.mesh`, `.app`, `.csv`). |
+
+---
+
+## Generating Hashes
+
+Generate hashes directly in your server scripts:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    // 1. TweakDBID: Item and vehicle definitions
+    const quadraHash = mp.hashes.tweakdbid('Vehicle.v_sport1_quadra_turbo_r_player');
+    const katanaHash = mp.hashes.tweakdbid('Items.Preset_Katana_Military');
+
+    // 2. CName: Appearance and component names
+    const appearanceHash = mp.hashes.cname('quadra_turbo_r__basic_player_01');
+
+    // 3. ResRef: Game engine file resources
+    const barrierResRef = mp.hashes.resref('base\\gameplay\\devices\\barriers\\road_barrier_a.ent');
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    -- 1. TweakDBID: Item and vehicle definitions
+    local quadraHash = mp.hashes.tweakdbid('Vehicle.v_sport1_quadra_turbo_r_player')
+    local katanaHash = mp.hashes.tweakdbid('Items.Preset_Katana_Military')
+
+    -- 2. CName: Appearance and component names
+    local appearanceHash = mp.hashes.cname('quadra_turbo_r__basic_player_01')
+
+    -- 3. ResRef: Game engine file resources
+    local barrierResRef = mp.hashes.resref('base\\gameplay\\devices\\barriers\\road_barrier_a.ent')
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Practical Applications
+
+### 1. Spawning Vehicles & Peds
+
+Spawning vehicles and peds requires passing model and appearance hashes:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    // Spawn a vehicle with specific model and skin
+    const car = mp.vehicles.create({
+      model: mp.hashes.tweakdbid('Vehicle.v_sport2_mizutani_shion_player'),
+      appearance: mp.hashes.cname('mizutani_shion__basic_player_01'),
+      position: [-1392.6, 1271.5, 123.0]
+    });
+
+    // Spawn an NPC ped
+    const npc = mp.peds.create({
+      model: mp.hashes.tweakdbid('Character.afterlife_bartender'),
+      appearance: mp.hashes.cname('afterlife_bartender_default'),
+      position: [-1456.8, 1038.2, 16.8]
+    });
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    -- Spawn a vehicle with specific model and skin
+    local car = mp.vehicles.create({
+      model = mp.hashes.tweakdbid('Vehicle.v_sport2_mizutani_shion_player'),
+      appearance = mp.hashes.cname('mizutani_shion__basic_player_01'),
+      position = {-1392.6, 1271.5, 123.0}
+    })
+
+    -- Spawn an NPC ped
+    local npc = mp.peds.create({
+      model = mp.hashes.tweakdbid('Character.afterlife_bartender'),
+      appearance = mp.hashes.cname('afterlife_bartender_default'),
+      position = {-1456.8, 1038.2, 16.8}
+    })
+    ```
+  </TabItem>
+</Tabs>
+
+### 2. Identifying Weapons in Damage Events
+
+When a player deals damage or fires a weapon, `data.weaponHash` contains the TweakDBID of the weapon used. You can compare this against known hashes to identify weapons or apply custom damage multipliers:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    const WEAPON_KATANA = mp.hashes.tweakdbid('Items.Preset_Katana_Military');
+
+    mp.events.on('damage', (victimId, data) => {
+      if (data.weaponHash === WEAPON_KATANA) {
+        console.log(`Victim #${victimId} was struck by a military katana!`);
+      }
+    });
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    local WEAPON_KATANA = mp.hashes.tweakdbid('Items.Preset_Katana_Military')
+
+    mp.events.on('damage', function(victimId, data)
+      if data.weaponHash == WEAPON_KATANA then
+        print(string.format("Victim #%s was struck by a military katana!", victimId))
+      end
+    end)
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Best Practices
+
+:::tip
+Pre-compute and store frequently used hashes in constants or configuration tables at resource startup to avoid redundant hashing calculations during gameplay loops or combat events.
+:::

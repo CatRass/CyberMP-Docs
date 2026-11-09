@@ -1,0 +1,210 @@
+---
+title: Network IDs, Local Entities, and Ticks
+description: Learn how to map between network IDs and REDengine game IDs, spawn client-only entities, execute per-frame ticks, and persist local storage in JavaScript and Lua.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { SCRIPT_LANG_TAB_SYNC_KEY } from '../../../../lib/const';
+
+In CyberMP, the server identifies entities via lightweight **Network IDs** (`netId`), while REDengine uses internal **Game IDs** (`gameId` / `EntityID`). Passing a `netId` directly into a game native or a `gameId` to the server will result in lookup failures.
+
+In this guide, you will learn how to convert between ID formats, spawn client-side decorative entities, run lightweight per-frame update loops, and store local preferences.
+
+---
+
+## ID Translation (`mp.network`)
+
+When an entity enters streaming range, the client receives both its `netID` and its active `gameID`. The `mp.network` utility provides conversion methods:
+
+| Method | Return Value | Context / Direction |
+| :--- | :--- | :--- |
+| `getVehicleGameId(netId)` / `getVehicleId(gameId)` | `gameId` or `netId` | Vehicles |
+| `getPlayerGameId(netId)` / `getPlayerId(gameId)` | `gameId` or `netId` | Connected Players |
+| `getPedGameId(netId)` / `getPedId(gameId)` | `gameId` or `netId` | Peds (NPCs) |
+| `getObjectGameId(netId)` / `getObjectId(gameId)` | `gameId` or `netId` | World Objects |
+| `getLocalPlayerId()` | `netId` (`number`) | The local client's permanent Network ID |
+| `getStreamedPlayers()` | `Array<gameId>` | All remote players currently streamed in |
+| `getStreamedPool(poolName)` | `Array<gameId>` | Entities in `'CVehicle'`, `'CPed'`, `'CObject'`, `'CPickup'` |
+| `getServerAddress()` | `string` | Connected session endpoint (e.g. `127.0.0.1:2077`) |
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="client.js"
+    mp.events.on('vehicleStreamIn', (netID, gameID) => {
+      // Look up entity metadata using netID
+      const isLocked = mp.meta.getEntityMeta(netID, 'locked');
+
+      // Convert gameID back to netID
+      const originalNetID = mp.network.getVehicleId(gameID);
+
+      console.log(`Streamed vehicle: NetID=${netID}, GameID=${gameID}, Locked=${isLocked}`);
+    });
+
+    const localNetID = mp.network.getLocalPlayerId();
+    const streamedPlayers = mp.network.getStreamedPlayers();
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="client.lua"
+    mp.events.add('vehicleStreamIn', function(netID, gameID)
+      -- Look up entity metadata using netID
+      local isLocked = mp.meta.getEntity(netID, 'locked')
+
+      -- Convert gameID back to netID
+      local originalNetID = mp.network.getVehicleId(gameID)
+
+      print(string.format("Streamed vehicle: NetID=%s, GameID=%s, Locked=%s", netID, gameID, isLocked))
+    end)
+
+    local localNetID = mp.network.getLocalPlayerId()
+    local streamedPlayers = mp.network.getStreamedPlayers()
+    ```
+  </TabItem>
+</Tabs>
+
+:::caution[Streaming Availability]
+ID conversions are only valid while the entity is currently within streaming range. An entity that has despawned or not yet streamed into the client has no `gameID`.
+:::
+
+---
+
+## Client-Only Entities (Local Spawn)
+
+You can spawn vehicles, peds, and props that exist **only on the local client**. Other network players cannot see or interact with them. This is ideal for dealership preview screens, UI cutscenes, or decorative checkpoints.
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="client.js"
+    // Client-side hashes must be 64-bit BigInt values
+    const modelHash = BigInt(mp.game.hashes.toTweakdbid('Vehicle.v_standard2_archer_hella'));
+    const appearanceHash = BigInt(mp.game.hashes.toCname('default'));
+
+    // Spawn local preview vehicle: (model, appearance, x, y, z, roll, pitch, yaw, streaming)
+    const vehHandle = mp.local.spawnVehicle(
+      modelHash,
+      appearanceHash,
+      -1392.6, 1271.5, 123.0,
+      0.0, 0.0, 90.0,
+      true
+    );
+
+    // Despawn when no longer needed
+    mp.local.despawnVehicle(vehHandle);
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="client.lua"
+    -- Lua hash helpers return decimal strings; convert to numbers
+    local modelHash = tonumber(mp.hashes.toTweakdbid('Vehicle.v_standard2_archer_hella'), 10)
+    local appearanceHash = tonumber(mp.hashes.toCname('default'), 10)
+
+    -- Spawn local preview vehicle: (model, appearance, x, y, z, roll, pitch, yaw, streaming)
+    local vehHandle = mp.client.spawnVehicle(
+      modelHash,
+      appearanceHash,
+      -1392.6, 1271.5, 123.0,
+      0.0, 0.0, 90.0,
+      true
+    )
+
+    -- Despawn when no longer needed
+    mp.client.despawnVehicle(vehHandle)
+    ```
+  </TabItem>
+</Tabs>
+
+Similar local creation methods exist for `spawnPed` / `despawnPed` and `spawnObject` / `despawnObject`.
+
+---
+
+## Per-Frame Tick Loops
+
+When implementing custom HUD overlays, camera math, or interactive distance markers, execute callbacks every render frame:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="client.js"
+    let tickId = null;
+
+    const startTick = () => {
+      if (tickId !== null) return;
+
+      tickId = mp.setTick(() => {
+        // Fast calculations: distance checks, raycasts, UI positioning
+        const player = mp.game.GetPlayer();
+        if (!player) return;
+      });
+    };
+
+    const stopTick = () => {
+      if (tickId === null) return;
+      mp.clearTick(tickId);
+      tickId = null;
+    };
+
+    // Clean up tick loops when resource stops
+    mp.events.on('resourceStop', stopTick);
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="client.lua"
+    local isRunning = true
+
+    -- mp.onUpdateLoop runs on every frame
+    mp.onUpdateLoop(function()
+      if not isRunning then return end
+
+      local player = Game.GetPlayer()
+      if not player then return end
+      -- Fast calculations: distance checks, raycasts, UI positioning
+    end)
+
+    mp.events.add('resourceStop', function()
+      isRunning = false
+    end)
+    ```
+  </TabItem>
+</Tabs>
+
+:::tip[Performance Warning]
+Never perform database calls, heavy JSON parsing, or bulk entity queries inside a tick callback. Keep tick execution under 1 millisecond.
+:::
+
+---
+
+## Local Storage (`mp.localStorage`)
+
+To persist client settings across sessions (such as keybindings, custom UI layouts, or sound volumes), use the client's key-value local storage:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="client.js"
+    // Write value (must be string)
+    mp.localStorage.set('hud_theme', 'cyberpunk_neon');
+    mp.localStorage.set('user_bindings', JSON.stringify({ openMap: 'M', radio: 'R' }));
+
+    // Read value
+    const theme = mp.localStorage.get('hud_theme');
+    const bindings = JSON.parse(mp.localStorage.get('user_bindings') || '{}');
+
+    // Remove or Clear
+    mp.localStorage.remove('hud_theme');
+    mp.localStorage.clear();
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="client.lua"
+    -- Write value (must be string)
+    mp.localStorage.set('hud_theme', 'cyberpunk_neon')
+    mp.localStorage.set('user_bindings', json.encode({ openMap = 'M', radio = 'R' }))
+
+    -- Read value
+    local theme = mp.localStorage.get('hud_theme')
+    local bindings = json.decode(mp.localStorage.get('user_bindings') or '{}')
+
+    -- Remove or Clear
+    mp.localStorage.remove('hud_theme')
+    mp.localStorage.clear()
+    ```
+  </TabItem>
+</Tabs>

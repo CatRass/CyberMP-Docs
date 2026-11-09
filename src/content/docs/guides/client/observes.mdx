@@ -1,0 +1,119 @@
+---
+title: Observing Game Methods
+description: Learn how to monitor REDengine method calls without altering their execution using observe hooks in JavaScript and Lua.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { SCRIPT_LANG_TAB_SYNC_KEY } from '../../../../lib/const';
+
+The observe API allows client scripts to listen to internal REDengine methods whenever they are invoked by the game engine. Observers act as passive listeners: they do not modify return values or prevent the underlying game function from executing.
+
+In this guide, you will learn how to register method observers, handle instance versus static methods, and understand execution timing.
+
+:::important[Prerequisite]
+Observing game methods requires enabling game natives in your `resource.toml`:
+```toml title="resource.toml"
+use_game_natives = true
+```
+:::
+
+---
+
+## Registering an Observer
+
+Observers must be registered after game classes are initialized, typically inside the `onInit` lifecycle stage:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="client.js"
+    let settingsMenu = null;
+
+    mp.game.onInit(() => {
+      // Observe when the settings menu controller opens
+      mp.game.observe('SettingsMainGameController', 'OnMenuChanged', (self) => {
+        settingsMenu = self;
+        console.log('Settings menu opened.');
+      });
+
+      // Observe when the settings menu controller requests close
+      mp.game.observe('SettingsMainGameController', 'RequestClose', (self) => {
+        settingsMenu = null;
+        console.log('Settings menu closed.');
+      });
+    });
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="client.lua"
+    local settingsMenu = nil
+
+    mp.registerGameState('onInit', function()
+      -- Observe when the settings menu controller opens
+      mp.observe('SettingsMainGameController', 'OnMenuChanged', function(self)
+        settingsMenu = self
+        print("Settings menu opened.")
+      end)
+
+      -- Observe when the settings menu controller requests close
+      mp.observe('SettingsMainGameController', 'RequestClose', function(self)
+        settingsMenu = nil
+        print("Settings menu closed.")
+      end)
+    end)
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Method Signatures and Arguments
+
+Class and method names correspond directly to definitions found in [NativeDB](https://nativedb.red4ext.com/).
+
+- **Instance Methods:** The callback receives `(self, arg1, arg2, ...)`. The first argument represents the instance of the game object executing the method.
+- **Static Methods:** The callback receives `(arg1, arg2, ...)` without a `self` reference.
+- **Overloads:** If a method has multiple signatures in NativeDB, supply the full signature suffix (e.g. `'ClassName'`, `'MethodName;Int32Bool'`).
+
+:::warning[Weak References]
+The `self` reference is a weak reference into the game engine's memory pool. Do not assume a stored controller or entity reference remains valid once the corresponding entity or menu is destroyed.
+:::
+
+---
+
+## Execution Timing & Variants
+
+The engine provides several observer variants to control capture timing and thread dispatching:
+
+| Method Variant | Capture Point | Dispatch Behavior |
+| :--- | :--- | :--- |
+| `observe` / `observeBefore` | Before original method executes | Queued onto the script thread (runs on next tick) |
+| `observeAfter` | After original method executes | Queued onto the script thread (runs on next tick) |
+| `observeRaw` / `observeBeforeRaw` | Before original method executes | Dispatched immediately without queuing |
+| `observeAfterRaw` | After original method executes | Dispatched immediately without queuing |
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="client.js"
+    mp.game.onInit(() => {
+      // Immediate raw capture of player input actions
+      mp.game.observeBeforeRaw('PlayerPuppet', 'OnAction', (self, action) => {
+        // Keep raw callback execution minimal and fast
+      });
+    });
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="client.lua"
+    mp.registerGameState('onInit', function()
+      -- Immediate raw capture of player input actions
+      mp.observeBeforeRaw('PlayerPuppet', 'OnAction', function(self, action)
+        -- Keep raw callback execution minimal and fast
+      end)
+    end)
+    ```
+  </TabItem>
+</Tabs>
+
+:::tip[Observer vs Override]
+Observers cannot cancel an action or alter what the method returns. If you need to intercept, replace, or block a game method, use [Method Overrides](/guides/client/overrides).
+:::

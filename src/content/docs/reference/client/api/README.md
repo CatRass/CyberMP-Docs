@@ -9,6 +9,7 @@ title: "@cybermp/client-types"
 
 - [ELoadingScreenState](/reference/client/api/enums/eloadingscreenstate/)
 - [EPlayerGender](/reference/client/api/enums/eplayergender/)
+- [EResourceState](/reference/client/api/enums/eresourcestate/)
 - [EVoiceActivationType](/reference/client/api/enums/evoiceactivationtype/)
 - [EWeatherState](/reference/client/api/enums/eweatherstate/)
 
@@ -23,11 +24,17 @@ title: "@cybermp/client-types"
 
 - [MpCef](/reference/client/api/global/mpcef/)
 - [MpClient](/reference/client/api/global/mpclient/)
+- [MpCommands](/reference/client/api/global/mpcommands/)
 - [MpDiscord](/reference/client/api/global/mpdiscord/)
+- [MpExternalExports](/reference/client/api/global/mpexternalexports/)
 - [MpGame](/reference/client/api/global/mpgame/)
+- [MpLocal](/reference/client/api/global/mplocal/)
 - [MpLocalStorage](/reference/client/api/global/mplocalstorage/)
 - [MpMeta](/reference/client/api/global/mpmeta/)
-- [MpVoiceChat](/reference/client/api/global/mpvoicechat/)
+- [MpNetwork](/reference/client/api/global/mpnetwork/)
+- [MpResources](/reference/client/api/global/mpresources/)
+- [MpCreateExport](/reference/client/api/global/mpcreateexport/)
+- [MpExports](/reference/client/api/global/mpexports/)
 - [ObserveFunction](/reference/client/api/global/observefunction/)
 - [OverrideFunction](/reference/client/api/global/overridefunction/)
 - [ServerVector3](/reference/client/api/global/servervector3/)
@@ -43,4 +50,5 @@ title: "@cybermp/client-types"
 - [extended\_\_inkISystemRequestsHandler](/reference/client/api/natives/extended__inkisystemrequestshandler/)
 - [extended\_\_vehicleBaseObject](/reference/client/api/natives/extended__vehiclebaseobject/)
 - [extended\_\_worldWeatherScriptInterface](/reference/client/api/natives/extended__worldweatherscriptinterface/)
+- [MpGameHashes](/reference/client/api/natives/mpgamehashes/)
 - [TweakDB](/reference/client/api/natives/tweakdb/)

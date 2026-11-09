@@ -28,9 +28,9 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.11",
-    "@cybermp/browser-types": "^2.0.0",
-    "@cybermp/client-types": "^2.2.2",
-    "@cybermp/server-types": "^3.2.4",
+    "@cybermp/browser-types": "^2.0.1",
+    "@cybermp/client-types": "^2.3.6",
+    "@cybermp/server-types": "^3.2.8",
     "typescript": "^6.0.3"
   }
 }

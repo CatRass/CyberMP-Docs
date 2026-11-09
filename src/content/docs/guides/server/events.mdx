@@ -2,108 +2,278 @@
 title: Working with Events
 description: Learn how to manage platform lifecycles, handle client packets, and sync network data on the server side.
 ---
-The server-side [`mp.events`](/reference/server/api/events/mpevents/) API manages game world lifecycles and coordinates communication across the network. It allows you to monitor player connections, track state changes like combat and vehicles, catch incoming client-side payloads, and broadcast data back out to network players.
 
-In this guide, you will learn how to structure and manage events on your server.
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { SCRIPT_LANG_TAB_SYNC_KEY } from '../../../../lib/const';
+
+The server-side event system manages game world lifecycles and coordinates communication across the network. It allows you to monitor player connections, track state changes like combat and vehicles, catch incoming client-side payloads, and broadcast data back out to connected players.
+
+In this guide, you will learn how to structure and manage events on your server using either JavaScript or Lua.
+
+---
 
 ## Platform & Custom Server Events
 
-Use [`mp.events.on`](/reference/server/api/events/mpevents#on) to hook into built-in game platform lifecycle events (such as players connecting, dying, or interacting with vehicles) as well as custom server-to-server events.
+Use the event listener interface to hook into built-in game platform lifecycle events (such as players connecting, dying, or interacting with vehicles) as well as custom server-to-server events.
 
-```js title="server.js"
-// 1. Platform Event: Handle new incoming player connections
-mp.events.on('playerConnected', (playerId, tempId) => {
-    console.log(`Player connected - assigned Network ID: ${playerId}`);
-});
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    // 1. Platform Event: Handle new incoming player connections
+    mp.events.on('playerConnected', (playerId, tempId) => {
+      console.log(`Player connected - assigned Network ID: ${playerId}`);
+    });
 
-// 2. Platform Event: Track player deaths and log combat analytics
-mp.events.on('playerDeath', (playerId, data) => {
-    if (data.killerId) {
-      console.log(`Player ${playerId} was flatlined by Killer ID: ${data.killerId}`);
-    } else {
-      console.log(`Player ${playerId} flatlined due to environmental damage.`);
-    }
-});
+    // 2. Platform Event: Track player deaths and log combat analytics
+    mp.events.on('playerDeath', (playerId, data) => {
+      if (data.killerId) {
+        console.log(`Player ${playerId} was flatlined by Killer ID: ${data.killerId}`);
+      } else {
+        console.log(`Player ${playerId} flatlined due to environmental damage.`);
+      }
+    });
 
-// 3. Custom Server Event: Triggered internally within server scripts
-mp.events.on('logServerActivity', (action, details) => {
-    console.log(`[Activity Log] Action: ${action} | ${details}`);
-});
+    // 3. Custom Server Event: Triggered internally within server scripts
+    mp.events.on('logServerActivity', (action, details) => {
+      console.log(`[Activity Log] Action: ${action} | ${details}`);
+    });
 
-// Emit the custom event inside your server environment
-mp.events.emit('logServerActivity', 'Database', 'Initial connection established.');
+    // Emit the custom event inside your server environment
+    mp.events.emit('logServerActivity', 'Database', 'Initial connection established.');
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    -- 1. Platform Event: Handle new incoming player connections
+    mp.events.on('playerConnected', function(playerId, tempId)
+      print(string.format("Player connected - assigned Network ID: %s", playerId))
+    end)
 
-```
+    -- 2. Platform Event: Track player deaths and log combat analytics
+    mp.events.on('playerDeath', function(playerId, data)
+      if data.killerId then
+        print(string.format("Player %s was flatlined by Killer ID: %s", playerId, data.killerId))
+      else
+        print(string.format("Player %s flatlined due to environmental damage.", playerId))
+      end
+    end)
+
+    -- 3. Custom Server Event: Triggered internally within server scripts
+    mp.events.on('logServerActivity', function(action, details)
+      print(string.format("[Activity Log] Action: %s | %s", action, details))
+    end)
+
+    -- Emit the custom event inside your server environment
+    mp.events.emit('logServerActivity', 'Database', 'Initial connection established.')
+    ```
+  </TabItem>
+</Tabs>
+
+---
 
 ## Handling Packets from Clients
 
-When a client code transmits an event over the network socket using [`emitServer`](/reference/client/api/events/mpevents#emitserver), the server catches it using [`mp.events.onClient`](/reference/server/api/events/mpevents#onclient).
-> **Note:** The server-side callback automatically injects the sending **`player` context object** as the first argument, ensuring you always securely know which client initiated the request.
+When client code transmits an event over the network socket using `emitServer`, the server catches it using `onClient`.
 
+:::note
+The server-side callback automatically receives the sending **player object** as the first argument, ensuring you always securely know which client initiated the request.
+:::
 
-```js title="server.js"
-// Catching a vehicle spawn request from a client script
-mp.events.onClient('requestVehicleSpawn', (player, modelHash, x, y, z) => {
-  console.log(`Player ${player.nickname} (${player.id}) requested to spawn: ${modelHash}`);
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    // Catching a vehicle spawn request from a client script
+    mp.events.onClient('requestVehicleSpawn', (player, modelHash, x, y, z) => {
+      console.log(`Player ${player.nickname} (${player.id}) requested to spawn: ${modelHash}`);
 
-  // Your vehicle creation logic goes here...
-});
+      // Your vehicle creation logic goes here...
+    });
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    -- Catching a vehicle spawn request from a client script
+    mp.events.onClient('requestVehicleSpawn', function(player, modelHash, x, y, z)
+      print(string.format("Player %s (%s) requested to spawn: %s", player.nickname or player.id, player.id, modelHash))
 
-```
+      -- Your vehicle creation logic goes here...
+    end)
+    ```
+  </TabItem>
+</Tabs>
+
+---
 
 ## Emitting Events to Clients
 
-To push messages, UI updates, or state sync packets back down across the network to the players, use [`mp.events.emitClient`](/reference/server/api/events/mpevents#emitclient). This function requires you to specify the target player (either via their active [`MpPlayer`](/reference/server/api/entities/players/mpplayer/) instance object or their raw numerical `playerId`) as the very first parameter.
-```js title="server.js"
-// Listen for a player spawning into the world
-mp.events.on('playerSpawn', (playerId) => {
-  // Direct a welcome alert exclusively to the player who just spawned
-  mp.events.emitClient(playerId, 'serverNotification', 'Welcome back to Night City.');
-});
+To push messages, UI updates, or state sync packets across the network to players, you can either:
 
-// Example: Notifying a vehicle owner when their car is damaged
-mp.events.on('vehicleHittedByPlayer', (vehicleId, data) => {
-  if (data.byOwner) {
-    // Send an event back down to the driver's client application context
-    mp.events.emitClient(data.instigatorID, 'uiNotification', 'You damaged your own vehicle!');
-  }
-});
+- Use `mp.events.emitClient(playerId, 'my-event', ...args)` (specifying the target player by numeric ID or player reference).
+- Call `player.emit('my-event', ...args)` (or `player:emit('my-event', ...args)` in Lua) directly on the target player object instance.
 
-```
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    // Listen for a player spawning into the world
+    mp.events.on('playerSpawn', (playerId) => {
+      // Option 1: Direct a welcome alert using mp.events.emitClient
+      mp.events.emitClient(playerId, 'serverNotification', 'Welcome back to Night City.');
+
+      // Option 2: Direct a welcome alert calling emit directly on the player instance
+      const player = mp.players.at(playerId);
+      if (player) {
+        player.emit('serverNotification', 'Welcome back to Night City.');
+      }
+    });
+
+    // Example: Notifying a vehicle owner when their car is damaged
+    mp.events.on('vehicleHittedByPlayer', (vehicleId, data) => {
+      if (data.byOwner) {
+        // Send an event back to the driver's client
+        mp.events.emitClient(data.instigatorID, 'uiNotification', 'You damaged your own vehicle!');
+      }
+    });
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    -- Listen for a player spawning into the world
+    mp.events.on('playerSpawn', function(playerId)
+      -- Option 1: Direct a welcome alert using mp.events.emitClient
+      mp.events.emitClient(playerId, 'serverNotification', 'Welcome back to Night City.')
+
+      -- Option 2: Direct a welcome alert calling emit directly on the player instance
+      local player = mp.players.at(playerId)
+      if player then
+        player:emit('serverNotification', 'Welcome back to Night City.')
+      end
+    end)
+
+    -- Example: Notifying a vehicle owner when their car is damaged
+    mp.events.on('vehicleHittedByPlayer', function(vehicleId, data)
+      if data.byOwner then
+        -- Send an event back to the driver's client
+        mp.events.emitClient(data.instigatorID, 'uiNotification', 'You damaged your own vehicle!')
+      end
+    end)
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Cancelling Platform Events
+
+Certain game events (such as damage, explosion, or world state changes) can be intercepted and cancelled before they affect the game state. To cancel an event, you can either:
+
+- Return `false` from the callback function.
+- Call `mp.cancelEvent()` inside the callback.
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    // Disable PvP damage in safe zones
+    mp.events.on('damage', (victimId, data) => {
+      const victim = mp.players.at(victimId);
+
+      // If the victim is inside a designated safe zone
+      if (victim?.getMeta('inSafeZone')) {
+        // Option 1: Call mp.cancelEvent()
+        mp.cancelEvent();
+
+        // Option 2: Alternatively, return false from the function
+        // return false;
+      }
+    });
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    -- Disable PvP damage in safe zones
+    mp.events.on('damage', function(victimId, data)
+      local victim = mp.players.at(victimId)
+
+      -- If the victim is inside a designated safe zone
+      if victim and victim:getMeta('inSafeZone') then
+        -- Option 1: Call mp.cancelEvent()
+        mp.cancelEvent()
+
+        -- Option 2: Alternatively, return false from the function
+        -- return false
+      end
+    end)
+    ```
+  </TabItem>
+</Tabs>
+
+---
 
 ## Cleaning Up Event Handlers
 
-To prevent memory leaks or repeating execution routines inside dynamic modules, detach your active event listeners using [`mp.events.off`](/reference/server/api/events/mpevents#off). This cleanup method works interchangeably for both [`mp.events.on`](/reference/server/api/events/mpevents#on) and custom [`mp.events.onClient`](/reference/server/api/events/mpevents#onclient) network listeners.
-```js title="server.js"
-// Define a named tracking handler function
-const trackExplosions = (playerId, data) => {
-  console.log(`Explosion tracked at coordinate cluster: [${data.posX}, ${data.posY}]`);
-};
+To prevent memory leaks or repeating routines when resources or modules restart, detach active event listeners using `off`. This cleanup method works for both internal and network client listeners.
 
-// Register the active event listener hook
-mp.events.on('explosion', trackExplosions);
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    // Define a named tracking handler function
+    const trackExplosions = (playerId, data) => {
+      console.log(`Explosion tracked at coordinate cluster: [${data.posX}, ${data.posY}]`);
+    };
 
-// Unregister the handler loop later when it is no longer required
-mp.events.off('explosion', trackExplosions);
-```
+    // Register the active event listener hook
+    mp.events.on('explosion', trackExplosions);
+
+    // Unregister the handler when it is no longer required
+    mp.events.off('explosion', trackExplosions);
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    -- Define a named tracking handler function
+    local function trackExplosions(playerId, data)
+      print(string.format("Explosion tracked at coordinate cluster: [%s, %s]", data.posX, data.posY))
+    end
+
+    -- Register the active event listener hook
+    mp.events.on('explosion', trackExplosions)
+
+    -- Unregister the handler when it is no longer required
+    mp.events.off('explosion', trackExplosions)
+    ```
+  </TabItem>
+</Tabs>
+
+---
 
 ## Communicating with CEF (Browser UI)
 
-Using standard events, the server cannot communicate directly with a player's CEF (Chromium Embedded Framework) browser instance. Because CEF views are isolated within the local client environment, all server-to-CEF communication must be routed through the client script first.
+Using standard events, the server cannot communicate directly with a player's Chromium Embedded Framework (CEF) browser instance. Because CEF views run isolated within the local client environment, server-to-CEF communication routes through a client script bridge:
 
-To send data from the server to a player's UI using standard events, you must set up a bridge event on the client that catches the server payload and forwards it to the browser:
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    mp.events.emitClient(playerId, 'browser:updateInventory', inventoryData);
+    ```
 
-```js title="server.js"
-mp.events.emitClient(playerId, 'browser:updateInventory', inventoryData);
-```
+    ```js title="client.js"
+    mp.events.onServer('browser:updateInventory', (inventoryData) => {
+      mp.events.emitCef('updateInventory', inventoryData);
+    });
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    mp.events.emitClient(playerId, 'browser:updateInventory', inventoryData)
+    ```
 
-```js title="client.js"
-mp.events.onServer('browser:updateInventory', (inventoryData) => {
-  mp.events.emitCef("updateInventory", inventoryData);
-});
-```
+    ```lua title="client.lua"
+    mp.events.onServer('browser:updateInventory', function(inventoryData)
+      mp.events.emitCef('updateInventory', inventoryData)
+    end)
+    ```
+  </TabItem>
+</Tabs>
 
 :::tip
-Writing boilerplate proxy listeners on the client for every UI interaction quickly becomes tedious.
-This limitation is solved by the RPC (Remote Procedure Call) system, which allows the server and CEF to invoke functions and exchange data directly without manually writing client-side bridge events.
+Writing boilerplate proxy listeners on the client for every UI interaction can become repetitive. This limitation is solved by the Remote Procedure Call (RPC) system, which allows the server and CEF to invoke functions and exchange data directly.
 :::

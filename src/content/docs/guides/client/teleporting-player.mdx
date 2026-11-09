@@ -1,102 +1,181 @@
 ---
-title: How to teleport player
-description: Learn how to safely teleport players in the game world.
+title: Teleporting the Player
+description: Learn how to safely teleport players in the game world, close active UI menus, and bind teleportation commands in JavaScript and Lua.
 ---
-import { Steps } from '@astrojs/starlight/components';
 
-In this guide, you will learn how to build a reusable teleportation function, handle menu closures to prevent UI lockups, and create a custom console command to move the player around the map.
+import { Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+import { SCRIPT_LANG_TAB_SYNC_KEY } from '../../../../lib/const';
+
+Teleporting characters in REDengine requires safely closing any active pause or settings menus before moving the entity. Failing to close these menus can permanently freeze the game's user interface.
+
+In this guide, you will learn how to track menu states, execute safe teleportation routines using the game's `TeleportationFacility`, and register console commands in JavaScript and Lua.
+
+:::tip[Resource Configuration]
+Using game engine facilities requires enabling game natives in your `resource.toml`:
+```toml title="resource.toml"
+use_game_natives = true
+```
+:::
+
+---
 
 <Steps>
-1. ## Tracking and Closing Menus
+1. ## Tracking and Closing UI Menus
 
-   Before teleporting a player (or spawning them), it is crucial to force-close any open pause or settings menus to prevent the game's user interface from getting stuck.
+   Set up observers to keep track of active pause and settings menu controllers so they can be dismissed before moving the player:
 
-   First, add these observers to your `client.js` to track when the player enters and exits menus:
+   <Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+     <TabItem label="JS">
+       ```js title="client.js"
+       let pauseMenu = null;
+       let settingsMenu = null;
 
-   ```js title="client.js"
-    let MenuScenario_PauseMenu = null;
-    let SettingsMainGameController = null;
-    
-    mp.game.onGameLoaded(() => {
-        // Track Settings Menu
-        mp.game.observe('SettingsMainGameController', 'OnMenuChanged', (self) => {
-            SettingsMainGameController = self;
-        });
-        
-        mp.game.observe('SettingsMainGameController', 'RequestClose', () => {
-            SettingsMainGameController = null;
-        });
-        
-        // Track Pause Menu
-        mp.game.observe('MenuScenario_PauseMenu', 'OnSwitchToSettings', (self) => {
-            MenuScenario_PauseMenu = self;
-        });
-        
-        mp.game.observe('MenuScenario_PauseMenu', 'OnEnterScenario', (self) => {
-            MenuScenario_PauseMenu = self;
-        });
-    });
-   ```
+       mp.game.onGameLoaded(() => {
+         // Track Settings Menu
+         mp.game.observe('SettingsMainGameController', 'OnMenuChanged', (self) => {
+           settingsMenu = self;
+         });
+         mp.game.observe('SettingsMainGameController', 'RequestClose', () => {
+           settingsMenu = null;
+         });
 
-    Next, create a helper function that triggers the close events:
-    
-    ```js title="client.js"
-    const closeAllMenus = () => {
-        const player = mp.game.GetPlayer();
-        
-        // Force close standard hub menus
-        player.QueueEvent(new mp.game.ForceCloseHubMenuEvent());
-        
-        // Safely invoke close events on tracked menus
-        MenuScenario_PauseMenu?.OnClosePauseMenu();
-        SettingsMainGameController?.RequestClose();
-    };
-    
-    ```
+         // Track Pause Menu
+         mp.game.observe('MenuScenario_PauseMenu', 'OnSwitchToSettings', (self) => {
+           pauseMenu = self;
+         });
+         mp.game.observe('MenuScenario_PauseMenu', 'OnEnterScenario', (self) => {
+           pauseMenu = self;
+         });
+       });
 
-2. ## Implementing the Teleport Function
+       const closeAllMenus = () => {
+         const player = mp.game.GetPlayer();
+         if (player) {
+           player.QueueEvent(new mp.game.ForceCloseHubMenuEvent());
+         }
 
-    With menu handling out of the way, we can build the core teleport logic. We will use the game's native `TeleportationFacility` to move the player object.
-    Add the following function to `client.js`:
-    ```js title="client.js"
-    const teleportPlayer = (x, y, z, yaw = 1) => {
-        // Always close menus before moving the player
-        closeAllMenus();
-        
-        const teleportFacility =
-            mp.game.ScriptGameInstance.GetTeleportationFacility();
-        
-        const playerObj = mp.game.GetPlayerObject();
-        
-        // Execute teleport using target coordinates and rotation
-        teleportFacility.Teleport(
-            playerObj,
-            Object.assign(new mp.game.Vector4(), { x, y, z, w: 1 }),
-            Object.assign(new mp.game.EulerAngles(), {
-            roll: 0,
-            pitch: 0,
-            yaw,
-            }),
-        );
-    };
-    ```
+         if (pauseMenu) pauseMenu.OnClosePauseMenu();
+         if (settingsMenu) settingsMenu.RequestClose();
+       };
+       ```
+     </TabItem>
+     <TabItem label="Lua">
+       ```lua title="client.lua"
+       local pauseMenu = nil
+       local settingsMenu = nil
 
+       mp.registerGameState('onInit', function()
+         -- Track Settings Menu
+         mp.observe('SettingsMainGameController', 'OnMenuChanged', function(self)
+           settingsMenu = self
+         end)
+         mp.observe('SettingsMainGameController', 'RequestClose', function()
+           settingsMenu = nil
+         end)
 
-3. ## Registering the Commands
+         -- Track Pause Menu
+         mp.observe('MenuScenario_PauseMenu', 'OnSwitchToSettings', function(self)
+           pauseMenu = self
+         end)
+         mp.observe('MenuScenario_PauseMenu', 'OnEnterScenario', function(self)
+           pauseMenu = self
+         end)
+       end)
 
-    To test your new logic, let's register a couple of chat commands via `mp.commands.add`. We will add an `afterlife` command to teleport the player directly to the Afterlife club, and a `close-menu` command for utility.
-    ```js title="client.js"
-    // Teleports the player to the Afterlife club coordinates
-    mp.commands.add('afterlife', () => {
-        teleportPlayer(-1456.893433, 1038.277222, 16.825035, 1);
-    });
-    
-    // Utility command to manually close stuck UI menus
-    mp.commands.add('close-menu', () => {
-        closeAllMenus();
-    });
-    ```
+       local function closeAllMenus()
+         local player = Game.GetPlayer()
+         if player then
+           player:QueueEvent(NewObject('ForceCloseHubMenuEvent'))
+         end
+
+         if pauseMenu then pauseMenu:OnClosePauseMenu() end
+         if settingsMenu then settingsMenu:RequestClose() end
+       end
+       ```
+     </TabItem>
+   </Tabs>
+
+2. ## Executing Teleportation
+
+   To move the player puppet, retrieve REDengine's `TeleportationFacility` and supply target `Vector4` coordinates along with `EulerAngles` orientation:
+
+   <Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+     <TabItem label="JS">
+       ```js title="client.js"
+       const teleportPlayer = (x, y, z, yaw = 1.0) => {
+         // Always ensure menus are dismissed first
+         closeAllMenus();
+
+         const player = mp.game.GetPlayer();
+         if (!player) return;
+
+         const targetPosition = new mp.game.Vector4(x, y, z, 1.0);
+         const targetRotation = new mp.game.EulerAngles(0, 0, yaw);
+
+         mp.game.ScriptGameInstance.GetTeleportationFacility().Teleport(
+           player,
+           targetPosition,
+           targetRotation
+         );
+       };
+       ```
+     </TabItem>
+     <TabItem label="Lua">
+       ```lua title="client.lua"
+       local function teleportPlayer(x, y, z, yaw)
+         -- Always ensure menus are dismissed first
+         closeAllMenus()
+
+         local player = Game.GetPlayer()
+         if not player then return end
+
+         local targetPosition = Vector4.new(x, y, z, 1.0)
+         local targetRotation = EulerAngles.new(0, 0, yaw or 1.0)
+
+         Game.GetTeleportationFacility():Teleport(
+           player,
+           targetPosition,
+           targetRotation
+         )
+       end
+       ```
+     </TabItem>
+   </Tabs>
+
+3. ## Registering Teleportation Commands
+
+   Create client console commands to trigger navigation shortcuts or reset stuck menus from the F8 console:
+
+   <Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+     <TabItem label="JS">
+       ```js title="client.js"
+       // Teleport to Afterlife club
+       mp.commands.add('afterlife', () => {
+         teleportPlayer(-1456.89, 1038.27, 16.82, 1.0);
+       });
+
+       // Manually force-close open menus
+       mp.commands.add('close-menu', () => {
+         closeAllMenus();
+       });
+       ```
+     </TabItem>
+     <TabItem label="Lua">
+       ```lua title="client.lua"
+       -- Teleport to Afterlife club
+       mp.commands.add('afterlife', function()
+         teleportPlayer(-1456.89, 1038.27, 16.82, 1.0)
+       end)
+
+       -- Manually force-close open menus
+       mp.commands.add('close-menu', function()
+         closeAllMenus()
+       end)
+       ```
+     </TabItem>
+   </Tabs>
 </Steps>
 
-
-Save your file and restart your resource. You can now press `F8` to open your client console and type `afterlife` to instantly teleport to Afterlife!
+:::note[Cross-Dimension Teleportation]
+When teleporting between different server dimensions, update the player's dimension on the server side first (via `player.dimension = newDim`) so world streaming switches correctly.
+:::

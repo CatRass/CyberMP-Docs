@@ -1,0 +1,107 @@
+---
+title: Client Console Reference
+description: Complete reference for the in-game F8 console, registering client commands, script logging, and CEF remote debugging.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { SCRIPT_LANG_TAB_SYNC_KEY } from '../../../../lib/const';
+
+The CyberMP game client provides interactive developer consoles for debugging, inspecting script outputs, and triggering client-side commands during development.
+
+---
+
+## The In-Game F8 Console
+
+Press **F8** at any time while the game is running to toggle the in-game developer console overlay.
+
+The F8 console serves two primary purposes:
+1. **Executing Client Commands**: Directly invoke commands registered by your client scripts.
+2. **Reviewing Script Logs**: Inspect real-time standard output (`console.log`, `print`) printed by active client resources.
+
+---
+
+## Registering Client Commands
+
+To register commands in the client console, use `mp.commands.add`. Client console commands are typed directly by name:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="client.js"
+    // Register command in client console
+    mp.commands.add('spawn', (localId, args) => {
+      console.log(`Manual spawn invoked for local ID: ${localId}`);
+      mp.local.spawnPlayer(-1392.6, 1271.5, 123.0, 1.0);
+    });
+
+    mp.commands.add('coords', () => {
+      const player = mp.game.GetPlayer();
+      if (player) {
+        const pos = player.GetWorldPosition();
+        console.log(`Current Position: X=${pos.x.toFixed(2)}, Y=${pos.y.toFixed(2)}, Z=${pos.z.toFixed(2)}`);
+      }
+    });
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="client.lua"
+    -- Register command in client console
+    mp.commands.add('spawn', function(localId, args)
+      print(string.format("Manual spawn invoked for local ID: %s", localId))
+      mp.client.spawnPlayer(-1392.6, 1271.5, 123.0, 1.0)
+    end)
+
+    mp.commands.add('coords', function()
+      local player = Game.GetPlayer()
+      if player then
+        local pos = player:GetWorldPosition()
+        print(string.format("Current Position: X=%.2f, Y=%.2f, Z=%.2f", pos.x, pos.y, pos.z))
+      end
+    end)
+    ```
+  </TabItem>
+</Tabs>
+
+To invoke a command, open the F8 console, type the command name, and press Enter:
+```text
+spawn
+coords
+```
+
+:::note[Client vs Server Commands]
+Client commands execute exclusively within the local player's client environment and do not transmit over the network to other players.
+:::
+
+---
+
+## Client Logging
+
+- **JavaScript**: Use `console.log(...)`, `console.warn(...)`, and `console.error(...)`. Each line in the F8 console is automatically prefixed with the resource name.
+- **Lua**: Use `print(...)`. When `use_game_natives = true` is enabled, messages are routed through the game layer's internal logger.
+
+---
+
+## CEF Browser Remote Debugging
+
+Because user interfaces run inside an embedded Chromium environment (CEF), you can attach a full Chromium DevTools instance to inspect HTML elements, debug CSS, and inspect JavaScript errors:
+
+1. Enable remote debugging in `server.toml`:
+   ```toml title="server.toml"
+   cef_debug = true
+   ```
+2. Start the server and launch the CyberMP game client.
+3. Open any Chromium-based web browser (Google Chrome, Microsoft Edge, Brave) and navigate to:
+   ```text
+   http://localhost:9222
+   ```
+4. Click on your active UI page in the target list to open standard Chrome DevTools with elements inspection, network waterfall, and console logs.
+
+---
+
+## The External Developer Console
+
+In addition to the in-game F8 overlay, CyberMP can launch a dedicated external Windows console window that displays real-time network packets, engine hooks, and connection diagnostics.
+
+To enable the external developer console:
+1. Open the CyberMP Game Launcher.
+2. Navigate to **Settings**.
+3. Toggle **Enable Developer Console** to ON.

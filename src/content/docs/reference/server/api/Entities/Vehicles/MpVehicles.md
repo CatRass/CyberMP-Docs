@@ -19,7 +19,7 @@ Defined in: vehicles.ts:60
 
 > **at**(`entity`): [`MpVehicle`](/reference/server/api/entities/vehicles/mpvehicle/)
 
-Defined in: entities.ts:110
+Defined in: entities.ts:108
 
 Retrieves an entity by instance or ID.
 
@@ -59,7 +59,7 @@ Defined in: vehicles.ts:61
 
 ##### options
 
-`CreateVehicleOptions`
+[`CreateVehicleOptions`](/reference/server/api/entities/vehicles/createvehicleoptions/)
 
 #### Returns
 
@@ -93,7 +93,7 @@ Defined in: vehicles.ts:62
 
 > **exists**(`entity`): `boolean`
 
-Defined in: entities.ts:100
+Defined in: entities.ts:98
 
 Checks if an entity exists.
 

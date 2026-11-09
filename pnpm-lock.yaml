@@ -49,14 +49,14 @@ importers:
         specifier: 2.4.11
         version: 2.4.11
       '@cybermp/browser-types':
-        specifier: ^2.0.0
-        version: 2.0.0
+        specifier: ^2.0.1
+        version: 2.0.1
       '@cybermp/client-types':
-        specifier: ^2.2.2
-        version: 2.2.2
+        specifier: ^2.3.6
+        version: 2.3.6
       '@cybermp/server-types':
-        specifier: ^3.2.4
-        version: 3.2.4
+        specifier: ^3.2.8
+        version: 3.2.8
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -197,14 +197,14 @@ packages:
     resolution: {integrity: sha512-kzyuwOAQnXJNLS9PSyrk0CWk35nWJW/zl/6KvnTBMFK65gm7U1/Z5BqjxeapjZCIhQcM/DsrEmcbRwDyXyXK4A==}
     engines: {node: '>=14'}
 
-  '@cybermp/browser-types@2.0.0':
-    resolution: {integrity: sha512-WaQtefYRmH+JnkgKLyJfeOn2uxJG+OUThm1IPhSgV5DZiPL5H/qkDZi9N+KY/y14OlaPGOO1qIdMfbj6dA1msQ==}
+  '@cybermp/browser-types@2.0.1':
+    resolution: {integrity: sha512-Gs/WNQ8jyiXPUz5tgAeynKwm58ZI+t4FatNyMpg79E8nan9nZ1ECoH5e3Hz3F3qYC+5zlGaZcX6rnQW5XgXAbg==}
 
-  '@cybermp/client-types@2.2.2':
-    resolution: {integrity: sha512-tizJMVEemOlkucJyYY5gQzwHxfMj38CCzG7W4C+2YZgn+0/InbFKk7XeG35TWNZjXD0oQGq0q7W5dWNQxwSjzg==}
+  '@cybermp/client-types@2.3.6':
+    resolution: {integrity: sha512-Lf3e9JmnmW9Lysu+l2DmSl50oJtmen+WOKjUHbY+NEDBHOtpCbyYGnYvs4ObEdcc45AQIClAFC6RHTV6bNd3gQ==}
 
-  '@cybermp/server-types@3.2.4':
-    resolution: {integrity: sha512-kQNnJ1OYIQuiq63eVg0nGlP62wXNQrlv2PBnSFc7GLceKw076rXZylKRiANwTCAtGD7o0I9bEO8hwaIOMWKUzQ==}
+  '@cybermp/server-types@3.2.8':
+    resolution: {integrity: sha512-bv3ZdRw+2/ZGwkZXIBOiFvV1JJO6PSGk0eYjArKR/SMYLHUYSjV5XMp8Fi35kB9xNDWN5Vn+FiNOQ5jF2Gh41Q==}
 
   '@emnapi/runtime@1.10.0':
     resolution: {integrity: sha512-ewvYlk86xUoGI0zQRNq/mC+16R1QeDlKQy21Ki3oSYXNgLb45GV1P6A0M+/s6nyCuNDqe5VpaY84BzXGwVbwFA==}
@@ -2770,11 +2770,11 @@ snapshots:
 
   '@ctrl/tinycolor@4.2.0': {}
 
-  '@cybermp/browser-types@2.0.0': {}
+  '@cybermp/browser-types@2.0.1': {}
 
-  '@cybermp/client-types@2.2.2': {}
+  '@cybermp/client-types@2.3.6': {}
 
-  '@cybermp/server-types@3.2.4': {}
+  '@cybermp/server-types@3.2.8': {}
 
   '@emnapi/runtime@1.10.0':
     dependencies:

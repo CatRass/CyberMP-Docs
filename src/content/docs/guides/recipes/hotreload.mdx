@@ -1,0 +1,160 @@
+---
+title: Resource Hotreload
+description: Learn how to set up automatic file watching to instantly reload CyberMP resources on code changes.
+---
+
+import { Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+import { SCRIPT_LANG_TAB_SYNC_KEY } from '../../../../lib/const';
+
+During development, manually restarting resources via the server console after every code edit slows down iteration. Setting up hotreload allows the server to automatically detect file changes on disk and reload the affected resource instantly.
+
+In this recipe, you will learn how to configure resources for hot reloading, clean up active entities on stop, and implement a file-watcher resource.
+
+---
+
+## How Hotreload Works
+
+When a resource restarts via `mp.resources.restart`:
+1. The server runtime triggers the `resourceStop` event for that resource.
+2. The existing script environment (including event listeners, timers, and commands) is destroyed.
+3. Connected clients re-download the updated client scripts.
+4. The new script instance initializes and triggers `resourceStart`.
+
+:::important[State Cleanup]
+Entities created with `mp.*.create` (such as spawned vehicles or NPCs) live in the server world state. If your script spawns entities without destroying them in `resourceStop`, restarting the resource will spawn duplicate entities every time!
+:::
+
+---
+
+<Steps>
+1. ## Enable Hotreload on the Target Resource
+
+   Add the `hot_reload = true` flag to your resource's `resource.toml`. While the core engine doesn't watch files on its own, custom file watchers check this flag to decide which folders to watch:
+
+   ```toml title="resources/my_resource/resource.toml"
+   server_script = 'server.js' # or 'server.lua'
+   client_script = 'client.js' # or 'client.lua'
+
+   hot_reload = true
+   ```
+
+2. ## Cleaning Up State in `resourceStop`
+
+   Always track created world entities and destroy them when the resource stops:
+
+   <Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+     <TabItem label="JS">
+       ```js title="server.js"
+       const spawnedVehicles = [];
+
+       mp.events.on('resourceStart', () => {
+         const car = mp.vehicles.create({
+           model: mp.hashes.tweakdbid('Vehicle.v_sport1_quadra_turbo_r_player'),
+           appearance: mp.hashes.cname('quadra_turbo_r__basic_player_01'),
+           position: [-1392.6, 1271.5, 123.0],
+           yaw: 90
+         });
+         spawnedVehicles.push(car);
+       });
+
+       // Clean up entities when hotreload reloads this resource
+       mp.events.on('resourceStop', () => {
+         for (const veh of spawnedVehicles) {
+           if (veh && veh.exist) {
+             veh.destroy();
+           }
+         }
+       });
+       ```
+     </TabItem>
+     <TabItem label="Lua">
+       ```lua title="server.lua"
+       local spawnedVehicles = {}
+
+       mp.events.add('resourceStart', function()
+         local car = mp.vehicles.create({
+           model = mp.hashes.tweakdbid('Vehicle.v_sport1_quadra_turbo_r_player'),
+           appearance = mp.hashes.cname('quadra_turbo_r__basic_player_01'),
+           position = {-1392.6, 1271.5, 123.0},
+           yaw = 90
+         })
+         table.insert(spawnedVehicles, car)
+       end)
+
+       -- Clean up entities when hotreload reloads this resource
+       mp.events.add('resourceStop', function()
+         for _, veh in ipairs(spawnedVehicles) do
+           if veh and veh.exist then
+             veh:destroy()
+           end
+         end
+       end)
+       ```
+     </TabItem>
+   </Tabs>
+
+3. ## Creating a Watcher Resource
+
+   Create a dedicated watcher resource (e.g. `resources/hotreload/`):
+
+   ```toml title="resources/hotreload/resource.toml"
+   server_script = 'server.js'
+   ```
+
+   ```js title="resources/hotreload/server.js"
+   const fs = require('fs');
+   const path = require('path');
+
+   const debounce = (fn, delay = 500) => {
+     let timer;
+     return (...args) => {
+       clearTimeout(timer);
+       timer = setTimeout(() => fn(...args), delay);
+     };
+   };
+
+   const resourcesDir = path.resolve('./resources');
+
+   // Iterate through all active resources
+   for (const folder of fs.readdirSync(resourcesDir)) {
+     const manifestPath = path.join(resourcesDir, folder, 'resource.toml');
+     if (!fs.existsSync(manifestPath)) continue;
+
+     const manifest = fs.readFileSync(manifestPath, 'utf-8');
+     if (!manifest.includes('hot_reload = true')) continue;
+
+     console.log(`[Hotreload] Watching resource: ${folder}`);
+
+     const targetDir = path.join(resourcesDir, folder);
+     const restartResource = debounce(() => {
+       console.log(`[Hotreload] Changes detected in '${folder}'. Restarting...`);
+       mp.resources.restart(folder);
+     }, 400);
+
+     fs.watch(targetDir, { recursive: true }, (event, filename) => {
+       if (filename && !filename.startsWith('.')) {
+         restartResource();
+       }
+     });
+   }
+   ```
+
+4. ## Add Watcher to `server.toml`
+
+   Place `hotreload` at the top of your `resources` array so it initializes before your gamemode resources:
+
+   ```toml title="server.toml"
+   resources = [
+     'hotreload',
+     'my_resource'
+   ]
+   ```
+</Steps>
+
+---
+
+## Limitations
+
+- **New Folders:** Adding brand new resource folders still requires running `refresh` in the server console before starting them.
+- **Manifest Changes:** If you edit `resource.toml` itself (e.g. adding new assets to `file` or modifying `use_game_natives`), run `refresh` in the console so the server rescans metadata.
+- **Compiled Archives & Redscripts:** Game assets (`.archive` or `.redscripts`) loaded into REDengine at game startup cannot be reloaded while the game client is running; players must restart the game client to pick up modified game archives.

@@ -19,7 +19,7 @@ Defined in: peds.ts:30
 
 > **at**(`entity`): [`MpPed`](/reference/server/api/entities/peds/mpped/)
 
-Defined in: entities.ts:110
+Defined in: entities.ts:108
 
 Retrieves an entity by instance or ID.
 
@@ -93,7 +93,7 @@ Defined in: peds.ts:32
 
 > **exists**(`entity`): `boolean`
 
-Defined in: entities.ts:100
+Defined in: entities.ts:98
 
 Checks if an entity exists.
 

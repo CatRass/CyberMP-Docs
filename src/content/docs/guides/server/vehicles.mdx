@@ -1,0 +1,286 @@
+---
+title: Working with Vehicles
+description: Learn how to spawn, configure, manage seats, and handle vehicle events on the server side.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { SCRIPT_LANG_TAB_SYNC_KEY } from '../../../../lib/const';
+
+The server vehicle system allows you to manage cars, bikes, and other vehicles in Night City. You can spawn vehicles, track occupants across seats, inspect physical properties, monitor customization (such as CrystalCoat), and handle damage or weapon fire.
+
+In this guide, you will learn how to spawn vehicles, manage passengers, handle vehicle lifecycles, and clean up inactive entities.
+
+---
+
+## Spawning Vehicles
+
+Vehicles are spawned using the vehicle creation API. In Cyberpunk 2077, vehicle models and appearances are defined using REDengine hashes (TweakDBID for the vehicle record and CName for the visual appearance).
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    // 1. Resolve vehicle model and appearance hashes
+    const vehicleModel = mp.hashes.tweakdbid('Vehicle.v_sport1_quadra_turbo_r_player');
+    const vehicleAppearance = mp.hashes.cname('quadra_turbo_r__basic_player_01');
+
+    // 2. Spawn the vehicle in the game world
+    const car = mp.vehicles.create({
+      model: vehicleModel,
+      appearance: vehicleAppearance,
+      position: [-1392.6, 1271.5, 123.0],
+      yaw: 90.0,
+      health: 1000,
+      dimension: 0
+    });
+
+    console.log(`Spawned Quadra Turbo-R with Network ID: ${car.id}`);
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    -- 1. Resolve vehicle model and appearance hashes
+    local vehicleModel = mp.hashes.tweakdbid('Vehicle.v_sport1_quadra_turbo_r_player')
+    local vehicleAppearance = mp.hashes.cname('quadra_turbo_r__basic_player_01')
+
+    -- 2. Spawn the vehicle in the game world
+    local car = mp.vehicles.create({
+      model = vehicleModel,
+      appearance = vehicleAppearance,
+      position = {-1392.6, 1271.5, 123.0},
+      yaw = 90.0,
+      health = 1000,
+      dimension = 0
+    })
+
+    print(string.format("Spawned Quadra Turbo-R with Network ID: %s", car.id))
+    ```
+  </TabItem>
+</Tabs>
+
+:::tip
+Always use TweakDB IDs for vehicle model definitions and CNames for appearance skins.
+:::
+
+---
+
+## Querying and Iterating Vehicles
+
+You can check whether a vehicle exists and iterate over all active vehicles on the server:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    // Check if a vehicle ID exists
+    if (mp.vehicles.exists(vehicleId)) {
+      const veh = mp.vehicles.at(vehicleId);
+      console.log(`Vehicle #${veh.id} health: ${veh.health}`);
+    }
+
+    // Iterate over all active vehicles
+    const activeVehicles = mp.vehicles.toArray();
+    console.log(`Active vehicles count: ${activeVehicles.length}`);
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    -- Check if a vehicle ID exists
+    if mp.vehicles.exists(vehicleId) then
+      local veh = mp.vehicles.at(vehicleId)
+      print(string.format("Vehicle #%s health: %s", veh.id, veh.health))
+    end
+
+    -- Iterate over all active vehicles
+    local activeVehicles = mp.vehicles.toArray()
+    print(string.format("Active vehicles count: %s", #activeVehicles))
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Vehicle Properties & Physics
+
+Vehicle entities expose synchronized properties describing their state:
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| `id` | `number` | Unique network entity ID. |
+| `model` | `number` \| `bigint` | Hash of the vehicle model. |
+| `appearance` | `number` \| `bigint` | Hash of the vehicle appearance. |
+| `health` | `number` | Current health of the vehicle body. |
+| `position` | `[x, y, z]` | World coordinates array. |
+| `rotation` | `[pitch, roll, yaw]` | Orientation Euler angles array. |
+| `yaw` | `number` | Compass heading angle in degrees. |
+| `velocity` | `[x, y, z]` | Linear velocity vector. |
+| `angularVelocity` | `[x, y, z]` | Angular velocity vector. |
+| `dimension` | `number` | Virtual world dimension. |
+| `streamingRadius` | `number` | Entity streaming boundary distance. |
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    function logVehiclePhysics(vehicle) {
+      const [vx, vy, vz] = vehicle.velocity;
+      const speed = Math.sqrt(vx * vx + vy * vy + vz * vz) * 3.6; // convert m/s to km/h
+
+      console.log(`Vehicle #${vehicle.id} speed: ~${speed.toFixed(1)} km/h`);
+      console.log(`Position: [${vehicle.position.join(', ')}]`);
+    }
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    function logVehiclePhysics(vehicle)
+      local v = vehicle.velocity
+      local speed = math.sqrt(v[1] * v[1] + v[2] * v[2] + v[3] * v[3]) * 3.6 -- convert m/s to km/h
+
+      print(string.format("Vehicle #%s speed: ~%.1f km/h", vehicle.id, speed))
+      print(string.format("Position: [%s, %s, %s]", vehicle.position[1], vehicle.position[2], vehicle.position[3]))
+    end
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Managing Seats and Occupants
+
+CyberMP tracks passenger occupancy across seats:
+
+| Seat ID | Name | Description |
+| :--- | :--- | :--- |
+| `0` | Driver | Primary driver / steering wheel seat. |
+| `1` | Passenger | Front right passenger seat. |
+| `2` | RearLeft | Back left seat. |
+| `3` | RearRight | Back right seat. |
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    function checkOccupants(vehicle) {
+      // Check current driver
+      if (vehicle.seats.driver) {
+        console.log(`Driver: ${vehicle.seats.driver.nickname}`);
+      } else {
+        console.log('Vehicle has no driver.');
+      }
+
+      // Query by seat index (0 = Driver, 1 = Passenger, 2 = RearLeft, 3 = RearRight)
+      const rearPassenger = vehicle.getPlayerInSeat(2);
+
+      // Check who was last in a seat
+      const lastDriver = vehicle.getLastPlayerInSeat(0);
+      if (lastDriver) {
+        console.log(`Last driver was: ${lastDriver.nickname}`);
+      }
+    }
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    function checkOccupants(vehicle)
+      -- Check current driver
+      if vehicle.seats.driver then
+        print(string.format("Driver: %s", vehicle.seats.driver.nickname))
+      else
+        print("Vehicle has no driver.")
+      end
+
+      -- Query by seat index (0 = Driver, 1 = Passenger, 2 = RearLeft, 3 = RearRight)
+      local rearPassenger = vehicle:getPlayerInSeat(2)
+
+      -- Check who was last in a seat
+      local lastDriver = vehicle:getLastPlayerInSeat(0)
+      if lastDriver then
+        print(string.format("Last driver was: %s", lastDriver.nickname))
+      end
+    end
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Handling Vehicle Events
+
+Subscribe to vehicle platform events:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    // Player entered a vehicle seat
+    mp.events.on('playerEnterVehicle', (playerId, vehicleId, seat) => {
+      const player = mp.players.at(playerId);
+      console.log(`${player.nickname} entered seat #${seat} of Vehicle #${vehicleId}`);
+    });
+
+    // Player exited a vehicle
+    mp.events.on('playerExitVehicle', (playerId, vehicleId) => {
+      const player = mp.players.at(playerId);
+      console.log(`${player.nickname} exited Vehicle #${vehicleId}`);
+    });
+
+    // Vehicle customization changed (CrystalCoat)
+    mp.events.on('vehicleCustomizationChange', (playerId, data) => {
+      console.log(`Player ${playerId} modified vehicle customization.`);
+    });
+
+    // Vehicle destruction updated
+    mp.events.on('vehicleDestructionChange', (playerId, data) => {
+      console.log(`Vehicle destruction update from Player ${playerId}.`);
+    });
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    -- Player entered a vehicle seat
+    mp.events.on('playerEnterVehicle', function(playerId, vehicleId, seat)
+      local player = mp.players.at(playerId)
+      print(string.format("%s entered seat #%s of Vehicle #%s", player.nickname, seat, vehicleId))
+    end)
+
+    -- Player exited a vehicle
+    mp.events.on('playerExitVehicle', function(playerId, vehicleId)
+      local player = mp.players.at(playerId)
+      print(string.format("%s exited Vehicle #%s", player.nickname, vehicleId))
+    end)
+
+    -- Vehicle customization changed (CrystalCoat)
+    mp.events.on('vehicleCustomizationChange', function(playerId, data)
+      print(string.format("Player %s modified vehicle customization.", playerId))
+    end)
+
+    -- Vehicle destruction updated
+    mp.events.on('vehicleDestructionChange', function(playerId, data)
+      print(string.format("Vehicle destruction update from Player %s.", playerId))
+    end)
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Destroying and Cleaning Up Vehicles
+
+To remove vehicles that are no longer in use, call `destroy` on the vehicle or use `mp.vehicles.destroy`:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    // Option 1: Destroy via the vehicle instance
+    vehicle.destroy();
+
+    // Option 2: Destroy via ID
+    mp.vehicles.destroy(vehicleId);
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    -- Option 1: Destroy via the vehicle instance
+    vehicle:destroy()
+
+    -- Option 2: Destroy via ID
+    mp.vehicles.destroy(vehicleId)
+    ```
+  </TabItem>
+</Tabs>

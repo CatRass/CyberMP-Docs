@@ -1,0 +1,149 @@
+---
+title: Setting Up TypeScript
+description: Learn how to configure type safety for CyberMP server, client, and CEF browser scripts using official type definition packages.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+While CyberMP executes standard JavaScript and Lua at runtime, using TypeScript during development provides autocompletion, type checking, and compile-time validation for network events, entity properties, and REDengine classes.
+
+In this guide, you will learn how to install official type definitions, configure scoped `tsconfig` files, and compile your code for production.
+
+---
+
+## Official Type Packages
+
+Install the official definitions corresponding to each execution environment:
+
+| Package | Environment | Injected Global |
+| :--- | :--- | :--- |
+| [`@cybermp/server-types`](https://www.npmjs.com/package/@cybermp/server-types) | Server resources | `mp: MpServer` |
+| [`@cybermp/client-types`](https://www.npmjs.com/package/@cybermp/client-types) | Game client resources | `mp: MpClient` |
+| [`@cybermp/browser-types`](https://www.npmjs.com/package/@cybermp/browser-types) | CEF web pages | `mp: MpBrowser` |
+
+Install them as development dependencies in your project root:
+
+```bash
+npm install -D @cybermp/server-types @cybermp/client-types @cybermp/browser-types @types/node typescript
+```
+
+---
+
+## Global Type Declarations
+
+Because CyberMP injects the `mp` object into the global execution context, create declaration files (`.d.ts`) to let the TypeScript compiler know which type interface applies to which file:
+
+<Tabs>
+  <TabItem label="Server Declaration">
+    ```ts title="src/types/server-env.d.ts"
+    import type { MpServer } from '@cybermp/server-types';
+
+    declare global {
+      const mp: MpServer;
+    }
+
+    export {};
+    ```
+  </TabItem>
+  <TabItem label="Client Declaration">
+    ```ts title="src/types/client-env.d.ts"
+    import type { MpClient } from '@cybermp/client-types';
+
+    declare global {
+      const mp: MpClient;
+    }
+
+    export {};
+    ```
+  </TabItem>
+  <TabItem label="Browser (CEF) Declaration">
+    ```ts title="src/types/browser-env.d.ts"
+    import type { MpBrowser } from '@cybermp/browser-types';
+
+    declare global {
+      const mp: MpBrowser;
+    }
+
+    export {};
+    ```
+  </TabItem>
+</Tabs>
+
+:::important[Separate Declarations]
+Never include `@cybermp/server-types` and `@cybermp/client-types` inside the same compilation scope. Server scripts have access to `mp.players.create`, while client scripts have access to `mp.game` and `mp.cef`. Combining them causes type collisions.
+:::
+
+---
+
+## Configuring `tsconfig.json`
+
+Set up separate tsconfig files for server and client directories:
+
+### Server Configuration
+
+```json title="tsconfig.server.json"
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "skipLibCheck": true,
+    "types": ["node"]
+  },
+  "include": [
+    "src/server/**/*.ts",
+    "src/types/server-env.d.ts"
+  ]
+}
+```
+
+### Client Configuration
+
+```json title="tsconfig.client.json"
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "skipLibCheck": true,
+    "lib": ["ESNext", "DOM"]
+  },
+  "include": [
+    "src/client/**/*.ts",
+    "src/types/client-env.d.ts"
+  ]
+}
+```
+
+---
+
+## Accessing REDengine Types
+
+Client-side game classes (such as `PlayerPuppet`, `VehicleObject`, `SettingsMainGameController`) can be imported directly from the `/game` export of `@cybermp/client-types`:
+
+```ts title="src/client/main.ts"
+import type { PlayerPuppet } from '@cybermp/client-types/game';
+
+mp.game.onceGameLoaded(() => {
+  const player = mp.game.GetPlayer() as PlayerPuppet;
+  console.log(`Player Entity ID: ${player.GetEntityID()}`);
+});
+```
+
+---
+
+## Building for Production
+
+CyberMP runs JavaScript files referenced in `resource.toml` (`client_script = 'dist/client.js'`, `server_script = 'dist/server.js'`). Use a bundler such as `esbuild`, `tsdown`, or `bun` to compile your TypeScript sources into bundled JavaScript files.
+
+Example build script using `esbuild`:
+
+```bash
+# Compile server script
+npx esbuild src/server/main.ts --bundle --platform=node --outfile=resources/my_resource/dist/server.js
+
+# Compile client script
+npx esbuild src/client/main.ts --bundle --platform=neutral --outfile=resources/my_resource/dist/client.js
+```

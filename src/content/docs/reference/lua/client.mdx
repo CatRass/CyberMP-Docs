@@ -1,0 +1,189 @@
+---
+title: Client Lua API Reference
+description: Authoritative reference for the CyberMP Client Lua API, covering client events, local spawn, network mapping, CEF, and the CET game native layer.
+---
+
+The client-side Lua API runs within the game process. It provides interfaces for local and network events, CEF browser integration, local entity spawning, and full access to REDengine through the Cyber Engine Tweaks (CET) layer.
+
+---
+
+## Client Events (`mp.events`)
+
+The client event dispatcher handles communication across three distinct layers: local scripts, the server, and the CEF browser.
+
+### Registration Methods
+
+| Method | Context | Description |
+| :--- | :--- | :--- |
+| `mp.events.add(name, fn)` | Local | Listens for built-in platform events and local signals. |
+| `mp.events.addServer(name, fn)` | Server → Client | Listens for network broadcasts sent by the server via `triggerClient`. |
+| `mp.events.addCef(name, fn)` | CEF → Client | Listens for events emitted by the embedded HTML UI page. |
+| `mp.events.trigger(name, ...)` | Local | Emits an event within the local client script. |
+| `mp.events.triggerServer(name, ...)` | Client → Server | Sends a reliable network packet to the server (`mp.events.addClient`). |
+| `mp.events.triggerUnreliable(name, bps, ...)` | Client → Server | Sends an unreliable UDP packet (ideal for high-frequency input streams). |
+| `mp.events.triggerCef(name, ...)` | Client → CEF | Forwards an event packet into the active CEF web page. |
+| `mp.events.remove(token)` | Any | Unregisters an active listener token returned by `add*`. |
+
+### Client Platform Events
+
+| Event Name | Parameters | Description |
+| :--- | :--- | :--- |
+| `resourceStart` | `()` | Triggered when the client script finishes parsing. |
+| `resourceStop` | `()` | Triggered immediately before the resource is unloaded. |
+| `vehicleStreamIn` | `(netID, gameID)` | Synchronized vehicle entered streaming range. |
+| `vehicleStreamOut` | `(netID, gameID)` | Synchronized vehicle left streaming range. |
+| `remotePlayerStreamIn` | `(netID, gameID)` | Another player character entered streaming range. |
+| `remotePlayerStreamOut` | `(netID, gameID)` | Another player character left streaming range. |
+| `objectStreamIn` | `(netID, gameID)` | Synchronized world object entered streaming range. |
+| `pedStreamIn` | `(netID, gameID)` | Synchronized ped NPC entered streaming range. |
+| `pickupStreamIn` | `(netID, gameID)` | Synchronized collectible item entered streaming range. |
+| `doorStreamIn` | `(netID, gameID)` | Synchronized door entered streaming range. |
+| `domReady` | `(frameName)` | CEF browser window completed DOM construction. |
+| `loadingFailed` | `(error)` | CEF browser encountered a render or load failure. |
+
+---
+
+## Local Entities (`mp.client`)
+
+Spawn entities visible **only** to the local player. Ideal for preview vehicles, cutscene dummies, and client-side checkpoints:
+
+| Method | Return Type | Description |
+| :--- | :--- | :--- |
+| `mp.client.spawnPlayer(x, y, z, yaw)` | `boolean` | Initiates spawning of the local player character. |
+| `mp.client.spawnVehicle(model, app, x, y, z, roll, pitch, yaw, streaming)` | `number` | Spawns a client-only vehicle and returns its handle. |
+| `mp.client.spawnPed(model, app, x, y, z, yaw, streaming)` | `number` | Spawns a client-only ped and returns its handle. |
+| `mp.client.spawnObject(model, app, x, y, z, roll, pitch, yaw, streaming)` | `number` | Spawns a client-only prop and returns its handle. |
+| `mp.client.despawnVehicle(handle)` | `boolean` | Removes a client-only vehicle. |
+| `mp.client.despawnPed(handle)` | `boolean` | Removes a client-only ped. |
+| `mp.client.despawnObject(handle)` | `boolean` | Removes a client-only object. |
+
+```lua title="client.lua"
+-- Hashes must be passed as integers (convert from decimal strings)
+local model = tonumber(mp.hashes.toTweakdbid('Vehicle.v_standard2_archer_hella'), 10)
+local app = tonumber(mp.hashes.toCname('default'), 10)
+
+local handle = mp.client.spawnVehicle(model, app, -1392.6, 1271.5, 123.0, 0, 0, 90, true)
+mp.client.despawnVehicle(handle)
+```
+
+---
+
+## Network Mapping (`mp.network`)
+
+Translates between multiplayer network IDs (`netId`) and internal REDengine game handles (`gameId` / `EntityID`):
+
+| Method | Context |
+| :--- | :--- |
+| `mp.network.getVehicleGameId(netId)` / `getVehicleId(gameId)` | Vehicles |
+| `mp.network.getPlayerGameId(netId)` / `getPlayerId(gameId)` | Remote Players |
+| `mp.network.getPedGameId(netId)` / `getPedId(gameId)` | Ped NPCs |
+| `mp.network.getObjectGameId(netId)` / `getObjectId(gameId)` | World Objects |
+| `mp.network.getLocalPlayerId()` | Local player network ID |
+| `mp.network.getStreamedPlayers()` | Table of `gameId`s for all remote players in range |
+| `mp.network.getStreamedPool(poolName)` | Returns streamed entities in `'CVehicle'`, `'CPed'`, `'CObject'`, `'CPickup'` |
+| `mp.getServerAddress()` | Connected server endpoint (`ip:port`) |
+
+---
+
+## Embedded Browser (`mp.cef`)
+
+Controls the Chromium Embedded Framework overlay:
+
+```lua title="client.lua"
+-- Load entry HTML page
+mp.cef.setUrl('./ui/index.html')
+
+-- Toggle input capture: mp.cef.setFocus(keyboardFocus, mouseCursor)
+mp.cef.setFocus(true, true)
+
+-- Check focus status
+local hasFocus = mp.cef.isInFocus()
+```
+
+---
+
+## Local Storage (`mp.localStorage`)
+
+Key-value persistent storage saved on the user's local machine:
+
+```lua title="client.lua"
+mp.localStorage.set('hud_color', '#00f0ff')
+local color = mp.localStorage.get('hud_color')
+mp.localStorage.remove('hud_color')
+mp.localStorage.clear()
+```
+
+---
+
+## Discord Integration (`mp.discord`)
+
+```lua title="client.lua"
+-- Update Rich Presence
+mp.discord.setActivity({
+  state = "Exploring Pacifica",
+  details = "Combat Zone Infiltration"
+})
+
+-- Clear presence
+mp.discord.clearActivity()
+
+-- OAuth2 authorization code
+local code = mp.discord.getOAuth2Code('APP_ID', '["identify"]')
+```
+
+---
+
+## Per-Frame Tick Loop
+
+`mp.onUpdateLoop(fn)` registers a function that runs on every render frame. Keep the execution lightweight:
+
+```lua title="client.lua"
+local enabled = true
+
+mp.onUpdateLoop(function()
+  if not enabled then return end
+  -- Frame calculations
+end)
+```
+
+---
+
+## CET Game Layer (`use_game_natives = true`)
+
+When `use_game_natives = true` is set in `resource.toml`, the client runtime injects the Cyber Engine Tweaks (CET) environment:
+
+### Global Classes & Constructors
+- `Game`: Accesses the game engine singleton and systems (`Game.GetPlayer()`, `Game.GetStatsSystem()`, `Game.GetTeleportationFacility()`).
+- `NewObject(className)`: Instantiates a REDengine class.
+- `GetSingleton(className)`: Retrieves an engine singleton.
+- `Vector4.new(x, y, z, w)`: Creates a 4D spatial coordinate struct.
+- `EulerAngles.new(pitch, roll, yaw)`: Creates an orientation rotation struct.
+- `ToCName(str)`, `ToTweakDBID(str)`, `ToItemID(str)`: Explicit hash conversion helpers.
+
+### Game Lifecycle Stages
+Register callbacks for engine startup phases using `mp.registerGameState(stage, fn)`:
+
+| Stage | Trigger Timing |
+| :--- | :--- |
+| `'onTweak'` | TweakDB database ready for modification. |
+| `'onInit'` | Game engine core runtime initialized; game classes bound. |
+| `'onGameLoaded'` | 3D world loaded; safe to query player puppets and spawn. |
+| `'onceGameLoaded'` | Triggers only once on initial world entry. |
+| `'onUpdate'` | Triggers on every tick after `onInit` (receives delta time `dt`). |
+| `'onInputKeyEvent'` | Triggers on keyboard/mouse input events (receives `action, key`). |
+
+Stage check methods: `mp.isOnTweakCalled()`, `mp.isOnInitCalled()`, `mp.isOnGameLoadedCalled()`.
+
+### Method Hooks (Observe & Override)
+- **`mp.observe(className, methodName, callback)`**: Non-intrusive method listener.
+- **`mp.observeBefore` / `mp.observeAfter`**: Controls before/after capture points.
+- **`mp.observeRaw` / `mp.observeBeforeRaw` / `mp.observeAfterRaw`**: Immediate dispatching without tick queuing.
+- **`mp.override(className, methodName, callback)`**: Intercepts method calls. Callback receives `(self, arg1, ..., wrappedMethod)` and must return the expected value.
+
+### TweakDB Database
+```lua title="client.lua"
+mp.registerGameState('onTweak', function()
+  TweakDB:SetFlat('Items.Preset_Nue_Default.damage', 150)
+  TweakDB:UpdateRecord('Items.Preset_Nue_Default')
+end)
+```

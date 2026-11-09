@@ -1,0 +1,80 @@
+---
+title: Lua Scripting Overview
+description: Architecture of the CyberMP Lua runtime, resource manifests, built-in standard libraries, require behavior, and vector types.
+---
+
+CyberMP embeds a high-performance Lua runtime on both the server and client. Each active resource runs within its own isolated Lua state with independent global variables, providing a lightweight alternative to JavaScript for gameplay scripting.
+
+In this reference, you will learn how the Lua runtime operates, how manifests are configured, available standard libraries, and built-in vector math types.
+
+---
+
+## Resource Manifest (`resource.toml`)
+
+To use Lua, specify `.lua` script entry points in your `resource.toml`:
+
+```toml title="resource.toml"
+server_script = 'server.lua'
+client_script = ['utils.lua', 'client.lua']
+shared_script = 'shared.lua'
+
+# Optional: Enable game native classes (CET layer) on the client
+use_game_natives = true
+
+# Optional: Export functions to other resources
+export = ['calculateReward']
+```
+
+### Execution Order & Shared Scopes
+- **Execution Sequence**: For a given side, `shared_script` runs first, followed by `server_script` on the server or `client_script` on the client.
+- **Shared Globals**: All Lua files within the same resource share the same global environment (`_G`). Variables and functions defined in `utils.lua` are immediately accessible in `client.lua`.
+- **Encryption**: Client scripts and shared scripts are encrypted by the server for network transfer and decrypted on the client before execution.
+
+---
+
+## Standard & Utility Libraries
+
+The CyberMP Lua runtime includes standard language libraries alongside high-speed JSON and MessagePack serializers:
+
+| Library | Server | Client | Functions & Notes |
+| :--- | :--- | :--- | :--- |
+| `base`, `table`, `string`, `math`, `utf8` | **Yes** | **Yes** | Standard Lua 5.4 features. |
+| `coroutine`, `debug` | **Yes** | **Yes** | Coroutine scheduling and traceback utilities. |
+| `json` | **Yes** | **Yes** | `json.encode(table)`, `json.decode(string)`. |
+| `msgpack` | **Yes** | **Yes** | `msgpack.pack(value)`, `msgpack.unpack(buffer)`. |
+| `io`, `os` | **Yes** | Limited | Client `os` is limited to `clock`, `date`, `difftime`, `time`. Full `io` requires `use_game_natives = true`. |
+| `dofile`, `loadfile` | No | No | Sandboxed / removed for security. |
+
+### Logging
+- `print(...)`: Prints values to the console with the resource name tag.
+- `mp.log(text)`: Writes raw text without appending a trailing newline.
+- `mp.isServer()`: Returns `true` when running on the server, `false` on the client.
+
+---
+
+## Module Resolution (`require`)
+
+- **On the Server**: `require('lib/math_utils')` loads `lib/math_utils.lua` relative to the resource root folder. Unlike standard Lua, dots in the path are not converted to slashes.
+- **On the Client**: `require` does not resolve local filesystem files. Instead, list all dependent scripts in the `client_script` array inside `resource.toml` in the order they should execute.
+
+---
+
+## Built-In Vector Structs
+
+The Lua runtime features built-in vector types. Components are stored as 32-bit floating-point numbers:
+
+```lua title="shared.lua"
+-- 2D Vector: vector2(x, y)
+local v2 = vector2(100.0, 200.0)
+print(v2.x, v2.y)
+
+-- 3D Vector: vector3(x, y, z)
+local v3 = vector3(-1392.6, 1271.5, 123.0)
+print(v3.x, v3.y, v3.z)
+
+-- 4D Vector: vector4(x, y, z, w)
+local v4 = vector4(0.0, 0.0, 0.0, 1.0)
+print(v4.x, v4.y, v4.z, v4.w)
+```
+
+All entity positions, rotations, and velocities returned by `mp.players`, `mp.vehicles`, and world entity pools are instances of `vector3`.

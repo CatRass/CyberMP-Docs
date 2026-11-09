@@ -1,0 +1,391 @@
+---
+title: Creating Commands
+description: Learn how to register server commands, handle execution from both the server terminal and client F8 console, parse arguments, and manage permissions.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { SCRIPT_LANG_TAB_SYNC_KEY } from '../../../../lib/const';
+
+The server-side command system allows both server operators and connected players to execute actions via a console interface, invoked through either:
+
+1. **The Server Terminal / Console**: Directly executed by server administrators in the server console window (e.g., `kick 1 Afk`).
+2. **The Client Developer Console (F8)**: Invoked by connected players using the in-game F8 console overlay (e.g., `veh`, `tp 100 200 50`).
+
+In this guide, you will learn how to register commands, handle execution contexts (distinguishing between the server terminal and a player), validate arguments, and structure moderation tools in JavaScript and Lua.
+
+---
+
+## Registering a Command
+
+To register a command on the server, use `mp.commands.add`. Command names are plain strings without any slashes:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    mp.commands.add('ping', (player, args) => {
+      if (player) {
+        // Invoked by a player in the client F8 console
+        player.emit('chat:addMessage', `Pong! Latency: ${player.ping}ms.`);
+      } else {
+        // Invoked in the server terminal
+        console.log('[Server Console] Pong! Server is running.');
+      }
+    });
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    mp.commands.add('ping', function(player, args)
+      if player then
+        -- Invoked by a player in the client F8 console
+        player:emit('chat:addMessage', string.format("Pong! Latency: %sms.", player.ping))
+      else
+        -- Invoked in the server terminal
+        print('[Server Console] Pong! Server is running.')
+      end
+    end)
+    ```
+  </TabItem>
+</Tabs>
+
+### The Callback Arguments
+
+The command handler callback receives two parameters:
+- **`player`**:
+  - When invoked by a player via the **client F8 console**, this parameter is an [`MpPlayer`](/reference/server/api/entities/players/mpplayer/) instance representing the invoking player.
+  - When typed directly into the **server terminal**, this parameter is `null` (or `nil` in Lua).
+- **`args`**: An array / table of whitespace-delimited arguments passed after the command name.
+
+:::caution[Handling `player === null`]
+Because commands can be triggered from the server terminal, `player` will be `null` whenever a server operator runs the command. Never assume `player` is always an object; accessing `player.position` or `player.emit` without first checking `if (player)` will throw a runtime error when executed from the server terminal.
+:::
+
+---
+
+## Parsing and Validating Arguments
+
+Arguments arrive as raw strings inside `args`. When designing commands that require player context (such as modifying health or teleporting), guard the handler by ensuring `player` is valid first:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    // Invocation (F8 console): sethealth 500
+    mp.commands.add('sethealth', (player, args) => {
+      // Reject execution from the server terminal where there is no player entity
+      if (!player) {
+        console.log('[Command] sethealth can only be executed by a player in-game.');
+        return;
+      }
+
+      if (!args[0]) {
+        player.emit('chat:addMessage', 'Usage: sethealth <amount>');
+        return;
+      }
+
+      const amount = parseInt(args[0], 10);
+      if (Number.isNaN(amount) || amount < 0 || amount > 1000) {
+        player.emit('chat:addMessage', 'Error: Health must be between 0 and 1000.');
+        return;
+      }
+
+      player.emit('player:setHealth', amount);
+      player.emit('chat:addMessage', `Your health was updated to ${amount} HP.`);
+    });
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    -- Invocation (F8 console): sethealth 500
+    mp.commands.add('sethealth', function(player, args)
+      -- Reject execution from the server terminal where there is no player entity
+      if not player then
+        print('[Command] sethealth can only be executed by a player in-game.')
+        return
+      end
+
+      if not args[1] then
+        player:emit('chat:addMessage', 'Usage: sethealth <amount>')
+        return
+      end
+
+      local amount = tonumber(args[1])
+      if not amount or amount < 0 or amount > 1000 then
+        player:emit('chat:addMessage', 'Error: Health must be between 0 and 1000.')
+        return
+      end
+
+      player:emit('player:setHealth', amount)
+      player:emit('chat:addMessage', string.format("Your health was updated to %s HP.", amount))
+    end)
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Practical Command Examples
+
+### 1. Spawning a Vehicle (`veh`)
+
+This command requires player coordinates to position the new vehicle, so it verifies `player` exists before proceeding:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    // Invocation (F8 console): veh [model] [appearance]
+    mp.commands.add('veh', (player, args) => {
+      if (!player) {
+        console.log('[Command] veh can only be executed by a player in-game.');
+        return;
+      }
+
+      const modelName = args[0] || 'Vehicle.v_sport1_quadra_turbo_r_player';
+      const appearanceName = args[1] || 'quadra_turbo_r__basic_player_01';
+
+      try {
+        const modelHash = mp.hashes.tweakdbid(modelName);
+        const appearanceHash = mp.hashes.cname(appearanceName);
+
+        const [x, y, z] = player.position;
+        const rad = (player.yaw * Math.PI) / 180;
+        const spawnX = x + Math.sin(-rad) * 4;
+        const spawnY = y + Math.cos(-rad) * 4;
+
+        const vehicle = mp.vehicles.create({
+          model: modelHash,
+          appearance: appearanceHash,
+          position: [spawnX, spawnY, z],
+          yaw: player.yaw,
+          dimension: player.dimension,
+        });
+
+        player.emit('chat:addMessage', `Spawned vehicle #${vehicle.id} (${modelName}).`);
+      } catch (error) {
+        player.emit('chat:addMessage', `Failed to spawn vehicle: ${error.message}`);
+      }
+    });
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    -- Invocation (F8 console): veh [model] [appearance]
+    mp.commands.add('veh', function(player, args)
+      if not player then
+        print('[Command] veh can only be executed by a player in-game.')
+        return
+      end
+
+      local modelName = args[1] or 'Vehicle.v_sport1_quadra_turbo_r_player'
+      local appearanceName = args[2] or 'quadra_turbo_r__basic_player_01'
+
+      local modelHash = mp.hashes.tweakdbid(modelName)
+      local appearanceHash = mp.hashes.cname(appearanceName)
+
+      local pos = player.position
+      local rad = math.rad(player.yaw)
+      local spawnX = pos[1] + math.sin(-rad) * 4
+      local spawnY = pos[2] + math.cos(-rad) * 4
+
+      local vehicle = mp.vehicles.create({
+        model = modelHash,
+        appearance = appearanceHash,
+        position = {spawnX, spawnY, pos[3]},
+        yaw = player.yaw,
+        dimension = player.dimension,
+      })
+
+      player:emit('chat:addMessage', string.format("Spawned vehicle #%s (%s).", vehicle.id, modelName))
+    end)
+    ```
+  </TabItem>
+</Tabs>
+
+### 2. Teleporting to Coordinates or Players (`tp`, `goto`)
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    // Invocation (F8 console): tp <x> <y> <z>
+    mp.commands.add('tp', (player, args) => {
+      if (!player) {
+        console.log('[Command] tp can only be executed by a player in-game.');
+        return;
+      }
+
+      if (args.length < 3) {
+        player.emit('chat:addMessage', 'Usage: tp <x> <y> <z>');
+        return;
+      }
+
+      const [x, y, z] = args.map(Number);
+      if (Number.isNaN(x) || Number.isNaN(y) || Number.isNaN(z)) {
+        player.emit('chat:addMessage', 'Error: Invalid coordinates provided.');
+        return;
+      }
+
+      player.emit('player:teleport', x, y, z);
+      player.emit('chat:addMessage', `Teleported to [${x}, ${y}, ${z}].`);
+    });
+
+    // Invocation (F8 console): goto <playerId>
+    mp.commands.add('goto', (player, args) => {
+      if (!player) {
+        console.log('[Command] goto can only be executed by a player in-game.');
+        return;
+      }
+
+      const targetId = parseInt(args[0], 10);
+      if (!mp.players.exists(targetId)) {
+        player.emit('chat:addMessage', `Player ID #${targetId} not found.`);
+        return;
+      }
+
+      const target = mp.players.at(targetId);
+      const [tx, ty, tz] = target.position;
+
+      player.dimension = target.dimension;
+      player.emit('player:teleport', tx + 1, ty + 1, tz);
+      player.emit('chat:addMessage', `Teleported to ${target.nickname}.`);
+    });
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    -- Invocation (F8 console): tp <x> <y> <z>
+    mp.commands.add('tp', function(player, args)
+      if not player then
+        print('[Command] tp can only be executed by a player in-game.')
+        return
+      end
+
+      if #args < 3 then
+        player:emit('chat:addMessage', 'Usage: tp <x> <y> <z>')
+        return
+      end
+
+      local x, y, z = tonumber(args[1]), tonumber(args[2]), tonumber(args[3])
+      if not x or not y or not z then
+        player:emit('chat:addMessage', 'Error: Invalid coordinates provided.')
+        return
+      end
+
+      player:emit('player:teleport', x, y, z)
+      player:emit('chat:addMessage', string.format("Teleported to [%s, %s, %s].", x, y, z))
+    end)
+
+    -- Invocation (F8 console): goto <playerId>
+    mp.commands.add('goto', function(player, args)
+      if not player then
+        print('[Command] goto can only be executed by a player in-game.')
+        return
+      end
+
+      local targetId = tonumber(args[1])
+      if not targetId or not mp.players.exists(targetId) then
+        player:emit('chat:addMessage', string.format("Player ID #%s not found.", tostring(args[1])))
+        return
+      end
+
+      local target = mp.players.at(targetId)
+      local pos = target.position
+
+      player.dimension = target.dimension
+      player:emit('player:teleport', pos[1] + 1, pos[2] + 1, pos[3])
+      player:emit('chat:addMessage', string.format("Teleported to %s.", target.nickname))
+    end)
+    ```
+  </TabItem>
+</Tabs>
+
+### 3. Dual-Context Moderation Command (`kick`)
+
+Unlike commands that require a physical player entity in the world, moderation commands can be invoked from **both** the server console (where `player` is `null`) and the client F8 console by authenticated administrators:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="server.js"
+    // Invocation: kick <playerId> [reason...]
+    mp.commands.add('kick', (player, args) => {
+      // If invoked by a player via F8 console, verify admin permissions
+      if (player && !player.getMeta('isAdmin')) {
+        player.emit('chat:addMessage', 'Error: Access denied.');
+        return;
+      }
+
+      const targetId = parseInt(args[0], 10);
+      if (Number.isNaN(targetId) || !mp.players.exists(targetId)) {
+        const errorMsg = `Player ID #${args[0]} not found. Usage: kick <playerId> [reason...]`;
+        if (player) {
+          player.emit('chat:addMessage', errorMsg);
+        } else {
+          console.log(`[Command] ${errorMsg}`);
+        }
+        return;
+      }
+
+      const targetPlayer = mp.players.at(targetId);
+      const reason = args.slice(1).join(' ') || 'Kicked by administrator';
+      const senderName = player ? player.nickname : 'Server Console';
+
+      // Broadcast kick notice to all online players
+      mp.players.toArray().forEach((p) => {
+        p.emit('chat:addMessage', `[Kick] ${targetPlayer.nickname} was kicked by ${senderName} (${reason})`);
+      });
+
+      console.log(`[Kick] ${targetPlayer.nickname} was kicked by ${senderName} (${reason})`);
+      targetPlayer.kick(reason);
+    });
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="server.lua"
+    -- Invocation: kick <playerId> [reason...]
+    mp.commands.add('kick', function(player, args)
+      -- If invoked by a player via F8 console, verify admin permissions
+      if player and not player:getMeta('isAdmin') then
+        player:emit('chat:addMessage', 'Error: Access denied.')
+        return
+      end
+
+      local targetId = tonumber(args[1])
+      if not targetId or not mp.players.exists(targetId) then
+        local errorMsg = string.format("Player ID #%s not found. Usage: kick <playerId> [reason...]", tostring(args[1]))
+        if player then
+          player:emit('chat:addMessage', errorMsg)
+        else
+          print(string.format("[Command] %s", errorMsg))
+        end
+        return
+      end
+
+      local targetPlayer = mp.players.at(targetId)
+      local reasonParts = {}
+      for i = 2, #args do
+        table.insert(reasonParts, args[i])
+      end
+      local reason = #reasonParts > 0 and table.concat(reasonParts, ' ') or 'Kicked by administrator'
+      local senderName = player and player.nickname or 'Server Console'
+
+      -- Broadcast kick notice to all online players
+      for _, p in ipairs(mp.players.toArray()) do
+        p:emit('chat:addMessage', string.format("[Kick] %s was kicked by %s (%s)", targetPlayer.nickname, senderName, reason))
+      end
+
+      print(string.format("[Kick] %s was kicked by %s (%s)", targetPlayer.nickname, senderName, reason))
+      targetPlayer:kick(reason)
+    end)
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Best Practices
+
+:::tip
+1. **Always check whether `player` exists:** If a command is entered in the server terminal, `player` will be `null` (`nil` in Lua). If the command requires a player instance, guard against `null` early.
+2. **Support dual contexts when possible:** Administrative and utility commands (such as kicking, stopping resources, or broadcasting) can often be written to work cleanly from both the server terminal and player console.
+3. **Never trust client arguments:** Parse numbers explicitly with validation checks (`Number.isNaN`, `tonumber`, boundary checks).
+4. **Always verify entity existence:** Check `mp.players.exists(id)` or `mp.vehicles.exists(id)` before retrieving and manipulating entities.
+5. **Register command names in lowercase:** Keeps input intuitive and consistent across both the server terminal and F8 client console.
+:::

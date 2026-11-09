@@ -1,0 +1,160 @@
+---
+title: Working with Game Natives
+description: Authoritative guide to calling REDengine classes, game systems, and native methods from JavaScript and Lua client scripts.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { SCRIPT_LANG_TAB_SYNC_KEY } from '../../../../lib/const';
+
+In CyberMP, client-side scripts can directly invoke underlying REDengine C++ systems and REDscript classes: query the player puppet, modify stats, teleport characters, modify TweakDB records, and install method hooks.
+
+In this guide, you will learn how native access is enabled, how to call game systems in JavaScript and Lua, and essential bridge rules.
+
+:::important[Required Manifest Setting]
+To access game natives, you **must** enable `use_game_natives` in your `resource.toml`. Without this flag, native bindings remain inactive:
+```toml title="resource.toml"
+client_script = 'client.js' # or 'client.lua'
+use_game_natives = true
+```
+:::
+
+---
+
+## NativeDB Reference
+
+All REDengine classes, methods, fields, and enums are indexed on [NativeDB](https://nativedb.red4ext.com/). Names in NativeDB match the exact names you call from client scripts.
+
+---
+
+## Accessing Game Systems & The Player
+
+Always wait until the world is loaded before invoking native methods. Access systems through `mp.game` in JavaScript, or the global `Game` object in Lua:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="client.js"
+    mp.game.onceGameLoaded(() => {
+      // Access the local player puppet
+      const player = mp.game.GetPlayer();
+      const entityId = player.GetEntityID();
+      console.log('Player Entity ID:', entityId);
+
+      // Access engine systems through ScriptGameInstance
+      const statsSystem = mp.game.ScriptGameInstance.GetStatsSystem();
+      const statPoolsSystem = mp.game.ScriptGameInstance.GetStatPoolsSystem();
+      const teleportFacility = mp.game.ScriptGameInstance.GetTeleportationFacility();
+      const multiplayerSystem = mp.game.ScriptGameInstance.GetMultiplayerSystem();
+    });
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="client.lua"
+    mp.registerGameState('onGameLoaded', function()
+      -- Access the local player puppet
+      local player = Game.GetPlayer()
+      local entityId = player:GetEntityID()
+      print("Player Entity ID:", entityId)
+
+      -- Access engine systems directly through Game
+      local statsSystem = Game.GetStatsSystem()
+      local statPoolsSystem = Game.GetStatPoolsSystem()
+      local teleportFacility = Game.GetTeleportationFacility()
+      local multiplayerSystem = Game.GetMultiplayerSystem()
+    end)
+    ```
+  </TabItem>
+</Tabs>
+
+:::tip[Lua Method Invocation]
+In Lua, methods on game objects are called using colon syntax (e.g. `player:GetEntityID()`), while global system getters use dot syntax (e.g. `Game.GetStatsSystem()`).
+:::
+
+---
+
+## Handling Hashes at Runtime
+
+REDengine identifies assets, appearances, and database records using 64-bit numerical hashes (`TweakDBID`, `CName`, `ResRef`).
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="client.js"
+    // Convert string names to REDengine hashes
+    const itemHash = mp.game.hashes.toTweakdbid('Items.Preset_Nue_Default');
+    const appHash = mp.game.hashes.toCname('default');
+    const resourceHash = mp.game.hashes.toResref('base\\characters\\main_npc\\jackie.ent');
+
+    // Reverse lookup (hashes to string names)
+    const itemName = mp.game.hashes.fromTweakdbid(itemHash);
+    const appName = mp.game.hashes.fromCname(appHash);
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="client.lua"
+    -- Convert string names to REDengine hashes (returns decimal string)
+    local itemHash = mp.hashes.toTweakdbid('Items.Preset_Nue_Default')
+    local appHash = mp.hashes.toCname('default')
+    local resourceHash = mp.hashes.toResref('base\\characters\\main_npc\\jackie.ent')
+
+    -- Reverse lookup (hashes to string names)
+    local itemName = mp.hashes.fromTweakdbid(itemHash)
+    local appName = mp.hashes.fromCname(appHash)
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Bridge Gotchas & Rules
+
+### 1. Vector Structs as Objects in JavaScript
+When calling native methods that accept spatial coordinates (such as UI translations, rotations, or transforms on `inkWidget`), the JavaScript bridge expects an object with `{ x, y }` or `{ x, y, z }` properties rather than multiple numeric parameters:
+
+```js title="client.js"
+// Incorrect (Ignored by the bridge)
+widget.SetAnchorPoint(0.5, 0.5);
+
+// Correct (Pass vector as object)
+widget.SetAnchorPoint({ x: 0.5, y: 0.5 });
+widget.SetTranslation({ x: 100, y: 250 });
+```
+
+In Lua, instantiate explicit engine struct types:
+```lua title="client.lua"
+local pos = Vector4.new(x, y, z, 1.0)
+local rot = EulerAngles.new(pitch, roll, yaw)
+```
+
+### 2. Handling Engine `Variant` Boxes
+Certain game methods accept or return generic REDengine `Variant` containers. Convert them at the bridge boundary:
+
+```js title="client.js"
+// Box a JavaScript object into a REDengine Variant
+const variantBox = mp.game.toVariant({ x: 10, y: 20, z: 30 }, 'Vector3');
+
+// Unbox a REDengine Variant into a plain JavaScript value
+const plainValue = mp.game.fromVariant(variantBox);
+```
+
+### 3. TweakDB Records
+To modify game stats, item parameters, or vehicle handling at runtime, read and write records after the `onTweak` stage:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="client.js"
+    mp.game.onTweak(() => {
+      // Modify flat values in TweakDB
+      mp.game.TweakDB.setFlat('Items.Preset_Nue_Default.damage', 150);
+      mp.game.TweakDB.updateRecord('Items.Preset_Nue_Default');
+    });
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="client.lua"
+    mp.registerGameState('onTweak', function()
+      -- Modify flat values in TweakDB
+      TweakDB:SetFlat('Items.Preset_Nue_Default.damage', 150)
+      TweakDB:UpdateRecord('Items.Preset_Nue_Default')
+    end)
+    ```
+  </TabItem>
+</Tabs>

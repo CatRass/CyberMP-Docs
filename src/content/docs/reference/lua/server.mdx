@@ -1,0 +1,236 @@
+---
+title: Server Lua API Reference
+description: Authoritative reference for the CyberMP Server Lua API, covering entity pools, entity objects, events, commands, resources, and utilities.
+---
+
+The server-side Lua API is exposed through the global `mp` table in `.lua` files running within `server_script` or `shared_script`.
+
+---
+
+## Entity Pools
+
+The server runtime provides five primary synchronized entity pools:
+- `mp.players`
+- `mp.vehicles`
+- `mp.objects`
+- `mp.peds`
+- `mp.pickups`
+
+### Common Pool Methods
+
+| Method | Return Type | Description |
+| :--- | :--- | :--- |
+| `pool.exists(id)` | `boolean` | Checks whether an entity with the specified network ID exists. |
+| `pool.at(id)` | `Entity` | Retrieves the entity object. Throws an error if the entity does not exist (always call `exists` first). |
+| `pool.toArray()` | `Entity[]` | Returns a table array containing all active entities in the pool. |
+| `pool.create(options)` | `Entity` | Spawns a new synchronized entity in the world (available on vehicles, objects, peds, pickups). |
+| `pool.destroy(idOrEntity)` | `boolean` | Despawns and removes the entity from the world. |
+| `mp.players.kick(playerOrId, reason)` | `boolean` | Disconnects the specified player. |
+
+```lua title="server.lua"
+-- Iterate over all connected players
+for _, player in ipairs(mp.players.toArray()) do
+  player:emit('chat:addMessage', 'Server announcement!')
+end
+
+-- Check existence before accessing
+if mp.vehicles.exists(vehicleId) then
+  local car = mp.vehicles.at(vehicleId)
+  car.dimension = 0
+end
+```
+
+---
+
+## Entity Objects
+
+An entity object is a table containing `{ id = <networkId> }` backed by a metatable that queries the C++ server core on property reads.
+
+### Shared Properties (All Entities)
+
+| Property | Type | Access | Description |
+| :--- | :--- | :--- | :--- |
+| `id` | `number` | Read-only | Unique network ID assigned to the entity. |
+| `type` | `number` | Read-only | Entity type enum: `1` Player, `2` Vehicle, `3` Object, `4` Ped, `5` Pickup, `6` Door, `0` Unknown. |
+| `exist` | `boolean` | Read-only | `true` while the entity remains active on the server. |
+| `position` | `vector3` | Read-only | Current coordinates in Night City. |
+| `rotation` | `vector3` | Read-only | Rotation vector: `x` roll, `y` pitch, `z` yaw. |
+| `yaw` | `number` | Read-only | Entity heading in degrees. |
+| `dimension` | `number` | Read / Write | Virtual world dimension index (`0` for default shared world). |
+| `streamingRadius` | `number` | Read / Write | Distance in meters at which clients stream this entity in. |
+| `owner` | `Player` / `number` | Read / Write | Player object of the network owner client (`-1` if unowned). Assignable for non-players. |
+| `firstOwner` | `Player` / `number` | Read-only | The initial network owner, or `-1`. |
+
+:::caution[Property Assignment]
+Only `dimension`, `streamingRadius`, and `owner` can be assigned directly on entity objects. Assigning other properties (such as `entity.position = ...`) only sets a key on the Lua table without updating the engine world state.
+:::
+
+### Player Methods & Fields
+- **Properties**: `nickname`, `ping`, `ip`, `health`, `velocity` (`vector3`), `vehicle` (current vehicle or `nil`), `lastVehicle` (previous vehicle or `nil`).
+- **`player:kick(reason)`**: Disconnects the player from the session.
+- **`player:emit(eventName, ...)` / `player:trigger(...)`**: Sends a network event packet to this client (`mp.events.addServer` on client).
+- **`player:mute(boolean)`**: Toggles whether the player's microphone input is muted on VoIP channels.
+- **`player:getMeta(key)` / `player:setMeta(key, value)`**: Accesses local un-synced player metadata.
+
+### Vehicle Methods & Fields
+- **Properties**: `model` (uint64 hash), `appearance` (uint64 hash), `health`, `velocity` (`vector3`), `angularVelocity` (`vector3`), `seats` (array of player IDs occupying seats), `lastSeats`.
+- **`vehicle:getPlayerInSeat(seatIndex)`**: Returns the player in the specified seat (0 = Driver).
+- **`vehicle:getLastPlayerInSeat(seatIndex)`**: Returns the previous player who occupied that seat.
+- **`vehicle:destroy()`**: Despawns and removes the vehicle.
+
+### Spawning Entities (`create`)
+
+```lua title="server.lua"
+-- Spawning a vehicle
+local vehicle = mp.vehicles.create({
+  model = mp.hashes.tweakdbid('Vehicle.v_sport1_quadra_turbo_r_player'),
+  appearance = mp.hashes.cname('quadra_turbo_r__basic_player_01'),
+  position = vector3(-1392.6, 1271.5, 123.0),
+  yaw = 90.0,
+  health = 1000,
+  dimension = 0
+})
+
+-- Spawning an NPC Ped
+local ped = mp.peds.create({
+  model = mp.hashes.tweakdbid('Character.Judy'),
+  appearance = mp.hashes.cname('default'),
+  position = vector3(-1390.0, 1270.0, 123.0),
+  yaw = 180.0
+})
+
+-- Spawning a static world object
+local obj = mp.objects.create({
+  model = mp.hashes.cname('base\\gameplay\\devices\\security\\surveillance_cameras\\surveillance_camera_wall_a.ent'),
+  position = vector3(-1385.0, 1275.0, 125.0)
+})
+
+-- Spawning a pickup item
+local pickup = mp.pickups.create({
+  model = mp.hashes.tweakdbid('Items.Preset_Nue_Default'),
+  pickupType = 0,
+  position = vector3(-1388.0, 1272.0, 123.0)
+})
+```
+
+---
+
+## Server Events (`mp.events`)
+
+### Registration & Triggers
+
+| Method | Description |
+| :--- | :--- |
+| `mp.events.add(name, fn)` | Registers a listener for built-in platform events or internal server events. |
+| `mp.events.addClient(name, fn)` | Registers a listener for network events emitted by clients (`emitServer`). The first parameter passed to `fn` is the sending player's network ID (`playerId`). |
+| `mp.events.trigger(name, ...)` | Emits an internal server event. |
+| `mp.events.triggerClient(playerOrId, name, ...)` | Emits an event packet to a specific player or all players (pass `-1` for global broadcast). |
+| `mp.events.remove(token)` | Unregisters a previously registered event listener. |
+
+### Cancelling Built-In Events
+Inside platform event handlers, call `mp.cancelEvent()` or `return false` to abort default actions:
+
+```lua title="server.lua"
+-- Disable PvP damage in safe zones
+mp.events.add('damage', function(victimId, data)
+  local victim = mp.players.at(victimId)
+  if victim:getMeta('inSafeZone') then
+    mp.cancelEvent()
+    return false
+  end
+end)
+```
+
+### Common Server Platform Events
+
+| Event Name | Signature | Description |
+| :--- | :--- | :--- |
+| `playerConnecting` | `(tempId, name, ip)` | Client requests initial connection slot. |
+| `playerConnected` | `(playerId, tempId)` | Client assigned permanent network ID. |
+| `playerSpawn` | `(playerId)` | Player spawned in the game world. |
+| `playerDeath` | `(playerId, data)` | Player flatlined (`data.killerId`, `data.weaponHash`). |
+| `playerRespawn` | `(playerId, position)` | Player respawned at position. |
+| `playerDisconnected` | `(playerId, reason)` | Player left or disconnected. |
+| `damage` | `(victimId, data)` | Entity damaged (`data.attackerId`, `data.damage`). |
+| `explosion` | `(playerId, data)` | Explosion triggered at coordinates (`data.posX`, `data.posY`, `data.posZ`). |
+| `resourceStart` | `(resourceName)` | Resource initialized. |
+| `resourceStop` | `(resourceName)` | Resource unloading. |
+
+---
+
+## Commands (`mp.commands`)
+
+Register commands for the server terminal or client F8 console:
+
+```lua title="server.lua"
+mp.commands.add('heal', function(player, args)
+  if not player then
+    print('[Command] heal must be executed by a player in-game.')
+    return
+  end
+
+  local amount = tonumber(args[1]) or 100
+  player.health = amount
+  player:emit('chat:addMessage', string.format("Health set to %s HP.", amount))
+end)
+```
+
+---
+
+## Resources Management (`mp.resources`)
+
+| Method | Description |
+| :--- | :--- |
+| `mp.resources.start(name)` | Starts an installed resource folder. |
+| `mp.resources.stop(name)` | Stops an active resource. |
+| `mp.resources.restart(name)` | Restarts an active resource. |
+| `mp.resources.getState(name)` | Returns resource state: `'running'`, `'stopped'`, `'not_found'`. |
+| `mp.resources.refresh()` | Re-indexes disk resources without restarting running scripts. |
+| `mp.resources.getTomlFile(name)` | Returns the resource's `resource.toml` as a JSON string. |
+
+---
+
+## HTTP & Utilities
+
+### HTTP Requests
+`mp.sendHttpRequest(url, callback, method, data, headers, options)`:
+
+```lua title="server.lua"
+mp.sendHttpRequest('https://api.example.com/data', function(status, body, headers, err)
+  if err then
+    print("HTTP request error:", err)
+    return
+  end
+
+  local response = json.decode(body)
+  print("Response status:", status, "Data:", response.message)
+end, 'POST', json.encode({ token = 'auth123' }), { ['Content-Type'] = 'application/json' })
+```
+
+### Password Hashing (Bcrypt)
+```lua title="server.lua"
+local hashed = mp.generateBcryptHash('player_password')
+local isMatch = mp.verifyBcryptHash('player_password', hashed) -- true
+```
+
+### Console Variables (CVars)
+```lua title="server.lua"
+local valueStr = mp.getVar('max_players')
+local valueInt = mp.getVarInt('max_players')
+mp.addVar('custom_mode', 'deathmatch')
+```
+
+### Reading `server.toml`
+```lua title="server.lua"
+local serverTomlJson = mp.getServerTomlFile()
+local config = json.decode(serverTomlJson)
+print("Configured TCP host:", config.tcp_host)
+```
+
+---
+
+## Low-Level `mp.v1` API
+
+Low-level functions operating on raw numeric IDs without wrapping into entity tables:
+- `mp.v1.getPlayersCount()`: Returns the total number of connected players.
+- `mp.v1.getEntityMaxHealth(id)`: Returns the maximum health attribute of the specified entity.

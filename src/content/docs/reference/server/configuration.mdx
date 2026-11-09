@@ -1,0 +1,132 @@
+---
+title: Server Configuration
+description: Complete reference for the CyberMP server.toml configuration file, gameplay core settings, and environment overrides.
+---
+
+The CyberMP server is configured using the `server.toml` file located in the server root directory. At runtime, server scripts can read these configuration parameters via `mp.config` in JavaScript or `json.decode(mp.getServerTomlFile())` in Lua.
+
+---
+
+## TOML Schema & Example
+
+To enable autocomplete and property validation in IDEs that support TOML schemas (such as the Even Better TOML VS Code extension), add the schema declaration header at the top of your file:
+
+```toml title="server.toml"
+#:schema https://schemas.cyber.mp/server/schema.json
+
+tcp_host = "0.0.0.0:2077"
+udp_host = "0.0.0.0:2077"
+connection_host_addr = "127.0.0.1:2077"
+
+max_players = 32
+private_token = ""
+
+resources = [
+  "my_gamemode"
+]
+
+disable_voice = false
+cef_debug = false
+ep2_dlc_enabled = false
+duplicatePlayers = 50
+
+[core]
+nametags = true
+death_autostand = true
+disable_switch_seats = true
+default_gameplay_restrictions = true
+disable_drop_points = true
+disable_location_dependent_quests = true
+disable_garage = true
+files = []
+
+[core.overrides]
+change_player_on_death_logic = true
+disable_side_quests_notifications = true
+change_vehicles_logic = true
+disable_player_inventory_encumbrance = true
+player_extended_customization = true
+disable_time_skip = true
+disable_turrets = true
+disable_surveillance_cameras = true
+disable_vending_machines = true
+disable_generic_devices = true
+disable_no_combat = true
+```
+
+---
+
+## Root Configuration Keys
+
+| Parameter | Type | Required | Default | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| `tcp_host` | `string` | **Yes** | `"0.0.0.0:2077"` | TCP bind host and port for control connections. |
+| `udp_host` | `string` | **Yes** | `"0.0.0.0:2077"` | UDP bind host and port for gameplay synchronization. |
+| `connection_host_addr` | `string` | **Yes** | `"127.0.0.1:2077"` | The public endpoint clients use to connect. Broadcasted in masterlist heartbeats. |
+| `max_players` | `integer` | No | `20` | Maximum number of concurrent player slots. |
+| `resources` | `string[]` | **Yes** | `[]` | Ordered list of resource folder names to load on startup. |
+| `private_token` | `string` | No | `""` | Masterlist server token. Leave empty for private/local servers. |
+| `disable_voice` | `boolean` | No | `false` | When `true`, disables the built-in 3D positional VoIP server. |
+| `cef_debug` | `boolean` | No | `false` | Enables Chromium remote debugging for CEF interfaces on port `9222`. |
+| `ep2_dlc_enabled` | `boolean` | No | `false` | Enables content from the Phantom Liberty expansion DLC. |
+| `duplicatePlayers` | `integer` | No | `50` | Maximum connections allowed from a single IP address (anti-DDoS safeguard). |
+
+---
+
+## `[core]` Gameplay Runtime Settings
+
+The `[core]` table configures default features shipped with the mandatory `cybermp_core` runtime package sent to every connecting client:
+
+:::important[Required Section]
+Always keep the `[core]` table in your `server.toml`. Without it, `cybermp_core` fails to initialize properly on clients, disabling nametags, death logic, and gameplay restrictions.
+:::
+
+| Property | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `nametags` | `boolean` | `true` | Renders `[ID] Nickname` overhead markers within 8 meters. |
+| `death_autostand` | `boolean` | `true` | Automatically plays stand-up animation if health regenerates above 0. |
+| `disable_switch_seats`| `boolean` | `true` | Prevents players from switching seats while inside vehicles. |
+| `default_gameplay_restrictions` | `boolean` | `true` | Enforces standard multiplayer restrictions (disables Photo Mode, scanning, fast travel, and phone calls). |
+| `disable_drop_points` | `boolean` | `true` | Disables singleplayer drop point containers across Night City. |
+| `disable_location_dependent_quests` | `boolean` | `true` | Automatically completes tracked vanilla journal quests to prevent narrative conflicts. |
+| `disable_garage` | `boolean` | `true` | Prevents vanilla vehicle summoning from opening the singleplayer garage interface. |
+| `files` | `string[]` | `[]` | Optional list of archives or redscripts from `cybermp_core/files/` streamed to clients. |
+
+---
+
+## `[core.overrides]` REDengine Hooks
+
+The `[core.overrides]` table controls native method interceptors installed by `cybermp_core`:
+
+| Flag | Description |
+| :--- | :--- |
+| `change_player_on_death_logic` | Overrides `PlayerPuppet.OnDeath` so server scripts control death and respawn handling. |
+| `disable_side_quests_notifications` | Suppresses quest tracking popups and journal notifications on the client HUD. |
+| `change_vehicles_logic` | Overrides vanilla vehicle summoning, vehicle hijacking, and mounting checks. |
+| `disable_player_inventory_encumbrance` | Disables character movement slow-down when carrying excess weight. |
+| `player_extended_customization` | Enables character mirror customization in NewGame edit mode. |
+| `disable_time_skip` | Disables the wait/skip time menu. |
+| `disable_turrets` | Disables hostile automated security turrets in the world. |
+| `disable_surveillance_cameras`| Disables security surveillance camera devices. |
+| `disable_vending_machines` | Disables interactive vending machines. |
+| `disable_generic_devices` | Disables interactive doors, netrunner panels, and security lockers. |
+| `disable_no_combat` | Removes peaceful "No Combat" zone restrictions across the city. |
+
+---
+
+## Environment Variable Overrides
+
+Any value in `server.toml` can be overridden using system environment variables without modifying the file. This is useful in Docker containers and CI/CD pipelines:
+
+| Variable | Overrides Key |
+| :--- | :--- |
+| `CYBERMP_TCP_HOST` | `tcp_host` |
+| `CYBERMP_UDP_HOST` | `udp_host` |
+| `CYBERMP_CONNECTION_HOST_ADDR` | `connection_host_addr` |
+| `CYBERMP_MAX_PLAYERS` | `max_players` |
+| `CYBERMP_RESOURCES` | `resources` (comma or space separated list) |
+| `CYBERMP_PRIVATE_TOKEN` | `private_token` |
+| `CYBERMP_DISABLE_VOICE` | `disable_voice` |
+| `CYBERMP_CEF_DEBUG` | `cef_debug` |
+| `CYBERMP_EP2_DLC_ENABLED` | `ep2_dlc_enabled` |
+| `CYBERMP_DUPLICATE_PLAYERS` | `duplicatePlayers` |
