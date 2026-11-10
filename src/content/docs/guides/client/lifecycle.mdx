@@ -6,9 +6,9 @@ description: Understand the sequence of resource initialization, game stages, wo
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 import { SCRIPT_LANG_TAB_SYNC_KEY } from '../../../../lib/const';
 
-When a client launches or reconnects, scripts initialize before the 3D world is loaded. Attempting to query the player, access world systems, or teleport inside `resourceStart` will fail or return `null`.
+When a client launches or reconnects, scripts initialize before the 3D world is streamed and ready. Attempting to query the player, access world systems, or teleport inside `resourceStart` will fail or return `null`.
 
-In this guide, you will learn the exact order of client lifecycle stages, what actions are safe at each stage, and how to safely wait for the player puppet.
+For details on game native availability across phases, see [Working with Game Natives](/reference/client/working-with-game-natives).
 
 ---
 
@@ -24,14 +24,14 @@ sequenceDiagram
     Runtime->>Runtime: resourceStart
     Note over Runtime: Register events, RPC handlers, commands
     Game->>Runtime: onTweak
-    Note over Runtime: TweakDB modifications
+    Note over Runtime: Modify TweakDB records and flats
     Game->>Runtime: onInit
     Note over Runtime: Game classes bound, menu observers
     Game->>Runtime: onGameLoaded / onceGameLoaded
-    Note over Runtime: Safe to call Game.GetPlayer(), spawnPlayer()
-    Runtime->>Puppet: spawnLocalPlayer() / mp.client.spawnPlayer()
-    Note over Puppet: Asynchronous puppet streaming
-    Puppet-->>Runtime: Puppet available in Game.GetPlayer()
+    Note over Runtime: Safe to query GetPlayer() & trigger spawn
+    Runtime->>Puppet: mp.local.spawnPlayer() / mp.client.spawnPlayer()
+    Note over Puppet: Asynchronous entity streaming
+    Puppet-->>Runtime: Puppet available in GetPlayer()
 ```
 
 ---
@@ -41,25 +41,26 @@ sequenceDiagram
 | Stage | JavaScript API | Lua API | Safe to Execute | Unsafe to Execute |
 | :--- | :--- | :--- | :--- | :--- |
 | **`resourceStart`** | `mp.events.on('resourceStart', fn)` | `mp.events.add('resourceStart', fn)` | Register events, RPC handlers, commands | Any REDengine native calls |
-| **`onTweak`** | `mp.game.onTweak(fn)` | `mp.registerGameState('onTweak', fn)` | Read/write TweakDB records and flats | Assuming the player puppet exists |
-| **`onInit`** | `mp.game.onInit(fn)` | `mp.registerGameState('onInit', fn)` | Early hooks, menu observers | World entity queries |
+| **`onTweak`** | `mp.game.onTweak(fn)` | `mp.registerGameState('onTweak', fn)` | Read/write TweakDB records and flats | Assuming the local player puppet exists |
+| **`onInit`** | `mp.game.onInit(fn)` | `mp.registerGameState('onInit', fn)` | Method observers, overrides, early hooks | World entity queries |
 | **`onGameLoaded`** | `mp.game.onGameLoaded(fn)` / `onceGameLoaded(fn)` | `mp.registerGameState('onGameLoaded', fn)` | Retrieve `GetPlayer()`, systems, spawn routines | Assuming puppet exists synchronously |
-| **`resourceStop`** | `mp.events.on('resourceStop', fn)` | `mp.events.add('resourceStop', fn)` | Release CEF focus, clear intervals/ticks | Long-running asynchronous operations |
+| **`onLocalPlayerSpawned`** | `mp.game.onLocalPlayerSpawned(fn)` | — *(JavaScript only)* | Post-spawn appearance, UI setup | Assuming character gender is finalized |
+| **`resourceStop`** | `mp.events.on('resourceStop', fn)` | `mp.events.add('resourceStop', fn)` | Release CEF focus, clear ticks, despawn local entities | Starting new asynchronous work |
 
-:::note[Post-Load Execution]
-If a client resource starts or restarts when the game is *already* loaded, handlers for `onInit` and `onGameLoaded` run on the very first script tick.
+:::note[Post-Load Script Execution]
+If a client resource starts or restarts when the game is *already* loaded (such as after a restart or hot reload), queued handlers for `onInit` and `onGameLoaded` run on the very first script tick.
 :::
 
 ---
 
 ## Safe Initialization Pattern
 
-Keep event registration immediate, but defer world interactions until `onGameLoaded`:
+Keep event and command registration immediate at script root, but defer all world interactions and engine native calls until `onGameLoaded`:
 
 <Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
   <TabItem label="JS">
     ```js title="client.js"
-    // 1. Immediate: Register network listeners and commands
+    // 1. Immediate: Register network listeners and console commands
     mp.events.onServer('serverNotification', (msg) => {
       console.log('[Server]:', msg);
     });
@@ -74,14 +75,13 @@ Keep event registration immediate, but defer world interactions until `onGameLoa
       console.log('World loaded, local player handle:', player?.GetEntityID());
 
       // Trigger safe spawn
-      mp.setSpawnDataLocalPlayer(-1392.6, 1271.5, 123.0, 1.0);
-      mp.spawnLocalPlayer();
+      mp.local.spawnPlayer(-1392.637, 1271.536, 123.082, 1.0);
     });
     ```
   </TabItem>
   <TabItem label="Lua">
     ```lua title="client.lua"
-    -- 1. Immediate: Register network listeners and commands
+    -- 1. Immediate: Register network listeners and console commands
     mp.events.addServer('serverNotification', function(msg)
       print("[Server]: " .. msg)
     end)
@@ -96,19 +96,21 @@ Keep event registration immediate, but defer world interactions until `onGameLoa
       print("World loaded, local player ready:", player ~= nil)
 
       -- Trigger safe spawn
-      mp.client.spawnPlayer(-1392.6, 1271.5, 123.0, 1.0)
+      mp.client.spawnPlayer(-1392.637, 1271.536, 123.082, 1.0)
     end)
     ```
   </TabItem>
 </Tabs>
 
+For complete spawn setup (including health pools), see [Spawning the Player](/guides/client/spawning-player).
+
 ---
 
 ## Polling for the Player Puppet
 
-Calling the spawn method initiates asynchronous entity streaming. The player puppet might not be available on the exact frame the call returns `true`. 
+Calling the spawn method initiates asynchronous entity streaming. The player puppet might not be available on the exact frame the spawn method returns `true`.
 
-When applying custom appearances, stat modifications, or inventory items right after spawn, poll until `GetPlayer()` returns a valid instance:
+When applying custom appearances, stat modifications, or inventory items immediately after spawning, poll until `GetPlayer()` returns a valid instance:
 
 <Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
   <TabItem label="JS">
@@ -124,8 +126,7 @@ When applying custom appearances, stat modifications, or inventory items right a
     };
 
     mp.game.onceGameLoaded(async () => {
-      mp.setSpawnDataLocalPlayer(-1392.6, 1271.5, 123.0, 1.0);
-      mp.spawnLocalPlayer();
+      mp.local.spawnPlayer(-1392.637, 1271.536, 123.082, 1.0);
 
       const player = await waitForPlayer();
       if (player) {
@@ -143,16 +144,61 @@ When applying custom appearances, stat modifications, or inventory items right a
       while mp.getTimer() - start < timeoutMs do
         local player = Game.GetPlayer()
         if player then return player end
-        mp.wait(50) -- Requires coroutine/scheduler context
+        mp.wait(50) -- Requires coroutine execution context
       end
       return nil
     end
 
     mp.registerGameState('onGameLoaded', function()
-      mp.client.spawnPlayer(-1392.6, 1271.5, 123.0, 1.0)
+      mp.client.spawnPlayer(-1392.637, 1271.536, 123.082, 1.0)
 
       -- Run wait in a task
       mp.events.trigger('task:initPlayer')
+    end)
+    ```
+  </TabItem>
+</Tabs>
+
+:::caution[Incomplete Puppet State]
+Immediately after spawn, calling `GetGender()` on the puppet can report a placeholder or sentinel value (`None`). Do not apply character-specific meshes or body morphs until the puppet has fully streamed into the world.
+:::
+
+---
+
+## Teardown and Cleanup
+
+When a resource stops, its JavaScript context or Lua state is destroyed. However, external states created by your script (such as client-only preview vehicles, active render ticks, or CEF mouse focus) persist unless explicitly cleaned up:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="client.js"
+    let previewVehicle = null;
+
+    mp.events.on('resourceStop', () => {
+      // 1. Despawn client-only preview entities
+      if (previewVehicle) {
+        mp.local.despawnVehicle(previewVehicle);
+        previewVehicle = null;
+      }
+
+      // 2. Release CEF focus
+      mp.cef.setFocus(false, false);
+    });
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="client.lua"
+    local previewVehicle = nil
+
+    mp.events.add('resourceStop', function()
+      -- 1. Despawn client-only preview entities
+      if previewVehicle then
+        mp.client.despawnVehicle(previewVehicle)
+        previewVehicle = nil
+      end
+
+      -- 2. Release CEF focus
+      mp.cef.setFocus(false, false)
     end)
     ```
   </TabItem>

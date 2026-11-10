@@ -108,9 +108,12 @@ Key-value persistent storage saved on the user's local machine:
 
 ```lua title="client.lua"
 mp.localStorage.set('hud_color', '#00f0ff')
+mp.localStorage.save() -- commit changes to disk
+
 local color = mp.localStorage.get('hud_color')
-mp.localStorage.remove('hud_color')
-mp.localStorage.clear()
+mp.localStorage.delete('hud_color')
+mp.localStorage.deleteAll()
+mp.localStorage.save()
 ```
 
 ---

@@ -1,0 +1,126 @@
+---
+title: Local Storage
+description: Learn how to persist client-side preferences and configuration data across game sessions using mp.localStorage in JavaScript and Lua.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { SCRIPT_LANG_TAB_SYNC_KEY } from '../../../../lib/const';
+
+The client runtime provides persistent key-value storage via `mp.localStorage`. Data saved here is written to the user's local machine and persists across game restarts and server reconnections without requiring server-side database storage.
+
+For complete method signatures, see the [`MpLocalStorage`](/reference/client/api/global/mplocalstorage/) reference and the [Lua Client Reference](/reference/lua/client/#local-storage-mplocalstorage).
+
+---
+
+## API Overview
+
+The `mp.localStorage` interface exposes five core operations:
+
+| Method | Description |
+| :--- | :--- |
+| `set(key, value)` | Associates a plaintext string value with the specified key in memory. |
+| `get(key)` | Retrieves the string value associated with the key, or `""` / `nil` if not found. |
+| `delete(key)` | Permanently removes a specific key-value entry from storage. |
+| `deleteAll()` | Clears all stored key-value entries for this storage database. |
+| `save()` | **Flushes in-memory data to physical disk.** |
+
+:::important[Always Call `save()`]
+Mutations made via `set()`, `delete()`, or `deleteAll()` are held in memory until `mp.localStorage.save()` is called. If the game client or resource terminates before `save()` is executed, pending changes will be lost. Always invoke `save()` after writing or removing data.
+:::
+
+---
+
+## Storing and Retrieving Values
+
+Values must be plaintext strings. To store structured data (such as objects, arrays, or tables), serialize them with JSON before saving:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="client.js"
+    // 1. Store primitive string values
+    mp.localStorage.set('hud_theme', 'cyberpunk_neon');
+    mp.localStorage.set('master_volume', '0.85');
+
+    // 2. Store structured objects using JSON serialization
+    const customKeybinds = {
+      openPhone: 'T',
+      toggleRadio: 'R',
+      quickHeal: 'H'
+    };
+    mp.localStorage.set('user_keybinds', JSON.stringify(customKeybinds));
+
+    // 3. Commit changes to physical disk
+    mp.localStorage.save();
+
+    // 4. Retrieve values
+    const theme = mp.localStorage.get('hud_theme');
+    const rawKeybinds = mp.localStorage.get('user_keybinds');
+    const keybinds = rawKeybinds ? JSON.parse(rawKeybinds) : {};
+
+    console.log(`Loaded theme: ${theme}, Phone keybind: ${keybinds.openPhone}`);
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="client.lua"
+    -- 1. Store primitive string values
+    mp.localStorage.set('hud_theme', 'cyberpunk_neon')
+    mp.localStorage.set('master_volume', '0.85')
+
+    -- 2. Store structured tables using JSON serialization
+    local customKeybinds = {
+      openPhone = "T",
+      toggleRadio = "R",
+      quickHeal = "H"
+    }
+    mp.localStorage.set('user_keybinds', json.encode(customKeybinds))
+
+    -- 3. Commit changes to physical disk
+    mp.localStorage.save()
+
+    -- 4. Retrieve values
+    local theme = mp.localStorage.get('hud_theme')
+    local rawKeybinds = mp.localStorage.get('user_keybinds')
+    local keybinds = rawKeybinds and json.decode(rawKeybinds) or {}
+
+    print(string.format("Loaded theme: %s, Phone keybind: %s", theme, keybinds.openPhone))
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Deleting Entries
+
+Use `delete(key)` to remove a specific configuration entry, or `deleteAll()` to reset the storage database completely. Remember to call `save()` afterwards to commit the deletion:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="client.js"
+    // Remove a single key
+    mp.localStorage.delete('hud_theme');
+    mp.localStorage.save();
+
+    // Clear all stored keys in local storage
+    mp.localStorage.deleteAll();
+    mp.localStorage.save();
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="client.lua"
+    -- Remove a single key
+    mp.localStorage.delete('hud_theme')
+    mp.localStorage.save()
+
+    -- Clear all stored keys in local storage
+    mp.localStorage.deleteAll()
+    mp.localStorage.save()
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Storage Scope and Isolation
+
+- **Client-Side Only**: Local storage is completely isolated to the user's machine. It is not automatically transmitted to the server. If the server needs stored client preferences, forward them via [server events](/guides/client/events#communicating-with-the-server) or [RPC](/guides/recipes/rpc).
+- **Per-Server Isolation**: Local storage is partitioned per server address (`ip:port`). Resources running on the same server share the storage namespace. To avoid naming collisions between independent resources, prefix your keys with the resource name (e.g. `'myresource:settings'`).

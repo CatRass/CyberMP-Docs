@@ -6,15 +6,16 @@ description: Learn how to intercept, replace, or chain REDengine method calls us
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 import { SCRIPT_LANG_TAB_SYNC_KEY } from '../../../../lib/const';
 
-Unlike passive observers, method overrides (`mp.override` / `mp.game.override`) completely intercept REDengine method invocations. An override function has full control over execution: it can invoke the original method, modify incoming parameters, return a custom result, or prevent the method from executing entirely.
+Unlike passive observers, method overrides (`mp.override` in Lua / `mp.game.override` in JS) completely intercept REDengine method invocations. An override function has full control over execution: it can invoke the original method, modify incoming parameters, return a custom result, or prevent the vanilla game method from executing entirely.
 
-In this guide, you will learn how to intercept game functions, manage execution chains with `wrappedMethod`, and handle return values.
+For complete type signatures, see [`OverrideFunction`](/reference/client/api/global/overridefunction/) and the [Lua Client Reference](/reference/lua/client/#method-hooks-observe--override).
 
 :::important[Prerequisite]
-Overriding game methods requires enabling game natives in your `resource.toml`:
+Overriding game engine methods requires enabling game natives in your `resource.toml`:
 ```toml title="resource.toml"
 use_game_natives = true
 ```
+For lifecycle phase requirements, see [Working with Game Natives](/reference/client/working-with-game-natives).
 :::
 
 ---
@@ -58,10 +59,10 @@ Overrides are registered inside the `onInit` lifecycle stage when game classes b
 
 The last parameter passed to your override callback is the continuation function `wrappedMethod`.
 
-- **Chaining Execution:** Calling `wrappedMethod(...)` invokes the next registered override or the vanilla game function.
-- **Do Not Pass `self`:** When invoking `wrappedMethod(arg1, arg2)`, omit the `self` reference. The bridge already maintains the internal instance context.
-- **Blocking Execution:** Omitting `wrappedMethod(...)` completely cancels the vanilla method logic.
-- **Synchronous Execution Only:** Overrides run synchronously. Never mark the callback `async` or return a Promise; the game engine expects immediate C++ return types.
+- **Chaining Execution:** Calling `wrappedMethod(...)` invokes the next registered override in the chain or the vanilla REDengine function.
+- **Do Not Pass `self`:** When calling `wrappedMethod(arg1, arg2)`, omit the `self` reference. The runtime bridge already retains the internal instance context.
+- **Blocking Execution:** Omitting the `wrappedMethod(...)` call completely cancels the vanilla method logic and skips further execution.
+- **Synchronous Execution Only:** Overrides run synchronously. Never mark the callback `async` or return a Promise; the game engine expects immediate C++ return values.
 
 ---
 
@@ -111,11 +112,3 @@ For game methods that return output parameters (`out` values in REDscript), retu
 - **Single Out Parameter:** Return an array `[result, out1]`.
 - **Multiple Out Parameters:** Return `[result, out1, out2, ...]`.
 - **Void Return with Out Parameters:** Return `[out1, out2]`.
-
----
-
-## Best Practices & Cleanup
-
-1. **Avoid Multiple Registrations:** Register overrides once during `onInit`. Avoid re-registering overrides repeatedly inside `onGameLoaded`.
-2. **Dynamic Toggling:** If you need to enable or disable an override conditionally at runtime, check an internal boolean flag inside the callback and call `return wrappedMethod(...)` when inactive.
-3. **Automatic Cleanup:** All registered overrides are cleaned up and unregistered automatically when the resource is stopped or restarted.

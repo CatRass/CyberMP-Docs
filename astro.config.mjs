@@ -33,6 +33,7 @@ export default defineConfig({
                   "guides/resources/interacting-with-resources",
                   "guides/resources/live-updates",
                   "guides/resources/adding-resource-files",
+                  "guides/resources/exports",
                 ],
               },
               {
@@ -45,6 +46,7 @@ export default defineConfig({
                   "guides/server/commands",
                   "guides/server/meta",
                   "guides/server/hashes",
+                  "guides/server/cdn",
                 ],
               },
               {
@@ -58,6 +60,7 @@ export default defineConfig({
                   "guides/client/observes",
                   "guides/client/overrides",
                   "guides/client/network-and-local",
+                  "guides/client/local-storage",
                   "guides/client/discord",
                 ],
               },

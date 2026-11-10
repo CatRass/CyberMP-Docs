@@ -8,13 +8,14 @@ import { SCRIPT_LANG_TAB_SYNC_KEY } from '../../../../lib/const';
 
 The observe API allows client scripts to listen to internal REDengine methods whenever they are invoked by the game engine. Observers act as passive listeners: they do not modify return values or prevent the underlying game function from executing.
 
-In this guide, you will learn how to register method observers, handle instance versus static methods, and understand execution timing.
+For complete type signatures, see [`ObserveFunction`](/reference/client/api/global/observefunction/) and the [Lua Client Reference](/reference/lua/client/#method-hooks-observe--override).
 
 :::important[Prerequisite]
-Observing game methods requires enabling game natives in your `resource.toml`:
+Observing game engine methods requires enabling game natives in your `resource.toml`:
 ```toml title="resource.toml"
 use_game_natives = true
 ```
+For lifecycle phase requirements, see [Working with Game Natives](/reference/client/working-with-game-natives).
 :::
 
 ---
@@ -72,10 +73,11 @@ Class and method names correspond directly to definitions found in [NativeDB](ht
 
 - **Instance Methods:** The callback receives `(self, arg1, arg2, ...)`. The first argument represents the instance of the game object executing the method.
 - **Static Methods:** The callback receives `(arg1, arg2, ...)` without a `self` reference.
-- **Overloads:** If a method has multiple signatures in NativeDB, supply the full signature suffix (e.g. `'ClassName'`, `'MethodName;Int32Bool'`).
+- **Overloaded Signatures:** If a method has multiple signatures in NativeDB, supply the full signature suffix (e.g. `'ClassName'`, `'MethodName;Int32Bool'`).
+- **No Result Modification:** Observers receive method arguments only; they cannot alter return values or cancel function execution.
 
 :::warning[Weak References]
-The `self` reference is a weak reference into the game engine's memory pool. Do not assume a stored controller or entity reference remains valid once the corresponding entity or menu is destroyed.
+The `self` reference passed into the callback is a weak pointer into the game engine's memory pool. Never assume a stored controller or entity reference remains valid once the corresponding entity or menu is closed or destroyed.
 :::
 
 ---
@@ -88,8 +90,8 @@ The engine provides several observer variants to control capture timing and thre
 | :--- | :--- | :--- |
 | `observe` / `observeBefore` | Before original method executes | Queued onto the script thread (runs on next tick) |
 | `observeAfter` | After original method executes | Queued onto the script thread (runs on next tick) |
-| `observeRaw` / `observeBeforeRaw` | Before original method executes | Dispatched immediately without queuing |
-| `observeAfterRaw` | After original method executes | Dispatched immediately without queuing |
+| `observeRaw` / `observeBeforeRaw` | Before original method executes | Dispatched immediately without tick queuing |
+| `observeAfterRaw` | After original method executes | Dispatched immediately without tick queuing |
 
 <Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
   <TabItem label="JS">
@@ -115,5 +117,5 @@ The engine provides several observer variants to control capture timing and thre
 </Tabs>
 
 :::tip[Observer vs Override]
-Observers cannot cancel an action or alter what the method returns. If you need to intercept, replace, or block a game method, use [Method Overrides](/guides/client/overrides).
+Observers cannot alter return values or prevent a game function from executing. If you need to intercept, replace, or block a game method, use [Method Overrides](/guides/client/overrides).
 :::

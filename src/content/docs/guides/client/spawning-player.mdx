@@ -3,196 +3,196 @@ title: Spawning the Player
 description: Learn how to configure player health stat pools and safely spawn the local player in JavaScript and Lua.
 ---
 
-import { Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+import { Tabs, TabItem } from '@astrojs/starlight/components';
 import { SCRIPT_LANG_TAB_SYNC_KEY } from '../../../../lib/const';
 
-In CyberMP, player spawning is coordinated on the client. To properly initialize a spawned character, your client script must configure health stat pools, invoke the client runtime's spawn method, and coordinate with game loading states.
+In CyberMP, player spawning is coordinated on the client. To properly initialize a character into Night City, your client script must configure health stat pools, invoke the client runtime's spawn method, and coordinate with game world loading states.
 
-In this guide, you will learn how to configure health modifiers, trigger local player spawns, and register a manual respawn command.
+For method definitions, see [`MpLocal.spawnPlayer`](/reference/client/api/global/mplocal/#spawnplayer) and the [Lua Client Reference](/reference/lua/client/#local-entities-mpclient).
 
-:::tip[Resource Configuration]
-Using game engine classes like `ScriptGameInstance` or `Game` requires enabling game natives in your `resource.toml`:
+:::important[Prerequisite]
+Using REDengine classes like `ScriptGameInstance` or `Game` requires enabling game natives in your `resource.toml`:
 ```toml title="resource.toml"
 use_game_natives = true
 ```
+For lifecycle phase requirements, see [Working with Game Natives](/reference/client/working-with-game-natives).
 :::
 
 ---
 
-<Steps>
-1. ## Initializing Health Stat Pools
+## Initializing Health Stat Pools
 
-   Before spawning, initialize the player's health pools to prevent the character from collapsing into a flatlined state. REDengine uses designated stat pools and modifier IDs for character health:
+Before spawning, you must initialize the player's health pools to prevent the character from collapsing into an immediate flatlined state upon entering the world. REDengine uses designated stat pools and modifier IDs for character health:
 
-   - **Health Stat Pool Type:** `17`
-   - **Health Stat Type:** `787`
-   - **Additive Modifier Type:** `0`
+- **Health Stat Pool Type:** `17` ([NativeDB](https://nativedb.red4ext.com/e/5923428624360168))
+- **Health Stat Type:** `787` ([NativeDB](https://nativedb.red4ext.com/e/8958699713058621))
+- **Additive Modifier Type:** `0` ([NativeDB](https://nativedb.red4ext.com/e/5896876661927857))
 
-   <Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
-     <TabItem label="JS">
-       ```js title="client.js"
-       const HEALTH_STAT_POOL_TYPE = 17;
-       const HEALTH_STAT_TYPE = 787;
-       const ADDITIVE_MODIFIER_TYPE = 0;
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="client.js"
+    const HEALTH_STAT_POOL_TYPE = 17;
+    const HEALTH_STAT_TYPE = 787;
+    const ADDITIVE_MODIFIER_TYPE = 0;
 
-       const setHealth = (value) => {
-         const player = mp.game.GetPlayer();
-         const playerGameId = player.GetEntityID();
-         const statPoolsSystem = mp.game.ScriptGameInstance.GetStatPoolsSystem();
+    const setHealth = (value) => {
+      const player = mp.game.GetPlayer();
+      const playerGameId = player.GetEntityID();
+      const statPoolsSystem = mp.game.ScriptGameInstance.GetStatPoolsSystem();
 
-         statPoolsSystem.RequestSettingStatPoolValueIgnoreChangeMode(
-           playerGameId,
-           HEALTH_STAT_POOL_TYPE,
-           value,
-           new mp.game.gameObject(),
-           false
-         );
-       };
+      statPoolsSystem.RequestSettingStatPoolValueIgnoreChangeMode(
+        playerGameId,
+        HEALTH_STAT_POOL_TYPE,
+        value,
+        new mp.game.gameObject(),
+        false
+      );
+    };
 
-       const setMaxHealth = (value) => {
-         const player = mp.game.GetPlayer();
-         const playerGameId = player.GetEntityID();
+    const setMaxHealth = (value) => {
+      const player = mp.game.GetPlayer();
+      const playerGameId = player.GetEntityID();
 
-         const statsSystem = mp.game.ScriptGameInstance.GetStatsSystem();
-         statsSystem.RemoveAllModifiers(playerGameId, HEALTH_STAT_TYPE, true);
+      const statsSystem = mp.game.ScriptGameInstance.GetStatsSystem();
+      statsSystem.RemoveAllModifiers(playerGameId, HEALTH_STAT_TYPE, true);
 
-         const modifier = new mp.game.gameConstantStatModifierData_Deprecated();
-         modifier.statType = HEALTH_STAT_TYPE;
-         modifier.modifierType = ADDITIVE_MODIFIER_TYPE;
-         modifier.value = value;
-         statsSystem.AddModifier(playerGameId, modifier);
+      const modifier = new mp.game.gameConstantStatModifierData_Deprecated();
+      modifier.statType = HEALTH_STAT_TYPE;
+      modifier.modifierType = ADDITIVE_MODIFIER_TYPE;
+      modifier.value = value;
+      statsSystem.AddModifier(playerGameId, modifier);
 
-         const statPoolsSystem = mp.game.ScriptGameInstance.GetStatPoolsSystem();
-         statPoolsSystem.RequestSettingStatPoolValueIgnoreChangeMode(
-           playerGameId,
-           HEALTH_STAT_POOL_TYPE,
-           value,
-           new mp.game.gameObject(),
-           true
-         );
-       };
-       ```
-     </TabItem>
-     <TabItem label="Lua">
-       ```lua title="client.lua"
-       local HEALTH_STAT_POOL_TYPE = 17
-       local HEALTH_STAT_TYPE = 787
-       local ADDITIVE_MODIFIER_TYPE = 0
+      const statPoolsSystem = mp.game.ScriptGameInstance.GetStatPoolsSystem();
+      statPoolsSystem.RequestSettingStatPoolValueIgnoreChangeMode(
+        playerGameId,
+        HEALTH_STAT_POOL_TYPE,
+        value,
+        new mp.game.gameObject(),
+        true
+      );
+    };
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="client.lua"
+    local HEALTH_STAT_POOL_TYPE = 17
+    local HEALTH_STAT_TYPE = 787
+    local ADDITIVE_MODIFIER_TYPE = 0
 
-       local function setHealth(value)
-         local player = Game.GetPlayer()
-         local playerGameId = player:GetEntityID()
-         local statPoolsSystem = Game.GetStatPoolsSystem()
+    local function setHealth(value)
+      local player = Game.GetPlayer()
+      local playerGameId = player:GetEntityID()
+      local statPoolsSystem = Game.GetStatPoolsSystem()
 
-         statPoolsSystem:RequestSettingStatPoolValueIgnoreChangeMode(
-           playerGameId,
-           HEALTH_STAT_POOL_TYPE,
-           value,
-           NewObject('gameObject'),
-           false
-         )
-       end
+      statPoolsSystem:RequestSettingStatPoolValueIgnoreChangeMode(
+        playerGameId,
+        HEALTH_STAT_POOL_TYPE,
+        value,
+        NewObject('gameObject'),
+        false
+      )
+    end
 
-       local function setMaxHealth(value)
-         local player = Game.GetPlayer()
-         local playerGameId = player:GetEntityID()
+    local function setMaxHealth(value)
+      local player = Game.GetPlayer()
+      local playerGameId = player:GetEntityID()
 
-         local statsSystem = Game.GetStatsSystem()
-         statsSystem:RemoveAllModifiers(playerGameId, HEALTH_STAT_TYPE, true)
+      local statsSystem = Game.GetStatsSystem()
+      statsSystem:RemoveAllModifiers(playerGameId, HEALTH_STAT_TYPE, true)
 
-         local modifier = NewObject('gameConstantStatModifierData_Deprecated')
-         modifier.statType = HEALTH_STAT_TYPE
-         modifier.modifierType = ADDITIVE_MODIFIER_TYPE
-         modifier.value = value
-         statsSystem:AddModifier(playerGameId, modifier)
+      local modifier = NewObject('gameConstantStatModifierData_Deprecated')
+      modifier.statType = HEALTH_STAT_TYPE
+      modifier.modifierType = ADDITIVE_MODIFIER_TYPE
+      modifier.value = value
+      statsSystem:AddModifier(playerGameId, modifier)
 
-         local statPoolsSystem = Game.GetStatPoolsSystem()
-         statPoolsSystem:RequestSettingStatPoolValueIgnoreChangeMode(
-           playerGameId,
-           HEALTH_STAT_POOL_TYPE,
-           value,
-           NewObject('gameObject'),
-           true
-         )
-       end
-       ```
-     </TabItem>
-   </Tabs>
-
-2. ## Executing the Spawn Routine
-
-   To spawn the character, apply the health parameters and invoke the spawn API:
-
-   <Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
-     <TabItem label="JS">
-       ```js title="client.js"
-       const SPAWN_HEALTH = 300;
-       // Coordinates near V's Megabuilding H10 apartment: [x, y, z, yaw]
-       const DEFAULT_SPAWN = [-1392.637, 1271.536, 123.082, 1.0];
-
-       const spawnPlayer = (x, y, z, yaw = 1.0) => {
-         setMaxHealth(SPAWN_HEALTH);
-         setHealth(SPAWN_HEALTH);
-
-         mp.setSpawnDataLocalPlayer(x, y, z, yaw);
-         mp.spawnLocalPlayer();
-       };
-       ```
-     </TabItem>
-     <TabItem label="Lua">
-       ```lua title="client.lua"
-       local SPAWN_HEALTH = 300
-       -- Coordinates near V's Megabuilding H10 apartment: [x, y, z, yaw]
-       local DEFAULT_SPAWN = {-1392.637, 1271.536, 123.082, 1.0}
-
-       local function spawnPlayer(x, y, z, yaw)
-         setMaxHealth(SPAWN_HEALTH)
-         setHealth(SPAWN_HEALTH)
-
-         mp.client.spawnPlayer(x, y, z, yaw or 1.0)
-       end
-       ```
-     </TabItem>
-   </Tabs>
-
-3. ## Hooking into World Loading & Commands
-
-   Always execute spawn routines inside the `onGameLoaded` lifecycle event. Spawning inside `resourceStart` will fail because REDengine's world instances are not yet created.
-
-   <Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
-     <TabItem label="JS">
-       ```js title="client.js"
-       // Spawn automatically when the world is ready
-       mp.game.onceGameLoaded(() => {
-         spawnPlayer(...DEFAULT_SPAWN);
-       });
-
-       // Register a client console command for manual respawn (press F8)
-       mp.commands.add('spawn', () => {
-         spawnPlayer(...DEFAULT_SPAWN);
-       });
-       ```
-     </TabItem>
-     <TabItem label="Lua">
-       ```lua title="client.lua"
-       -- Spawn automatically when the world is ready
-       mp.registerGameState('onGameLoaded', function()
-         spawnPlayer(table.unpack(DEFAULT_SPAWN))
-       end)
-
-       -- Register a client console command for manual respawn (press F8)
-       mp.commands.add('spawn', function()
-         spawnPlayer(table.unpack(DEFAULT_SPAWN))
-       end)
-       ```
-     </TabItem>
-   </Tabs>
-</Steps>
+      local statPoolsSystem = Game.GetStatPoolsSystem()
+      statPoolsSystem:RequestSettingStatPoolValueIgnoreChangeMode(
+        playerGameId,
+        HEALTH_STAT_POOL_TYPE,
+        value,
+        NewObject('gameObject'),
+        true
+      )
+    end
+    ```
+  </TabItem>
+</Tabs>
 
 ---
 
-## Important Best Practices
+## Executing the Spawn Routine
 
-- **Never call natives in `resourceStart`**: Always defer native calls to `onGameLoaded`. `resourceStart` signals that script execution started, not that the 3D world is populated.
-- **Close Menus Before Spawning**: Open pause or settings menus can lock player inputs after spawning. Always close active menus before triggering a spawn (see [Teleporting the Player](/guides/client/teleporting-player)).
-- **Wait for the Puppet**: `spawnPlayer` initiates asynchronous streaming. Poll `Game.GetPlayer()` before applying custom body appearances, weapons, or secondary teleportation.
+Apply the health parameters and call `spawnPlayer` with target coordinates. In JavaScript, local spawning is exposed on `mp.local.spawnPlayer`, while in Lua it is available on `mp.client.spawnPlayer`:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="client.js"
+    const SPAWN_HEALTH = 300;
+    // Coordinates near V's Megabuilding H10 apartment: [x, y, z, yaw]
+    const DEFAULT_SPAWN = [-1392.637, 1271.536, 123.082, 1.0];
+
+    const spawnPlayer = (x, y, z, yaw = 1.0) => {
+      setMaxHealth(SPAWN_HEALTH);
+      setHealth(SPAWN_HEALTH);
+
+      mp.local.spawnPlayer(x, y, z, yaw);
+    };
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="client.lua"
+    local SPAWN_HEALTH = 300
+    -- Coordinates near V's Megabuilding H10 apartment: [x, y, z, yaw]
+    local DEFAULT_SPAWN = {-1392.637, 1271.536, 123.082, 1.0}
+
+    local function spawnPlayer(x, y, z, yaw)
+      setMaxHealth(SPAWN_HEALTH)
+      setHealth(SPAWN_HEALTH)
+
+      mp.client.spawnPlayer(x, y, z, yaw or 1.0)
+    end
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Coordinating with World Loading and Commands
+
+Always trigger spawn routines inside the `onGameLoaded` lifecycle event. Spawning inside `resourceStart` will fail because REDengine's native classes and world systems are not yet initialized:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="client.js"
+    // Spawn automatically when the world is ready
+    mp.game.onceGameLoaded(() => {
+      spawnPlayer(...DEFAULT_SPAWN);
+    });
+
+    // Register a client console command for manual respawn (press F8)
+    mp.commands.add('spawn', () => {
+      spawnPlayer(...DEFAULT_SPAWN);
+    });
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="client.lua"
+    -- Spawn automatically when the world is ready
+    mp.registerGameState('onGameLoaded', function()
+      spawnPlayer(table.unpack(DEFAULT_SPAWN))
+    end)
+
+    -- Register a client console command for manual respawn (press F8)
+    mp.commands.add('spawn', function()
+      spawnPlayer(table.unpack(DEFAULT_SPAWN))
+    end)
+    ```
+  </TabItem>
+</Tabs>
+
+:::tip[Spawn Sequence Caveats]
+- **Close menus before spawning**: Leftover pause or settings menus can permanently freeze player inputs after spawning. Always dismiss open menus before spawning (see [Teleporting the Player](/guides/client/teleporting-player)).
+- **Asynchronous puppet streaming**: `spawnPlayer` returning `true` indicates only that the spawn sequence started. Wait until `GetPlayer()` returns a valid instance before applying custom appearances or inventory items (see [Client Lifecycle & Stages](/guides/client/lifecycle)).
+- **Gender sentinel value**: Right after spawn, calling `GetGender()` on the puppet can report `None` until character initialization completes. Wait for initialization before applying gender-specific clothing meshes.
+:::

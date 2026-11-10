@@ -3,179 +3,193 @@ title: Teleporting the Player
 description: Learn how to safely teleport players in the game world, close active UI menus, and bind teleportation commands in JavaScript and Lua.
 ---
 
-import { Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+import { Tabs, TabItem } from '@astrojs/starlight/components';
 import { SCRIPT_LANG_TAB_SYNC_KEY } from '../../../../lib/const';
 
-Teleporting characters in REDengine requires safely closing any active pause or settings menus before moving the entity. Failing to close these menus can permanently freeze the game's user interface.
+Teleporting characters in REDengine requires safely closing any active pause or settings menus before moving the entity. Moving a character while a menu scenario is open can freeze the game's input pipeline and lock character controls.
 
-In this guide, you will learn how to track menu states, execute safe teleportation routines using the game's `TeleportationFacility`, and register console commands in JavaScript and Lua.
+For details on game native availability across phases, see [Working with Game Natives](/reference/client/working-with-game-natives).
 
-:::tip[Resource Configuration]
-Using game engine facilities requires enabling game natives in your `resource.toml`:
+:::important[Prerequisite]
+Interacting with REDengine facilities and menu controllers requires enabling game natives in your `resource.toml`:
 ```toml title="resource.toml"
 use_game_natives = true
 ```
+For lifecycle phase requirements, see [Working with Game Natives](/reference/client/working-with-game-natives).
 :::
 
 ---
 
-<Steps>
-1. ## Tracking and Closing UI Menus
+## Tracking and Closing Active Menus
 
-   Set up observers to keep track of active pause and settings menu controllers so they can be dismissed before moving the player:
+Set up method observers to keep track of active pause and settings menu controllers so they can be safely dismissed before moving the player:
 
-   <Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
-     <TabItem label="JS">
-       ```js title="client.js"
-       let pauseMenu = null;
-       let settingsMenu = null;
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="client.js"
+    let pauseMenu = null;
+    let settingsMenu = null;
 
-       mp.game.onGameLoaded(() => {
-         // Track Settings Menu
-         mp.game.observe('SettingsMainGameController', 'OnMenuChanged', (self) => {
-           settingsMenu = self;
-         });
-         mp.game.observe('SettingsMainGameController', 'RequestClose', () => {
-           settingsMenu = null;
-         });
+    mp.game.onGameLoaded(() => {
+      // Track Settings Menu
+      mp.game.observe('SettingsMainGameController', 'OnMenuChanged', (self) => {
+        settingsMenu = self;
+      });
+      mp.game.observe('SettingsMainGameController', 'RequestClose', () => {
+        settingsMenu = null;
+      });
 
-         // Track Pause Menu
-         mp.game.observe('MenuScenario_PauseMenu', 'OnSwitchToSettings', (self) => {
-           pauseMenu = self;
-         });
-         mp.game.observe('MenuScenario_PauseMenu', 'OnEnterScenario', (self) => {
-           pauseMenu = self;
-         });
-       });
+      // Track Pause Menu
+      mp.game.observe('MenuScenario_PauseMenu', 'OnSwitchToSettings', (self) => {
+        pauseMenu = self;
+      });
+      mp.game.observe('MenuScenario_PauseMenu', 'OnEnterScenario', (self) => {
+        pauseMenu = self;
+      });
+    });
 
-       const closeAllMenus = () => {
-         const player = mp.game.GetPlayer();
-         if (player) {
-           player.QueueEvent(new mp.game.ForceCloseHubMenuEvent());
-         }
+    const closeAllMenus = () => {
+      const player = mp.game.GetPlayer();
+      if (player) {
+        player.QueueEvent(new mp.game.ForceCloseHubMenuEvent());
+      }
 
-         if (pauseMenu) pauseMenu.OnClosePauseMenu();
-         if (settingsMenu) settingsMenu.RequestClose();
-       };
-       ```
-     </TabItem>
-     <TabItem label="Lua">
-       ```lua title="client.lua"
-       local pauseMenu = nil
-       local settingsMenu = nil
+      if (pauseMenu) pauseMenu.OnClosePauseMenu();
+      if (settingsMenu) settingsMenu.RequestClose();
+    };
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="client.lua"
+    local pauseMenu = nil
+    local settingsMenu = nil
 
-       mp.registerGameState('onInit', function()
-         -- Track Settings Menu
-         mp.observe('SettingsMainGameController', 'OnMenuChanged', function(self)
-           settingsMenu = self
-         end)
-         mp.observe('SettingsMainGameController', 'RequestClose', function()
-           settingsMenu = nil
-         end)
+    mp.registerGameState('onInit', function()
+      -- Track Settings Menu
+      mp.observe('SettingsMainGameController', 'OnMenuChanged', function(self)
+        settingsMenu = self
+      end)
+      mp.observe('SettingsMainGameController', 'RequestClose', function()
+        settingsMenu = nil
+      end)
 
-         -- Track Pause Menu
-         mp.observe('MenuScenario_PauseMenu', 'OnSwitchToSettings', function(self)
-           pauseMenu = self
-         end)
-         mp.observe('MenuScenario_PauseMenu', 'OnEnterScenario', function(self)
-           pauseMenu = self
-         end)
-       end)
+      -- Track Pause Menu
+      mp.observe('MenuScenario_PauseMenu', 'OnSwitchToSettings', function(self)
+        pauseMenu = self
+      end)
+      mp.observe('MenuScenario_PauseMenu', 'OnEnterScenario', function(self)
+        pauseMenu = self
+      end)
+    end)
 
-       local function closeAllMenus()
-         local player = Game.GetPlayer()
-         if player then
-           player:QueueEvent(NewObject('ForceCloseHubMenuEvent'))
-         end
+    local function closeAllMenus()
+      local player = Game.GetPlayer()
+      if player then
+        player:QueueEvent(NewObject('ForceCloseHubMenuEvent'))
+      end
 
-         if pauseMenu then pauseMenu:OnClosePauseMenu() end
-         if settingsMenu then settingsMenu:RequestClose() end
-       end
-       ```
-     </TabItem>
-   </Tabs>
+      if pauseMenu then pauseMenu:OnClosePauseMenu() end
+      if settingsMenu then settingsMenu:RequestClose() end
+    end
+    ```
+  </TabItem>
+</Tabs>
 
-2. ## Executing Teleportation
+---
 
-   To move the player puppet, retrieve REDengine's `TeleportationFacility` and supply target `Vector4` coordinates along with `EulerAngles` orientation:
+## Executing Teleportation via Native Facility
 
-   <Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
-     <TabItem label="JS">
-       ```js title="client.js"
-       const teleportPlayer = (x, y, z, yaw = 1.0) => {
-         // Always ensure menus are dismissed first
-         closeAllMenus();
+To move the player character, retrieve REDengine's `TeleportationFacility` and supply target spatial coordinates using `Vector4` along with an `EulerAngles` rotation struct:
 
-         const player = mp.game.GetPlayer();
-         if (!player) return;
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="client.js"
+    const teleportPlayer = (x, y, z, yaw = 1.0) => {
+      // Always dismiss active menus before moving the player
+      closeAllMenus();
 
-         const targetPosition = new mp.game.Vector4(x, y, z, 1.0);
-         const targetRotation = new mp.game.EulerAngles(0, 0, yaw);
+      const player = mp.game.GetPlayer();
+      if (!player) return;
 
-         mp.game.ScriptGameInstance.GetTeleportationFacility().Teleport(
-           player,
-           targetPosition,
-           targetRotation
-         );
-       };
-       ```
-     </TabItem>
-     <TabItem label="Lua">
-       ```lua title="client.lua"
-       local function teleportPlayer(x, y, z, yaw)
-         -- Always ensure menus are dismissed first
-         closeAllMenus()
+      const targetPosition = new mp.game.Vector4(x, y, z, 1.0);
+      const targetRotation = new mp.game.EulerAngles(0, 0, yaw);
 
-         local player = Game.GetPlayer()
-         if not player then return end
+      mp.game.ScriptGameInstance.GetTeleportationFacility().Teleport(
+        player,
+        targetPosition,
+        targetRotation
+      );
+    };
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="client.lua"
+    local function teleportPlayer(x, y, z, yaw)
+      -- Always dismiss active menus before moving the player
+      closeAllMenus()
 
-         local targetPosition = Vector4.new(x, y, z, 1.0)
-         local targetRotation = EulerAngles.new(0, 0, yaw or 1.0)
+      local player = Game.GetPlayer()
+      if not player then return end
 
-         Game.GetTeleportationFacility():Teleport(
-           player,
-           targetPosition,
-           targetRotation
-         )
-       end
-       ```
-     </TabItem>
-   </Tabs>
+      local targetPosition = Vector4.new(x, y, z, 1.0)
+      local targetRotation = EulerAngles.new(0, 0, yaw or 1.0)
 
-3. ## Registering Teleportation Commands
+      Game.GetTeleportationFacility():Teleport(
+        player,
+        targetPosition,
+        targetRotation
+      )
+    end
+    ```
+  </TabItem>
+</Tabs>
 
-   Create client console commands to trigger navigation shortcuts or reset stuck menus from the F8 console:
-
-   <Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
-     <TabItem label="JS">
-       ```js title="client.js"
-       // Teleport to Afterlife club
-       mp.commands.add('afterlife', () => {
-         teleportPlayer(-1456.89, 1038.27, 16.82, 1.0);
-       });
-
-       // Manually force-close open menus
-       mp.commands.add('close-menu', () => {
-         closeAllMenus();
-       });
-       ```
-     </TabItem>
-     <TabItem label="Lua">
-       ```lua title="client.lua"
-       -- Teleport to Afterlife club
-       mp.commands.add('afterlife', function()
-         teleportPlayer(-1456.89, 1038.27, 16.82, 1.0)
-       end)
-
-       -- Manually force-close open menus
-       mp.commands.add('close-menu', function()
-         closeAllMenus()
-       end)
-       ```
-     </TabItem>
-   </Tabs>
-</Steps>
-
-:::note[Cross-Dimension Teleportation]
-When teleporting between different server dimensions, update the player's dimension on the server side first (via `player.dimension = newDim`) so world streaming switches correctly.
+:::note[Homogeneous Coordinate Requirement]
+In REDengine spatial math, point coordinates in `Vector4` require a `w` component of `1.0`.
 :::
+
+---
+
+## Registering Teleportation Commands
+
+Register client console commands to trigger navigation shortcuts or reset stuck menus from the in-game developer console (`F8`):
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="client.js"
+    // Teleport to the Afterlife club coordinates
+    mp.commands.add('afterlife', () => {
+      teleportPlayer(-1456.89, 1038.27, 16.82, 1.0);
+    });
+
+    // Utility command to manually force-close stuck UI menus
+    mp.commands.add('close-menu', () => {
+      closeAllMenus();
+    });
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="client.lua"
+    -- Teleport to the Afterlife club coordinates
+    mp.commands.add('afterlife', function()
+      teleportPlayer(-1456.89, 1038.27, 16.82, 1.0)
+    end)
+
+    -- Utility command to manually force-close stuck UI menus
+    mp.commands.add('close-menu', function()
+      closeAllMenus()
+    end)
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Cross-Dimension Teleportation
+
+When teleporting between different server dimensions (for instance, entering a private apartment or instanced mission space), coordinate with the server:
+
+1. Client requests instance transition (e.g. `mp.events.emitServer('requestApartmentEntry', id)`).
+2. Server updates `player.dimension = instanceId` (see [Working with Players](/guides/server/players/#virtual-dimensions)).
+3. Server emits a confirmation event back to the client.
+4. Client executes `teleportPlayer(...)` to position the character inside the interior.

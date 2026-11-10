@@ -6,30 +6,30 @@ description: Learn how to handle local, server, and CEF events on the client sid
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 import { SCRIPT_LANG_TAB_SYNC_KEY } from '../../../../lib/const';
 
-The client-side event system is the primary communication bridge for your scripts. It enables you to react to platform lifecycles, coordinate streaming entities, communicate with the server, and interact with the Chromium Embedded Framework (CEF) user interface.
+The client-side event system (`mp.events`) routes communication across three distinct targets: local scripts, the dedicated server, and the embedded Chromium Embedded Framework (CEF) user interface.
 
-In this guide, you will learn how to handle local, network, and browser events using JavaScript and Lua.
+For full method signatures and event definitions, see the [`MpEvents`](/reference/client/api/events/mpevents/) and [`MpEventsMap`](/reference/client/api/events/mpeventsmap/) reference pages, or the [Lua Client Events reference](/reference/lua/client/#client-events-mpevents).
 
 ---
 
 ## Custom & Platform Events
 
-Platform events are fired automatically by the client runtime when engine states change (e.g. resources starting, entities streaming in). You can also emit custom local events within your client environment.
+Platform events are fired automatically by the client runtime when engine states transition (e.g., resources starting, entities streaming in). You can also emit custom local events to coordinate logic across scripts within the client:
 
 <Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
   <TabItem label="JS">
     ```js title="client.js"
-    // 1. Platform Event: Triggers when this client resource fully starts
+    // Platform event: triggers when this client resource completes startup
     mp.events.on('resourceStart', () => {
       console.log('The client resource has successfully started.');
     });
 
-    // 2. Platform Event: Triggers when an entity enters streaming range
+    // Platform event: triggers when an entity enters streaming range
     mp.events.on('vehicleStreamIn', (netID, gameID) => {
       console.log(`Vehicle streamed in - NetID: ${netID}, GameID: ${gameID}`);
     });
 
-    // 3. Custom Local Event: Listening for a local signal
+    // Custom local event: listening for a local signal
     mp.events.on('myCustomEvent', (data) => {
       console.log('Received local data:', data);
     });
@@ -40,17 +40,17 @@ Platform events are fired automatically by the client runtime when engine states
   </TabItem>
   <TabItem label="Lua">
     ```lua title="client.lua"
-    -- 1. Platform Event: Triggers when this client resource fully starts
+    -- Platform event: triggers when this client resource completes startup
     mp.events.add('resourceStart', function()
       print('The client resource has successfully started.')
     end)
 
-    -- 2. Platform Event: Triggers when an entity enters streaming range
+    -- Platform event: triggers when an entity enters streaming range
     mp.events.add('vehicleStreamIn', function(netID, gameID)
       print(string.format("Vehicle streamed in - NetID: %s, GameID: %s", netID, gameID))
     end)
 
-    -- 3. Custom Local Event: Listening for a local signal
+    -- Custom local event: listening for a local signal
     mp.events.add('myCustomEvent', function(data)
       print('Received local data:', data)
     end)
@@ -61,11 +61,13 @@ Platform events are fired automatically by the client runtime when engine states
   </TabItem>
 </Tabs>
 
+Stream events (such as `vehicleStreamIn` / `Out` and `remotePlayerStreamIn` / `Out`) pass both the server-assigned `netID` and local engine `gameID`. For identifier mapping outside of stream callbacks, see [Network IDs and Local Entities](/guides/client/network-and-local). For all built-in events, consult the [`MpEventsMap`](/reference/client/api/events/mpeventsmap/) reference.
+
 ---
 
 ## Communicating with the Server
 
-Client scripts send payloads to the server and listen for network broadcasts dispatched by the server runtime.
+Client scripts send data to the server using reliable network packets and listen for events dispatched from the server runtime:
 
 <Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
   <TabItem label="JS">
@@ -84,8 +86,7 @@ Client scripts send payloads to the server and listen for network broadcasts dis
     -- Send a reliable packet to the server
     mp.events.triggerServer('requestVehicleSpawn', 'Vehicle.v_sport1_quadra_turbo_r_player')
 
-    -- Optional: Send over the unreliable channel (e.g. high-frequency inputs)
-    -- Syntax: triggerUnreliable(name, sendRateBps, ...)
+    -- Send over unreliable channel (ideal for high-frequency input streams)
     mp.events.triggerUnreliable('playerInputTick', 30, { moving = true })
 
     -- Listen for events dispatched from the server
@@ -96,16 +97,20 @@ Client scripts send payloads to the server and listen for network broadcasts dis
   </TabItem>
 </Tabs>
 
+:::tip[Request-Response RPC]
+When you need to wait for a return value from the server rather than listening for an asynchronous broadcast, use the [RPC system](/guides/recipes/rpc) (`RpcClient` / `RpcBrowser`).
+:::
+
 ---
 
 ## Interacting with CEF (Browser UI)
 
-When building user interfaces with HTML, CSS, and JavaScript, use CEF events to pass data between the game client and your web page.
+Use CEF events to pass data between your client script and embedded HTML/CSS web interfaces:
 
 <Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
   <TabItem label="JS">
     ```js title="client.js"
-    // Built-in CEF Event: Fires when the browser finishes parsing the document
+    // Built-in CEF event: fires when the browser DOM is ready
     mp.events.onCef('domReady', (frameName) => {
       console.log(`Browser frame '${frameName}' is ready.`);
 
@@ -113,12 +118,12 @@ When building user interfaces with HTML, CSS, and JavaScript, use CEF events to 
       mp.events.emitCef('initializeDashboard', { playerName: 'V', health: 100 });
     });
 
-    // Built-in CEF Event: Handle page errors
+    // Built-in CEF event: fires on uncaught JS errors in the browser
     mp.events.onCef('loadingFailed', (error) => {
       console.error(`CEF Load Failed: ${error.message} (Frame: ${error.frameName})`);
     });
 
-    // Custom Event: Dispatched from the CEF web page via mp.events.emit
+    // Custom event: dispatched from the CEF page via mp.events.emit
     mp.events.onCef('uiAction', (actionName, payload) => {
       console.log(`User triggered UI action: ${actionName}`, payload);
     });
@@ -126,7 +131,7 @@ When building user interfaces with HTML, CSS, and JavaScript, use CEF events to 
   </TabItem>
   <TabItem label="Lua">
     ```lua title="client.lua"
-    -- Built-in CEF Event: Fires when the browser finishes parsing the document
+    -- Built-in CEF event: fires when the browser DOM is ready
     mp.events.addCef('domReady', function(frameName)
       print(string.format("Browser frame '%s' is ready.", frameName))
 
@@ -134,12 +139,12 @@ When building user interfaces with HTML, CSS, and JavaScript, use CEF events to 
       mp.events.triggerCef('initializeDashboard', { playerName = 'V', health = 100 })
     end)
 
-    -- Built-in CEF Event: Handle page errors
+    -- Built-in CEF event: fires on uncaught JS errors in the browser
     mp.events.addCef('loadingFailed', function(error)
-      print(string.format("CEF Load Failed: %s", error))
+      print(string.format("CEF Load Failed: %s", tostring(error)))
     end)
 
-    -- Custom Event: Dispatched from the CEF web page via mp.events.emit
+    -- Custom event: dispatched from the CEF page via mp.events.emit
     mp.events.addCef('uiAction', function(actionName, payload)
       print(string.format("User triggered UI action: %s", actionName))
     end)
@@ -147,11 +152,17 @@ When building user interfaces with HTML, CSS, and JavaScript, use CEF events to 
   </TabItem>
 </Tabs>
 
+CEF automatically dispatches two built-in events into every frame:
+- **`domReady`**: Fires when the document structure has loaded (argument: `window.name`).
+- **`loadingFailed`**: Fires on uncaught exceptions or unhandled promise rejections in the page (returns [`CefLoadingFailedError`](/reference/client/api/events/cefloadingfailederror/)).
+
+To learn how to structure HTML interfaces and handle focus, see [Creating Your First CEF UI](/guides/client/first-cef-ui).
+
 ---
 
 ## Cleaning Up Listeners
 
-To prevent memory leaks or duplicate handlers when resources reload, detach listeners when they are no longer needed.
+To prevent memory leaks and duplicate callbacks across script reloads, detach listeners when they are no longer needed:
 
 <Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
   <TabItem label="JS">
@@ -173,7 +184,7 @@ To prevent memory leaks or duplicate handlers when resources reload, detach list
       print(string.format("Vehicle %s streamed in.", netID))
     end
 
-    -- Register listener (add returns a handler token or accepts named function)
+    -- Register listener (returns a handler token)
     local token = mp.events.add('vehicleStreamIn', handleVehicleStream)
 
     -- Unregister listener
@@ -182,25 +193,6 @@ To prevent memory leaks or duplicate handlers when resources reload, detach list
   </TabItem>
 </Tabs>
 
----
-
-## Client Platform Events Reference
-
-| Event Name | Arguments | Description |
-| :--- | :--- | :--- |
-| `resourceStart` | `()` | Triggered when the client resource has fully initialized. |
-| `resourceStop` | `()` | Triggered immediately before the resource is unloaded. |
-| `vehicleStreamIn` | `(netID, gameID)` | A synchronized vehicle entered client streaming range. |
-| `vehicleStreamOut` | `(netID, gameID)` | A synchronized vehicle left client streaming range. |
-| `remotePlayerStreamIn` | `(netID, gameID)` | Another player entered client streaming range. |
-| `remotePlayerStreamOut`| `(netID, gameID)` | Another player left client streaming range. |
-| `objectStreamIn` | `(netID, gameID)` | A synchronized world object entered streaming range. |
-| `objectStreamOut` | `(netID, gameID)` | A synchronized world object left streaming range. |
-| `pedStreamIn` | `(netID, gameID)` | A synchronized ped (NPC) entered streaming range. |
-| `pedStreamOut` | `(netID, gameID)` | A synchronized ped (NPC) left streaming range. |
-| `pickupStreamIn` | `(netID, gameID)` | A synchronized pickup item entered streaming range. |
-| `pickupStreamOut` | `(netID, gameID)` | A synchronized pickup item left streaming range. |
-| `doorStreamIn` | `(netID, gameID)` | A synchronized door entity entered streaming range. |
-| `doorStreamOut` | `(netID, gameID)` | A synchronized door entity left streaming range. |
-| `domReady` | `(frameName)` | A CEF browser frame completed DOM construction. |
-| `loadingFailed` | `(error)` | A CEF browser instance encountered a network or render error. |
+:::note[Listener Scope in JavaScript]
+In JavaScript, `mp.events.off()` removes only listeners registered through `mp.events.on()`. Handlers registered through `onServer` or `onCef` use internal prefixes and are automatically cleaned up when the resource stops or restarts.
+:::

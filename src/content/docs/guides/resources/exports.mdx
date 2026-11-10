@@ -1,0 +1,169 @@
+---
+title: Resource Exports
+description: Learn how to expose functions to other resources and invoke external routines using mp.exports in JavaScript and Lua.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { SCRIPT_LANG_TAB_SYNC_KEY } from '../../../../lib/const';
+
+The resource exports system (`mp.exports`) manages cross-resource execution pipelines. It allows one resource to expose reusable functions (such as notifications, UI helpers, moderation utilities, or math libraries) so that other resources can invoke them directly without duplicating code.
+
+For complete type declarations, see the [`MpExports`](/reference/client/api/global/mpexports/), [`MpCreateExport`](/reference/client/api/global/mpcreateexport/), and [`MpExternalExports`](/reference/client/api/global/mpexternalexports/) reference pages.
+
+---
+
+## The Dual-Purpose Pattern
+
+The `mp.exports` interface functions in two distinct ways depending on how it is accessed:
+
+1. **Invoked as a function**: Registers a public export in the current resource:
+   ```js
+   mp.exports('exportName', callback);
+   ```
+2. **Accessed as a nested dictionary**: Calls an exported function from another started resource:
+   ```js
+   mp.exports.resourceName.exportName(...args);
+   ```
+
+---
+
+## Registering an Export
+
+In the resource that provides the functionality (for example, a resource named `notifications`), register public functions using `mp.exports(name, callback)`:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="resources/notifications/client.js"
+    // Synchronous export
+    mp.exports('showNotification', (title, message) => {
+      console.log(`[Notification] ${title}: ${message}`);
+      // Custom HUD / CEF dispatch logic here
+    });
+
+    // Asynchronous export (returns a Promise)
+    mp.exports('fetchPlayerStats', async (playerId) => {
+      const stats = await loadStatsFromCache(playerId);
+      return stats;
+    });
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="resources/notifications/client.lua"
+    -- Synchronous export
+    mp.exports('showNotification', function(title, message)
+      print(string.format("[Notification] %s: %s", title, message))
+      -- Custom HUD / CEF dispatch logic here
+    end)
+
+    -- Return value export
+    mp.exports('calculateDistance', function(posA, posB)
+      local dx = posA[1] - posB[1]
+      local dy = posA[2] - posB[2]
+      local dz = posA[3] - posB[3]
+      return math.sqrt(dx * dx + dy * dy + dz * dz)
+    end)
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Invoking an Export from Another Resource
+
+In any other started resource (for example, `gamemode`), access the provider's folder name on `mp.exports` and invoke the exported function:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="resources/gamemode/client.js"
+    // Call the exported routine: mp.exports.<resourceName>.<functionName>(...args)
+    mp.exports.notifications.showNotification(
+      'Contract Completed',
+      'You earned 5,000 eddies.'
+    );
+
+    // Invoking an asynchronous export
+    async function checkStats() {
+      const stats = await mp.exports.notifications.fetchPlayerStats(1);
+      console.log('Player stats:', stats);
+    }
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="resources/gamemode/client.lua"
+    -- Call the exported routine: mp.exports.<resourceName>.<functionName>(...args)
+    mp.exports.notifications.showNotification(
+      "Contract Completed",
+      "You earned 5,000 eddies."
+    )
+
+    -- Invoking an export that computes a value
+    local dist = mp.exports.notifications.calculateDistance({0, 0, 0}, {100, 100, 0})
+    print("Computed distance:", dist)
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Error Handling & Optional Dependencies
+
+If a resource attempts to call an export on a resource that is not started or that did not register that export name, the runtime throws an error. Wrap optional dependencies in guard checks:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="client.js"
+    function tryNotify(title, message) {
+      try {
+        mp.exports.notifications.showNotification(title, message);
+      } catch (err) {
+        // notifications resource is missing or stopped; fallback to console
+        console.warn(`[Fallback] ${title}: ${message}`);
+      }
+    }
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="client.lua"
+    local function tryNotify(title, message)
+      local success, err = pcall(function()
+        mp.exports.notifications.showNotification(title, message)
+      end)
+
+      if not success then
+        -- notifications resource is missing or stopped; fallback to console
+        print(string.format("[Fallback] %s: %s", title, message))
+      end
+    end
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Load Order & Lifecycle
+
+Resources listed in `server.toml` initialize in sequential order. If resource `B` invokes an export from resource `A` immediately at top-level script evaluation, resource `A` must be listed **before** `B`:
+
+```toml title="server.toml"
+# Ensure dependency providers are listed before consumer resources
+resources = [
+  "notifications",
+  "gamemode"
+]
+```
+
+To programmatically verify whether a dependency resource is running before calling its exports, inspect its state via `mp.resources.getState`:
+
+```js
+// 2 = EResourceState.Started
+if (mp.resources.getState('notifications') === 2) {
+  mp.exports.notifications.showNotification('System', 'Online');
+}
+```
+
+---
+
+## Scope & Network Boundaries
+
+- **Local Execution Scope**: Exports are scoped strictly within the same execution context. Client exports can only be called by other client scripts; server exports can only be called by other server scripts. Exports do not cross the network boundary.
+- **Client-Server Communication**: To transfer data or invoke actions between the client and server, use [network events](/guides/client/events#communicating-with-the-server) or [request-response RPC](/guides/recipes/rpc).

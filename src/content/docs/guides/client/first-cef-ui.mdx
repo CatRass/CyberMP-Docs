@@ -3,179 +3,189 @@ title: Creating Your First CEF UI
 description: Learn how to create embedded HTML/CSS web interfaces using Chromium Embedded Framework (CEF) and establish two-way communication in JavaScript and Lua.
 ---
 
-import { Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+import { Tabs, TabItem } from '@astrojs/starlight/components';
 import { SCRIPT_LANG_TAB_SYNC_KEY } from '../../../../lib/const';
 
-The Chromium Embedded Framework (CEF) allows you to build custom heads-up displays (HUDs), inventory screens, interactive menus, and speedometer gauges using modern web technologies like HTML, CSS, and JavaScript.
+The Chromium Embedded Framework (CEF) allows you to build custom heads-up displays (HUDs), inventory screens, interactive menus, and speedometer gauges using standard web technologies (HTML, CSS, and JavaScript).
 
-In this guide, you will learn how to initialize a CEF browser overlay, handle cursor focus, and establish two-way communication between your game client and your web page in JavaScript and Lua.
+For complete method signatures and options, see the [`MpCef`](/reference/client/api/global/mpcef/) reference and the browser-side [`MpEvents`](/reference/browser/api/global/mpevents/) reference.
 
 ---
 
-<Steps>
-1. ## Initializing the CEF Web View
+## Resource Manifest Configuration
 
-   All web files (HTML, CSS, JS, images, fonts) must be explicitly listed in the `file` array inside your `resource.toml`. Otherwise, the server runtime will not stream them to clients.
+All web assets (HTML, CSS, JavaScript, images, fonts) must be listed in the `file` array of your `resource.toml` manifest. Unlisted files will not be streamed to clients:
 
-   You can initialize CEF either statically via manifest configuration or dynamically via script:
+```toml title="resource.toml"
+client_script = 'client.js' # or 'client.lua'
+cef_url = './ui/index.html'
 
-   <Tabs syncKey="cef-init-method">
-     <TabItem label="Via resource.toml (Recommended)">
-       Set `cef_url` in `resource.toml` to load the entry page automatically when the resource starts:
+file = [
+  "./ui/index.html",
+  "./ui/style.css"
+]
+```
 
-       ```toml title="resource.toml"
-       client_script = 'client.js' # or 'client.lua'
-       cef_url = './ui/index.html'
+### Static vs Dynamic URL Configuration
 
-       file = [
-         "./ui/index.html",
-         "./ui/style.css"
-       ]
-       ```
-     </TabItem>
-     <TabItem label="Via Client Script">
-       Initialize the browser dynamically at runtime:
+- **Static**: Specifying `cef_url` in `resource.toml` automatically loads the page when the resource starts.
+- **Dynamic**: You can load or change the page URL at runtime using `mp.cef.setUrl('./ui/index.html')` (the path must still be in the manifest's `file` array).
 
-       <Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
-         <TabItem label="JS">
-           ```js title="client.js"
-           // Create a CEF browser instance: mp.cef.createBrowser(url, isHidden, isTransparent)
-           const browser = mp.cef.createBrowser('./ui/index.html', false, true);
-           ```
-         </TabItem>
-         <TabItem label="Lua">
-           ```lua title="client.lua"
-           -- Sets the URL of the CEF browser (creates instance if not already existing)
-           mp.cef.setUrl('./ui/index.html')
-           ```
-         </TabItem>
-       </Tabs>
-     </TabItem>
-   </Tabs>
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="client.js"
+    // Sets or changes the CEF URL dynamically
+    mp.cef.setUrl('./ui/index.html');
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="client.lua"
+    -- Sets or changes the CEF URL dynamically
+    mp.cef.setUrl('./ui/index.html')
+    ```
+  </TabItem>
+</Tabs>
 
-2. ## Building the Web UI Page
+---
 
-   Create `ui/index.html`. Inside the browser context, CyberMP injects a global `mp.events` object. You can emit events to the client script and listen for responses:
+## Building the Web Page
 
-   ```html title="ui/index.html"
-   <!doctype html>
-   <html lang="en">
-   <head>
-     <meta charset="utf-8">
-     <title>CyberMP UI</title>
-     <style>
-       body {
-         margin: 0;
-         padding: 24px;
-         background: rgba(10, 10, 15, 0.85);
-         color: #00f0ff;
-         font-family: sans-serif;
-         display: flex;
-         flex-direction: column;
-         align-items: center;
-         justify-content: center;
-         height: 100vh;
-       }
-       button {
-         background: #ff003c;
-         color: white;
-         border: none;
-         padding: 12px 24px;
-         font-size: 16px;
-         cursor: pointer;
-         text-transform: uppercase;
-         letter-spacing: 1px;
-       }
-       button:hover {
-         background: #ff2b5d;
-       }
-     </style>
-   </head>
-   <body>
-     <h2>CyberMP HUD</h2>
-     <button id="send-btn">Send Data to Client</button>
-     <p id="status-text">Waiting for input...</p>
+Inside your resource directory, create `ui/index.html`. CyberMP injects a global `mp.events` object into the browser window context:
 
-     <script>
-       const btn = document.getElementById('send-btn');
-       const status = document.getElementById('status-text');
+```html title="ui/index.html"
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>CyberMP UI</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 24px;
+      background: rgba(10, 10, 15, 0.85);
+      color: #00f0ff;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    button {
+      background: #ff003c;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    button:hover {
+      background: #ff2b5d;
+    }
+    #status-text {
+      margin-top: 16px;
+      font-size: 14px;
+      color: #8be9fd;
+    }
+  </style>
+</head>
+<body>
+  <h2>CyberMP HUD Layer</h2>
+  <button id="send-btn">Send Data to Client</button>
+  <p id="status-text">Awaiting transmission...</p>
 
-       btn.addEventListener('click', () => {
-         // Emit an event to the client script
-         mp.events.emit('uiClickEvent', 'Hello from the CEF browser!');
-       });
+  <script>
+    const btn = document.getElementById('send-btn');
+    const status = document.getElementById('status-text');
 
-       // Listen for events dispatched from the client script
-       mp.events.on('acknowledgeData', (message) => {
-         status.textContent = message;
-       });
-     </script>
-   </body>
-   </html>
-   ```
+    // 1. Dispatch an event to the game client script when clicked
+    btn.addEventListener('click', () => {
+      mp.events.emit('uiClickEvent', 'Hello from the CEF browser context!');
+    });
 
-3. ## Managing Focus and Event Routing
+    // 2. Listen for response data transmitted from the client script
+    mp.events.on('acknowledgeData', (message) => {
+      status.textContent = message;
+    });
+  </script>
+</body>
+</html>
+```
 
-   When an interactive menu opens, you need to capture keyboard and mouse input. When it closes, release input back to the game:
+For more details on browser-side event emission and listeners, see the [Browser Events API](/reference/browser/api/global/mpevents/).
 
-   <Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
-     <TabItem label="JS">
-       ```js title="client.js"
-       // Command to open UI and capture mouse/keyboard
-       mp.commands.add('ui', () => {
-         mp.cef.setFocus(true, true); // (keyboardFocus, mouseCursor)
-         console.log('UI in focus:', mp.cef.isInFocus());
-       });
+---
 
-       // Command to release focus back to the game
-       mp.commands.add('closeui', () => {
-         mp.cef.setFocus(false, false);
-         console.log('UI in focus:', mp.cef.isInFocus());
-       });
+## Managing Input Focus & Event Routing
 
-       // Handle events arriving from the CEF page
-       mp.events.onCef('uiClickEvent', (message) => {
-         console.log(`[Client Script] Received: ${message}`);
+When an interactive menu opens, capture keyboard and mouse input so clicks and keystrokes route to CEF rather than character movement. Release focus when the menu closes:
 
-         // Send data back into CEF
-         mp.events.emitCef('acknowledgeData', 'Data received by client script!');
-       });
-       ```
-     </TabItem>
-     <TabItem label="Lua">
-       ```lua title="client.lua"
-       -- Command to open UI and capture mouse/keyboard
-       mp.commands.add('ui', function()
-         mp.cef.setFocus(true, true) -- (keyboardFocus, mouseCursor)
-         print("UI in focus:", mp.cef.isInFocus())
-       end)
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="client.js"
+    // Open UI and capture input: mp.cef.setFocus(keyboardFocus, mouseCursor)
+    mp.commands.add('ui', () => {
+      mp.cef.setFocus(true, true);
+      console.log('UI in focus:', mp.cef.isInFocus());
+    });
 
-       -- Command to release focus back to the game
-       mp.commands.add('closeui', function()
-         mp.cef.setFocus(false, false)
-         print("UI in focus:", mp.cef.isInFocus())
-       end)
+    // Close UI and return control to the game
+    mp.commands.add('closeui', () => {
+      mp.cef.setFocus(false, false);
+      console.log('UI in focus:', mp.cef.isInFocus());
+    });
 
-       -- Handle events arriving from the CEF page
-       mp.events.addCef('uiClickEvent', function(message)
-         print("[Client Script] Received: " .. message)
+    // Handle events coming from the CEF page
+    mp.events.onCef('uiClickEvent', (message) => {
+      console.log(`[Client Script] Received: ${message}`);
 
-         -- Send data back into CEF
-         mp.events.triggerCef('acknowledgeData', 'Data received by client script!')
-       end)
-       ```
-     </TabItem>
-   </Tabs>
+      // Respond back into the CEF web view
+      mp.events.emitCef('acknowledgeData', 'Data received by client script!');
+    });
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="client.lua"
+    -- Open UI and capture input: mp.cef.setFocus(keyboardFocus, mouseCursor)
+    mp.commands.add('ui', function()
+      mp.cef.setFocus(true, true)
+      print("UI in focus:", mp.cef.isInFocus())
+    end)
 
-4. ## Testing In-Game
+    -- Close UI and return control to the game
+    mp.commands.add('closeui', function()
+      mp.cef.setFocus(false, false)
+      print("UI in focus:", mp.cef.isInFocus())
+    end)
 
-   1. Connect to your server.
-   2. Press `F8` to open the client console.
-   3. Type `ui` and press Enter. The mouse cursor will appear over the screen.
-   4. Click **Send Data to Client**. The status text updates with the confirmation payload.
-   5. Type `closeui` in the F8 console to release cursor control back to character movement.
-</Steps>
+    -- Handle events coming from the CEF page
+    mp.events.addCef('uiClickEvent', function(message)
+      print("[Client Script] Received: " .. message)
 
-:::tip[Remote Debugging]
-To inspect your HTML/CSS elements and JavaScript console inside CEF, set `cef_debug = true` in your `server.toml`. Then open a Chromium-based browser on your development machine and navigate to `http://localhost:9222`.
-:::
+      -- Respond back into the CEF web view
+      mp.events.triggerCef('acknowledgeData', 'Data received by client script!')
+    end)
+    ```
+  </TabItem>
+</Tabs>
+
+### Testing In-Game
+
+1. Connect to your development server.
+2. Press `F8` to open the client developer console.
+3. Type `ui` and press Enter. The mouse cursor appears over the screen.
+4. Click **Send Data to Client**. The status text updates with the reply payload.
+5. Type `closeui` to release cursor control back to gameplay.
+
+---
+
+## Remote Debugging CEF
+
+To inspect HTML/CSS elements and view the web console:
+
+1. Add `cef_debug = true` to your [`server.toml`](/reference/server/configuration).
+2. Connect to the server with the game client.
+3. Open a Chromium-based browser (Chrome, Edge, Brave) and navigate to `http://localhost:9222`.
+4. Select the target page to launch Chrome DevTools.
