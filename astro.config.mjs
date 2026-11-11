@@ -100,7 +100,6 @@ export default defineConfig({
                     autogenerate: { directory: "reference/client/api" },
                     collapsed: true,
                   },
-                  "reference/client/console",
                   "reference/client/working-with-game-natives",
                 ],
               },

@@ -10,8 +10,8 @@ In CyberMP, player spawning is coordinated on the client. To properly initialize
 
 For method definitions, see [`MpLocal.spawnPlayer`](/reference/client/api/global/mplocal/#spawnplayer) and the [Lua Client Reference](/reference/lua/client/#local-entities-mpclient).
 
-:::important[Prerequisite]
-Using REDengine classes like `ScriptGameInstance` or `Game` requires enabling game natives in your `resource.toml`:
+:::note
+You need `use_game_natives` in your `resource.toml` to make calls to game native functions:
 ```toml title="resource.toml"
 use_game_natives = true
 ```

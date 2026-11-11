@@ -8,16 +8,6 @@ import { SCRIPT_LANG_TAB_SYNC_KEY } from '../../../../lib/const';
 
 Teleporting characters in REDengine requires safely closing any active pause or settings menus before moving the entity. Moving a character while a menu scenario is open can freeze the game's input pipeline and lock character controls.
 
-For details on game native availability across phases, see [Working with Game Natives](/reference/client/working-with-game-natives).
-
-:::important[Prerequisite]
-Interacting with REDengine facilities and menu controllers requires enabling game natives in your `resource.toml`:
-```toml title="resource.toml"
-use_game_natives = true
-```
-For lifecycle phase requirements, see [Working with Game Natives](/reference/client/working-with-game-natives).
-:::
-
 ---
 
 ## Tracking and Closing Active Menus
