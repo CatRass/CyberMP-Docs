@@ -87,6 +87,15 @@ export default defineConfig({
                     autogenerate: { directory: "reference/server/api" },
                     collapsed: true,
                   },
+                  {
+                    label: "Lua API",
+                    items: [
+                      "reference/lua/overview",
+                      "reference/lua/server",
+                      "reference/lua/shared",
+                    ],
+                    collapsed: true,
+                  },
                   "reference/server/configuration",
                   "reference/server/console",
                 ],
@@ -100,6 +109,15 @@ export default defineConfig({
                     autogenerate: { directory: "reference/client/api" },
                     collapsed: true,
                   },
+                  {
+                    label: "Lua API",
+                    items: [
+                      "reference/lua/overview",
+                      "reference/lua/client",
+                      "reference/lua/shared",
+                    ],
+                    collapsed: true,
+                  },
                   "reference/client/working-with-game-natives",
                 ],
               },
@@ -111,15 +129,6 @@ export default defineConfig({
                     autogenerate: { directory: "reference/browser/api" },
                     collapsed: true,
                   },
-                ],
-              },
-              {
-                label: "Lua API",
-                items: [
-                  "reference/lua/overview",
-                  "reference/lua/server",
-                  "reference/lua/client",
-                  "reference/lua/shared",
                 ],
               },
             ],

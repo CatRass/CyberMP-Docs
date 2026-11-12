@@ -128,14 +128,13 @@ local pickup = mp.pickups.create({
 | `mp.events.remove(token)` | Unregisters a previously registered event listener. |
 
 ### Cancelling Built-In Events
-Inside platform event handlers, call `mp.cancelEvent()` or `return false` to abort default actions:
+Inside platform event handlers, `return false` to abort default actions:
 
 ```lua title="server.lua"
 -- Disable PvP damage in safe zones
 mp.events.add('damage', function(victimId, data)
   local victim = mp.players.at(victimId)
   if victim:getMeta('inSafeZone') then
-    mp.cancelEvent()
     return false
   end
 end)

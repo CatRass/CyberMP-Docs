@@ -164,10 +164,7 @@ To push messages, UI updates, or state sync packets across the network to player
 
 ## Cancelling Platform Events
 
-Certain game events (such as damage, explosion, or world state changes) can be intercepted and cancelled before they affect the game state. To cancel an event, you can either:
-
-- Return `false` from the callback function.
-- Call `mp.cancelEvent()` inside the callback.
+Certain game events (such as damage, explosion, or world state changes) can be intercepted and cancelled before they affect the game state. To cancel an event, you can return `false` from the callback function:
 
 <Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
   <TabItem label="JS">
@@ -178,11 +175,7 @@ Certain game events (such as damage, explosion, or world state changes) can be i
 
       // If the victim is inside a designated safe zone
       if (victim?.getMeta('inSafeZone')) {
-        // Option 1: Call mp.cancelEvent()
-        mp.cancelEvent();
-
-        // Option 2: Alternatively, return false from the function
-        // return false;
+        return false;
       }
     });
     ```
@@ -195,11 +188,7 @@ Certain game events (such as damage, explosion, or world state changes) can be i
 
       -- If the victim is inside a designated safe zone
       if victim and victim:getMeta('inSafeZone') then
-        -- Option 1: Call mp.cancelEvent()
-        mp.cancelEvent()
-
-        -- Option 2: Alternatively, return false from the function
-        -- return false
+        return false
       end
     end)
     ```
