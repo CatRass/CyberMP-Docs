@@ -45,12 +45,12 @@ Use the event listener interface to hook into built-in game platform lifecycle e
   <TabItem label="Lua">
     ```lua title="server.lua"
     -- 1. Platform Event: Handle new incoming player connections
-    mp.events.on('playerConnected', function(playerId, tempId)
+    mp.events.add('playerConnected', function(playerId, tempId)
       print(string.format("Player connected - assigned Network ID: %s", playerId))
     end)
 
     -- 2. Platform Event: Track player deaths and log combat analytics
-    mp.events.on('playerDeath', function(playerId, data)
+    mp.events.add('playerDeath', function(playerId, data)
       if data.killerId then
         print(string.format("Player %s was flatlined by Killer ID: %s", playerId, data.killerId))
       else
@@ -59,12 +59,12 @@ Use the event listener interface to hook into built-in game platform lifecycle e
     end)
 
     -- 3. Custom Server Event: Triggered internally within server scripts
-    mp.events.on('logServerActivity', function(action, details)
+    mp.events.add('logServerActivity', function(action, details)
       print(string.format("[Activity Log] Action: %s | %s", action, details))
     end)
 
     -- Emit the custom event inside your server environment
-    mp.events.emit('logServerActivity', 'Database', 'Initial connection established.')
+    mp.events.trigger('logServerActivity', 'Database', 'Initial connection established.')
     ```
   </TabItem>
 </Tabs>
@@ -73,7 +73,7 @@ Use the event listener interface to hook into built-in game platform lifecycle e
 
 ## Handling Packets from Clients
 
-When client code transmits an event over the network socket using `emitServer`, the server catches it using `onClient`.
+When client code transmits an event over the network socket using `emitServer` (JS) or `triggerServer` (Lua), the server catches it using `onClient` (JS) or `addClient` (Lua).
 
 :::note
 The server-side callback automatically receives the sending **player object** as the first argument, ensuring you always securely know which client initiated the request.
@@ -93,7 +93,7 @@ The server-side callback automatically receives the sending **player object** as
   <TabItem label="Lua">
     ```lua title="server.lua"
     -- Catching a vehicle spawn request from a client script
-    mp.events.onClient('requestVehicleSpawn', function(player, modelHash, x, y, z)
+    mp.events.addClient('requestVehicleSpawn', function(player, modelHash, x, y, z)
       print(string.format("Player %s (%s) requested to spawn: %s", player.nickname or player.id, player.id, modelHash))
 
       -- Your vehicle creation logic goes here...
@@ -108,8 +108,8 @@ The server-side callback automatically receives the sending **player object** as
 
 To push messages, UI updates, or state sync packets across the network to players, you can either:
 
-- Use `mp.events.emitClient(playerId, 'my-event', ...args)` (specifying the target player by numeric ID or player reference).
-- Call `player.emit('my-event', ...args)` (or `player:emit('my-event', ...args)` in Lua) directly on the target player object instance.
+- Use `mp.events.emitClient(playerId, 'my-event', ...args)` in JS or `mp.events.triggerClient(playerId, 'my-event', ...args)` in Lua (specifying the target player by numeric ID or player reference).
+- Call `player.emit('my-event', ...args)` in JS or `player:trigger('my-event', ...args)` in Lua directly on the target player object instance.
 
 <Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
   <TabItem label="JS">
@@ -138,22 +138,22 @@ To push messages, UI updates, or state sync packets across the network to player
   <TabItem label="Lua">
     ```lua title="server.lua"
     -- Listen for a player spawning into the world
-    mp.events.on('playerSpawn', function(playerId)
-      -- Option 1: Direct a welcome alert using mp.events.emitClient
-      mp.events.emitClient(playerId, 'serverNotification', 'Welcome back to Night City.')
+    mp.events.add('playerSpawn', function(playerId)
+      -- Option 1: Direct a welcome alert using mp.events.triggerClient
+      mp.events.triggerClient(playerId, 'serverNotification', 'Welcome back to Night City.')
 
-      -- Option 2: Direct a welcome alert calling emit directly on the player instance
+      -- Option 2: Direct a welcome alert calling trigger directly on the player instance
       local player = mp.players.at(playerId)
       if player then
-        player:emit('serverNotification', 'Welcome back to Night City.')
+        player:trigger('serverNotification', 'Welcome back to Night City.')
       end
     end)
 
     -- Example: Notifying a vehicle owner when their car is damaged
-    mp.events.on('vehicleHittedByPlayer', function(vehicleId, data)
-      if data.byOwner then
+    mp.events.add('vehicleHittedByPlayer', function(playerId, data)
+      if data[4] then
         -- Send an event back to the driver's client
-        mp.events.emitClient(data.instigatorID, 'uiNotification', 'You damaged your own vehicle!')
+        mp.events.triggerClient(playerId, 'uiNotification', 'You damaged your own vehicle!')
       end
     end)
     ```
@@ -183,8 +183,8 @@ Certain game events (such as damage, explosion, or world state changes) can be i
   <TabItem label="Lua">
     ```lua title="server.lua"
     -- Disable PvP damage in safe zones
-    mp.events.on('damage', function(victimId, data)
-      local victim = mp.players.at(victimId)
+    mp.events.add('damage', function(playerId, data)
+      local victim = mp.players.at(data.victimId)
 
       -- If the victim is inside a designated safe zone
       if victim and victim:getMeta('inSafeZone') then
@@ -199,7 +199,7 @@ Certain game events (such as damage, explosion, or world state changes) can be i
 
 ## Cleaning Up Event Handlers
 
-To prevent memory leaks or repeating routines when resources or modules restart, detach active event listeners using `off`. This cleanup method works for both internal and network client listeners.
+To prevent memory leaks or repeating routines when resources or modules restart, detach active event listeners using `off` in JS or `remove` in Lua (`remove` takes the listener id returned by `add`). This cleanup method works for both internal and network client listeners.
 
 <Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
   <TabItem label="JS">
@@ -224,10 +224,10 @@ To prevent memory leaks or repeating routines when resources or modules restart,
     end
 
     -- Register the active event listener hook
-    mp.events.on('explosion', trackExplosions)
+    local explosionHandler = mp.events.add('explosion', trackExplosions)
 
     -- Unregister the handler when it is no longer required
-    mp.events.off('explosion', trackExplosions)
+    mp.events.remove('explosion', explosionHandler)
     ```
   </TabItem>
 </Tabs>
@@ -252,12 +252,12 @@ Using standard events, the server cannot communicate directly with a player's Ch
   </TabItem>
   <TabItem label="Lua">
     ```lua title="server.lua"
-    mp.events.emitClient(playerId, 'browser:updateInventory', inventoryData)
+    mp.events.triggerClient(playerId, 'browser:updateInventory', inventoryData)
     ```
 
     ```lua title="client.lua"
-    mp.events.onServer('browser:updateInventory', function(inventoryData)
-      mp.events.emitCef('updateInventory', inventoryData)
+    mp.events.addServer('browser:updateInventory', function(inventoryData)
+      mp.events.triggerCef('updateInventory', inventoryData)
     end)
     ```
   </TabItem>

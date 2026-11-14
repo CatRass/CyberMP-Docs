@@ -33,4 +33,4 @@ In this guide, we will focus entirely on how to configure the `file` property to
    When you declare assets in the `file` array, CyberMP automatically loads them directly into the game at startup.
 
    * **Supported Game Assets & Mods:** Custom archives, placement data, and engine tweaks such as `.archive`, `.xl`, `.tweak`, `.redscripts`, `.yaml` and `.yml` files are fully supported and injected directly into the game.
-   * **Scripting Restrictions:** This automatic injection **does not apply** to standalone scripting files like `.js` (aside from frontend CEF scripts), `.lua`, or `.redscript`. Game-level scripts must be handled through `client_script` property of resource rather than the raw asset pipeline. (except for redscript files, these should be compiled and included into file property)
+   * **Scripting Restrictions:** This automatic injection **does not apply** to standalone scripting files like `.js` (aside from frontend CEF scripts) or `.lua`. Game-level scripts must be handled through `client_script` property of resource rather than the raw asset pipeline. (except for redscript files, these should be compiled and included into file property)

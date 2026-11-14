@@ -90,14 +90,14 @@ In any other started resource (for example, `gamemode`), access the provider's f
   </TabItem>
   <TabItem label="Lua">
     ```lua title="resources/gamemode/client.lua"
-    -- Call the exported routine: mp.exports.<resourceName>.<functionName>(...args)
-    mp.exports.notifications.showNotification(
+    -- Call the exported routine: mp.exports.<resourceName>:<functionName>(...args)
+    mp.exports.notifications:showNotification(
       "Contract Completed",
       "You earned 5,000 eddies."
     )
 
     -- Invoking an export that computes a value
-    local dist = mp.exports.notifications.calculateDistance({0, 0, 0}, {100, 100, 0})
+    local dist = mp.exports.notifications:calculateDistance({0, 0, 0}, {100, 100, 0})
     print("Computed distance:", dist)
     ```
   </TabItem>
@@ -126,7 +126,7 @@ If a resource attempts to call an export on a resource that is not started or th
     ```lua title="client.lua"
     local function tryNotify(title, message)
       local success, err = pcall(function()
-        mp.exports.notifications.showNotification(title, message)
+        mp.exports.notifications:showNotification(title, message)
       end)
 
       if not success then

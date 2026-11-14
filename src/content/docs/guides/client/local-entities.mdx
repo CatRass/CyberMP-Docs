@@ -1,0 +1,114 @@
+---
+title: Local Entities
+description: Learn how to spawn client-only vehicles, peds, and objects, run per-frame ticks, and query engine timers in JavaScript and Lua.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { SCRIPT_LANG_TAB_SYNC_KEY } from '../../../../lib/const';
+
+Local entities exist only in the client's game session: the server does not track them and other players cannot see or interact with them. The same client runtime also exposes per-frame tick loops and the engine timer.
+
+For complete API signatures and types, see the [`MpLocal`](/reference/client/api/global/mplocal/) reference, or the [Lua Client API Reference](/reference/lua/client/#local-entities-mpclient). Converting server **Network IDs** into engine **Game IDs** is covered in [Network IDs](/guides/client/network-ids/).
+
+---
+
+## Client-Only Entities (Local Spawn)
+
+You can spawn vehicles, peds, and props that exist **strictly on the local client**. Other connected players will not see or interact with them. This is ideal for dealership showcase rooms, cinematic camera sequences, or decorative UI scenes:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="client.js"
+    // Client-side hashes must be 64-bit BigInt values in JavaScript
+    const modelHash = BigInt(mp.game.hashes.toTweakdbid('Vehicle.v_standard2_archer_hella'));
+    const appearanceHash = BigInt(mp.game.hashes.toCname('default'));
+
+    // Spawn local preview vehicle: (model, appearance, x, y, z, roll, pitch, yaw, streaming)
+    const vehHandle = mp.local.spawnVehicle(
+      modelHash,
+      appearanceHash,
+      -1392.637, 1271.536, 123.082,
+      0.0, 0.0, 90.0,
+      true
+    );
+
+    // Despawn when no longer needed
+    mp.local.despawnVehicle(vehHandle);
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="client.lua"
+    -- Lua hash helpers return decimal strings; convert to numbers
+    local modelHash = tonumber(mp.hashes.toTweakdbid('Vehicle.v_standard2_archer_hella'), 10)
+    local appearanceHash = tonumber(mp.hashes.toCname('default'), 10)
+
+    -- Spawn local preview vehicle: (model, appearance, x, y, z, roll, pitch, yaw, streaming)
+    local vehHandle = mp.client.spawnVehicle(
+      modelHash,
+      appearanceHash,
+      -1392.637, 1271.536, 123.082,
+      0.0, 0.0, 90.0,
+      true
+    )
+
+    -- Despawn when no longer needed
+    mp.client.despawnVehicle(vehHandle)
+    ```
+  </TabItem>
+</Tabs>
+
+Similar methods exist for pedestrians (`spawnPed` / `despawnPed`) and objects (`spawnObject` / `despawnObject`). Note that local entities in JavaScript reside under [`mp.local.*`](/reference/client/api/global/mplocal/), whereas in Lua they reside under [`mp.client.*`](/reference/lua/client/#local-entities-mpclient).
+
+---
+
+## Per-Frame Tick Loops
+
+When implementing custom 3D markers, distance math, or camera updates, execute logic on every render frame:
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="client.js"
+    let tickId = null;
+
+    const startTick = () => {
+      if (tickId !== null) return;
+
+      tickId = mp.setTick(() => {
+        const player = mp.game.GetPlayer();
+        if (!player) return;
+        // Fast calculations: distance checks, raycasts, UI positioning
+      });
+    };
+
+    const stopTick = () => {
+      if (tickId === null) return;
+      mp.clearTick(tickId);
+      tickId = null;
+    };
+
+    mp.events.on('resourceStop', stopTick);
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="client.lua"
+    local isRunning = true
+
+    -- mp.onUpdateLoop runs on every script tick and cannot be removed
+    mp.onUpdateLoop(function()
+      if not isRunning then return end
+
+      local player = Game.GetPlayer() -- needs use_game_natives = true
+      if not player then return end
+      -- Fast calculations: distance checks, raycasts, UI positioning
+    end)
+
+    mp.events.add('resourceStop', function()
+      isRunning = false
+    end)
+    ```
+  </TabItem>
+</Tabs>
+
+:::tip[Performance]
+Never perform database operations, heavy JSON parsing, or bulk entity queries inside a tick callback. Keep tick execution under 1 millisecond to prevent frame drops.
+:::

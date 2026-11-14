@@ -5,7 +5,7 @@ prev: false
 title: "Rotation"
 ---
 
-> **Rotation** = \[`number`, `number`, `number`\]
+> **Rotation** = \[`pitch`: `number`, `roll`: `number`, `yaw`: `number`\]
 
 Defined in: shared.ts:24
 

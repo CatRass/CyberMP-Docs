@@ -42,7 +42,6 @@ sequenceDiagram
 | **`onTweak`** | `mp.game.onTweak(fn)` | `mp.registerGameState('onTweak', fn)` | Read/write TweakDB records and flats | Assuming the local player puppet exists |
 | **`onInit`** | `mp.game.onInit(fn)` | `mp.registerGameState('onInit', fn)` | Method observers, overrides, early hooks | World entity queries |
 | **`onGameLoaded`** | `mp.game.onGameLoaded(fn)` / `onceGameLoaded(fn)` | `mp.registerGameState('onGameLoaded', fn)` | Retrieve `GetPlayer()`, systems, spawn routines | Assuming puppet exists synchronously |
-| **`onLocalPlayerSpawned`** | `mp.game.onLocalPlayerSpawned(fn)` | — *(JavaScript only)* | Post-spawn appearance, UI setup | Assuming character gender is finalized |
 | **`resourceStop`** | `mp.events.on('resourceStop', fn)` | `mp.events.add('resourceStop', fn)` | Release CEF focus, clear ticks, despawn local entities | Starting new asynchronous work |
 
 :::note[Post-Load Script Execution]
@@ -135,14 +134,13 @@ When applying custom appearances, stat modifications, or inventory items immedia
   </TabItem>
   <TabItem label="Lua">
     ```lua title="client.lua"
+    -- mp.wait needs a coroutine: call this from a task or a handler
     local function waitForPlayer(timeoutMs)
-      local start = mp.getTimer()
-      timeoutMs = timeoutMs or 10000
-
-      while mp.getTimer() - start < timeoutMs do
+      local started = mp.getTimer()
+      while mp.getTimer() - started < (timeoutMs or 10000) do
         local player = Game.GetPlayer()
         if player then return player end
-        mp.wait(50) -- Requires coroutine execution context
+        mp.wait(50)
       end
       return nil
     end
@@ -150,8 +148,10 @@ When applying custom appearances, stat modifications, or inventory items immedia
     mp.registerGameState('onGameLoaded', function()
       mp.client.spawnPlayer(-1392.637, 1271.536, 123.082, 1.0)
 
-      -- Run wait in a task
-      mp.events.trigger('task:initPlayer')
+      mp.spawnTask(function()
+        local player = waitForPlayer(10000)
+        print('Player ready:', player ~= nil)
+      end)
     end)
     ```
   </TabItem>

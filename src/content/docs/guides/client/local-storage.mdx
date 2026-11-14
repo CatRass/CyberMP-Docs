@@ -77,10 +77,14 @@ Values must be plaintext strings. To store structured data (such as objects, arr
     -- 3. Commit changes to physical disk
     mp.localStorage.save()
 
-    -- 4. Retrieve values
-    local theme = mp.localStorage.get('hud_theme')
+    -- 4. Retrieve values: get() returns JSON-encoded text ('"abc"', 'null' when missing)
+    local rawTheme = mp.localStorage.get('hud_theme')
+    local theme = (rawTheme and rawTheme ~= 'null') and json.decode(rawTheme) or nil
     local rawKeybinds = mp.localStorage.get('user_keybinds')
-    local keybinds = rawKeybinds and json.decode(rawKeybinds) or {}
+    local keybinds = {}
+    if rawKeybinds and rawKeybinds ~= 'null' then
+      keybinds = json.decode(json.decode(rawKeybinds)) -- unwrap the store, then parse the value
+    end
 
     print(string.format("Loaded theme: %s, Phone keybind: %s", theme, keybinds.openPhone))
     ```

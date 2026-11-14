@@ -1,235 +1,1512 @@
 ---
 title: Server Lua API Reference
-description: Authoritative reference for the CyberMP Server Lua API, covering entity pools, entity objects, events, commands, resources, and utilities.
+description: "Reference for the CyberMP Server Lua API: entity pools, entity objects, spawning options, events, commands, resources, HTTP, utilities and voice chat."
 ---
 
-The server-side Lua API is exposed through the global `mp` table in `.lua` files running within `server_script` or `shared_script`.
+The server-side Lua API is exposed through the global `mp` table in `.lua` files running within the `server_script` of a resource. Every resource runs in its own Lua state.
+
+Hashes, vectors and scheduler primitives are shared with the client runtime; this page documents the server-side surface of the `mp` table.
 
 ---
+
 
 ## Entity Pools
 
-The server runtime provides five primary synchronized entity pools:
-- `mp.players`
-- `mp.vehicles`
-- `mp.objects`
-- `mp.peds`
-- `mp.pickups`
+The server runtime provides five synchronized entity pools: `mp.players`, `mp.vehicles`, `mp.objects`, `mp.peds` and `mp.pickups`.
 
 ### Common Pool Methods
 
-| Method | Return Type | Description |
-| :--- | :--- | :--- |
-| `pool.exists(id)` | `boolean` | Checks whether an entity with the specified network ID exists. |
-| `pool.at(id)` | `Entity` | Retrieves the entity object. Throws an error if the entity does not exist (always call `exists` first). |
-| `pool.toArray()` | `Entity[]` | Returns a table array containing all active entities in the pool. |
-| `pool.create(options)` | `Entity` | Spawns a new synchronized entity in the world (available on vehicles, objects, peds, pickups). |
-| `pool.destroy(idOrEntity)` | `boolean` | Despawns and removes the entity from the world. |
-| `mp.players.kick(playerOrId, reason)` | `boolean` | Disconnects the specified player. |
+<a id="pool-exists"></a>
 
-```lua title="server.lua"
--- Iterate over all connected players
-for _, player in ipairs(mp.players.toArray()) do
-  player:emit('chat:addMessage', 'Server announcement!')
-end
+#### pool.exists(entityOrId)
 
--- Check existence before accessing
-if mp.vehicles.exists(vehicleId) then
-  local car = mp.vehicles.at(vehicleId)
-  car.dimension = 0
-end
-```
+> **pool.exists**(`entityOrId`): `boolean`
+
+Checks whether the entity still exists. Accepts an entity object or a numeric network ID.
+
+<a id="pool-at"></a>
+
+#### pool.at(entityOrId)
+
+> **pool.at**(`entityOrId`): `Entity`
+
+Returns the entity object. Raises an error when the entity does not exist, so call `exists` first.
+
+<a id="pool-toarray"></a>
+
+#### pool.toArray()
+
+> **pool.toArray**(): `Entity[]`
+
+Returns a Lua array with entity objects for every active entity in the pool.
+
+<a id="pool-create"></a>
+
+#### pool.create(options)
+
+> **pool.create**(`options`): `Entity`
+
+Creates a synchronized entity and returns its object. Available on vehicles, objects, peds and pickups — not on `mp.players`.
+
+<a id="pool-destroy"></a>
+
+#### pool.destroy(entityOrId)
+
+> **pool.destroy**(`entityOrId`): `nil`
+
+Removes the entity. Available on vehicles, objects, peds and pickups — not on `mp.players`. Returns nothing.
+
+<a id="mp-players-kick"></a>
+
+#### mp.players.kick(playerOrId, reason)
+
+> **mp.players.kick**(`playerOrId`, `reason`): `nil`
+
+Disconnects the specified player. Returns nothing.
 
 ---
+
 
 ## Entity Objects
 
-An entity object is a table containing `{ id = <networkId> }` backed by a metatable that queries the C++ server core on property reads.
+An entity object is a table containing `{ id = networkId }` backed by a metatable that reads the current value from the server core on every field access. Two objects for the same entity are different tables: compare their `id`, not the objects themselves.
 
 ### Shared Properties (All Entities)
 
-| Property | Type | Access | Description |
-| :--- | :--- | :--- | :--- |
-| `id` | `number` | Read-only | Unique network ID assigned to the entity. |
-| `type` | `number` | Read-only | Entity type enum: `1` Player, `2` Vehicle, `3` Object, `4` Ped, `5` Pickup, `6` Door, `0` Unknown. |
-| `exist` | `boolean` | Read-only | `true` while the entity remains active on the server. |
-| `position` | `vector3` | Read-only | Current coordinates in Night City. |
-| `rotation` | `vector3` | Read-only | Rotation vector: `x` roll, `y` pitch, `z` yaw. |
-| `yaw` | `number` | Read-only | Entity heading in degrees. |
-| `dimension` | `number` | Read / Write | Virtual world dimension index (`0` for default shared world). |
-| `streamingRadius` | `number` | Read / Write | Distance in meters at which clients stream this entity in. |
-| `owner` | `Player` / `number` | Read / Write | Player object of the network owner client (`-1` if unowned). Assignable for non-players. |
-| `firstOwner` | `Player` / `number` | Read-only | The initial network owner, or `-1`. |
+<a id="entity-id"></a>
+
+#### id
+
+> **id**: `number`
+
+Unique network ID assigned to the entity. Treat as read-only: assigning it retargets the proxy and is not supported.
+
+<a id="entity-type"></a>
+
+#### type
+
+> **type**: `number`
+
+Entity type, read-only: `1` Player, `2` Vehicle, `3` Object, `4` Ped, `5` Pickup, `6` Door, `0` not found.
+
+<a id="entity-exist"></a>
+
+#### exist
+
+> **exist**: `boolean`
+
+`true` while the entity remains active on the server. Read-only.
+
+<a id="entity-position"></a>
+
+#### position
+
+> **position**: `vector3`
+
+Current coordinates in Night City. Read-only.
+
+<a id="entity-rotation"></a>
+
+#### rotation
+
+> **rotation**: `vector3`
+
+Rotation, read-only: `x` roll, `y` pitch, `z` yaw.
+
+<a id="entity-yaw"></a>
+
+#### yaw
+
+> **yaw**: `number`
+
+Entity heading in degrees. Read-only.
+
+<a id="entity-dimension"></a>
+
+#### dimension
+
+> **dimension**: `number`
+
+Virtual world dimension (`0` for the default shared world). Read / write.
+
+<a id="entity-streamingradius"></a>
+
+#### streamingRadius
+
+> **streamingRadius**: `number`
+
+Distance at which clients stream this entity in. Read / write.
+
+<a id="entity-owner"></a>
+
+#### owner
+
+> **owner**: `Player` | `-1` | `nil`
+
+Player object of the network owner client, or `-1` when unowned. Read / write; assignable for non-player entities (pass a player object or network ID).
+
+<a id="entity-firstowner"></a>
+
+#### firstOwner
+
+> **firstOwner**: `Player` | `-1` | `nil`
+
+The initial network owner, or `-1`. Read-only.
+
+<a id="entity-getmeta"></a>
+
+#### entity:getMeta(key)
+
+> **entity:getMeta**(`key`): `any`
+
+Same as `mp.meta.getPlayer` / `mp.meta.getEntity`.
+
+<a id="entity-setmeta"></a>
+
+#### entity:setMeta(key, value)
+
+> **entity:setMeta**(`key`, `value`): `nil`
+
+Stores the value without syncing it to clients. To sync, use `mp.meta` with `sync = true`.
 
 :::caution[Property Assignment]
-Only `dimension`, `streamingRadius`, and `owner` can be assigned directly on entity objects. Assigning other properties (such as `entity.position = ...`) only sets a key on the Lua table without updating the engine world state.
+Only `dimension`, `streamingRadius` and `owner` can be assigned directly on entity objects. Assigning any other property (for example `entity.position = vec`) only stores a key on the Lua table; it does not move or change the entity in the engine.
 :::
 
-### Player Methods & Fields
-- **Properties**: `nickname`, `ping`, `ip`, `health`, `velocity` (`vector3`), `vehicle` (current vehicle or `nil`), `lastVehicle` (previous vehicle or `nil`).
-- **`player:kick(reason)`**: Disconnects the player from the session.
-- **`player:emit(eventName, ...)` / `player:trigger(...)`**: Sends a network event packet to this client (`mp.events.addServer` on client).
-- **`player:mute(boolean)`**: Toggles whether the player's microphone input is muted on VoIP channels.
-- **`player:getMeta(key)` / `player:setMeta(key, value)`**: Accesses local un-synced player metadata.
+### Player Objects
 
-### Vehicle Methods & Fields
-- **Properties**: `model` (uint64 hash), `appearance` (uint64 hash), `health`, `velocity` (`vector3`), `angularVelocity` (`vector3`), `seats` (array of player IDs occupying seats), `lastSeats`.
-- **`vehicle:getPlayerInSeat(seatIndex)`**: Returns the player in the specified seat (0 = Driver).
-- **`vehicle:getLastPlayerInSeat(seatIndex)`**: Returns the previous player who occupied that seat.
-- **`vehicle:destroy()`**: Despawns and removes the vehicle.
+Players are entity objects with additional synchronized fields and methods.
 
-### Spawning Entities (`create`)
+<a id="player-nickname"></a>
 
-```lua title="server.lua"
--- Spawning a vehicle
-local vehicle = mp.vehicles.create({
-  model = mp.hashes.tweakdbid('Vehicle.v_sport1_quadra_turbo_r_player'),
-  appearance = mp.hashes.cname('quadra_turbo_r__basic_player_01'),
-  position = vector3(-1392.6, 1271.5, 123.0),
-  yaw = 90.0,
-  health = 1000,
-  dimension = 0
-})
+#### nickname
 
--- Spawning an NPC Ped
-local ped = mp.peds.create({
-  model = mp.hashes.tweakdbid('Character.Judy'),
-  appearance = mp.hashes.cname('default'),
-  position = vector3(-1390.0, 1270.0, 123.0),
-  yaw = 180.0
-})
+> **nickname**: `string`
 
--- Spawning a static world object
-local obj = mp.objects.create({
-  model = mp.hashes.cname('base\\gameplay\\devices\\security\\surveillance_cameras\\surveillance_camera_wall_a.ent'),
-  position = vector3(-1385.0, 1275.0, 125.0)
-})
+Display name of the player.
 
--- Spawning a pickup item
-local pickup = mp.pickups.create({
-  model = mp.hashes.tweakdbid('Items.Preset_Nue_Default'),
-  pickupType = 0,
-  position = vector3(-1388.0, 1272.0, 123.0)
-})
-```
+<a id="player-ping"></a>
+
+#### ping
+
+> **ping**: `number`
+
+Network latency in milliseconds.
+
+<a id="player-ip"></a>
+
+#### ip
+
+> **ip**: `string`
+
+Remote IP address.
+
+<a id="player-health"></a>
+
+#### health
+
+> **health**: `number`
+
+Current health. Read-only.
+
+<a id="player-velocity"></a>
+
+#### velocity
+
+> **velocity**: `vector3`
+
+Movement velocity. Read-only.
+
+<a id="player-vehicle"></a>
+
+#### vehicle
+
+> **vehicle**: `Vehicle`
+
+Vehicle currently occupied by the player. Read the `id`: it is `0` when the player is not seated.
+
+<a id="player-lastvehicle"></a>
+
+#### lastVehicle
+
+> **lastVehicle**: `Vehicle`
+
+Previous vehicle of the player. Same `id` rule as `vehicle`.
+
+<a id="player-kick"></a>
+
+#### player:kick(reason)
+
+> **player:kick**(`reason`): `nil`
+
+Disconnects the player. `reason` is optional.
+
+<a id="player-trigger"></a>
+
+#### player:trigger(eventName, ...)
+
+> **player:trigger**(`eventName`, `...`): `boolean`
+
+Sends a network event to this client (`mp.events.addServer` on the client).
+
+<a id="player-mute"></a>
+
+#### player:mute(enable)
+
+> **player:mute**(`enable`): `nil`
+
+Mutes (`true`) or unmutes (`false`) the player's voice transmission.
+
+<a id="player-getmeta"></a>
+
+#### player:getMeta(key)
+
+> **player:getMeta**(`key`): `any`
+
+Player metadata value.
+
+<a id="player-setmeta"></a>
+
+#### player:setMeta(key, value)
+
+> **player:setMeta**(`key`, `value`): `nil`
+
+Stores player metadata locally; never syncs.
+
+### Vehicle Objects
+
+<a id="vehicle-model"></a>
+
+#### model
+
+> **model**: `integer`
+
+Vehicle TweakDBID hash. Read-only.
+
+<a id="vehicle-appearance"></a>
+
+#### appearance
+
+> **appearance**: `integer`
+
+Appearance CName hash. Read-only.
+
+<a id="vehicle-health"></a>
+
+#### health
+
+> **health**: `number`
+
+Current vehicle body health. Read-only.
+
+<a id="vehicle-velocity"></a>
+
+#### velocity
+
+> **velocity**: `vector3`
+
+Linear velocity. Read-only.
+
+<a id="vehicle-angularvelocity"></a>
+
+#### angularVelocity
+
+> **angularVelocity**: `vector3`
+
+Angular velocity. Read-only.
+
+<a id="vehicle-seats"></a>
+
+#### seats
+
+> **seats**: `table`
+
+Occupants: `driver`, `passenger`, `rearLeft`, `rearRight`. Each field is a player object; an empty seat reads as an object whose `id` is `0`.
+
+<a id="vehicle-lastseats"></a>
+
+#### lastSeats
+
+> **lastSeats**: `table`
+
+Previous occupants, same fields as `seats`.
+
+<a id="vehicle-getplayerinseat"></a>
+
+#### vehicle:getPlayerInSeat(seat)
+
+> **vehicle:getPlayerInSeat**(`seat`): `Player`
+
+Player in the seat (`0` driver, `1` passenger, `2` rear left, `3` rear right). Read `id` to detect an empty seat.
+
+<a id="vehicle-getlastplayerinseat"></a>
+
+#### vehicle:getLastPlayerInSeat(seat)
+
+> **vehicle:getLastPlayerInSeat**(`seat`): `Player`
+
+Previous player in the seat. Read `id` to detect an empty seat.
+
+<a id="vehicle-destroy"></a>
+
+#### vehicle:destroy()
+
+> **vehicle:destroy**(): `nil`
+
+Removes the vehicle.
+
+### Object, Ped and Pickup Objects
+
+<a id="object-model"></a>
+
+#### object.model
+
+> **model**: `integer`
+
+Object TweakDBID hash. Read-only.
+
+<a id="object-destroy"></a>
+
+#### object:destroy()
+
+> **object:destroy**(): `nil`
+
+Removes the object.
+
+<a id="ped-model"></a>
+
+#### ped.model
+
+> **model**: `integer`
+
+Ped TweakDBID hash. Read-only.
+
+<a id="ped-appearance"></a>
+
+#### ped.appearance
+
+> **appearance**: `integer`
+
+Appearance CName hash. Read-only.
+
+<a id="ped-health"></a>
+
+#### ped.health
+
+> **health**: `number`
+
+Current ped health. Read-only.
+
+<a id="ped-destroy"></a>
+
+#### ped:destroy()
+
+> **ped:destroy**(): `nil`
+
+Removes the ped.
+
+<a id="pickup-model"></a>
+
+#### pickup.model
+
+> **model**: `integer`
+
+Pickup TweakDBID hash. Read-only.
+
+<a id="pickup-pickuptype"></a>
+
+#### pickup.pickupType
+
+> **pickupType**: `number`
+
+Pickup type. Read-only.
+
+<a id="pickup-destroy"></a>
+
+#### pickup:destroy()
+
+> **pickup:destroy**(): `nil`
+
+Removes the pickup.
 
 ---
 
-## Server Events (`mp.events`)
 
-### Registration & Triggers
+## Hashes
 
-| Method | Description |
-| :--- | :--- |
-| `mp.events.add(name, fn)` | Registers a listener for built-in platform events or internal server events. |
-| `mp.events.addClient(name, fn)` | Registers a listener for network events emitted by clients (`emitServer`). The first parameter passed to `fn` is the sending player's network ID (`playerId`). |
-| `mp.events.trigger(name, ...)` | Emits an internal server event. |
-| `mp.events.triggerClient(playerOrId, name, ...)` | Emits an event packet to a specific player or all players (pass `-1` for global broadcast). |
-| `mp.events.remove(token)` | Unregisters a previously registered event listener. |
+REDengine identifies resources, items and appearances by 64-bit numeric hashes. The server Lua helpers return the hash as a **decimal string**; convert it with `tonumber(str, 10)` before passing it to `create` or any other API that expects a number.
 
-### Cancelling Built-In Events
-Inside platform event handlers, `return false` to abort default actions:
+<a id="mp-hashes-tocname-server"></a>
 
-```lua title="server.lua"
--- Disable PvP damage in safe zones
-mp.events.add('damage', function(victimId, data)
-  local victim = mp.players.at(victimId)
-  if victim:getMeta('inSafeZone') then
-    return false
-  end
-end)
-```
+### mp.hashes.toCname(name)
 
-### Common Server Platform Events
+> **mp.hashes.toCname**(`name`): `string`
 
-| Event Name | Signature | Description |
-| :--- | :--- | :--- |
-| `playerConnecting` | `(tempId, name, ip)` | Client requests initial connection slot. |
-| `playerConnected` | `(playerId, tempId)` | Client assigned permanent network ID. |
-| `playerSpawn` | `(playerId)` | Player spawned in the game world. |
-| `playerDeath` | `(playerId, data)` | Player flatlined (`data.killerId`, `data.weaponHash`). |
-| `playerRespawn` | `(playerId, position)` | Player respawned at position. |
-| `playerDisconnected` | `(playerId, reason)` | Player left or disconnected. |
-| `damage` | `(victimId, data)` | Entity damaged (`data.attackerId`, `data.damage`). |
-| `explosion` | `(playerId, data)` | Explosion triggered at coordinates (`data.posX`, `data.posY`, `data.posZ`). |
-| `resourceStart` | `(resourceName)` | Resource initialized. |
-| `resourceStop` | `(resourceName)` | Resource unloading. |
+CName hash (appearances, engine names).
 
----
+<a id="mp-hashes-totweakdbid-server"></a>
 
-## Commands (`mp.commands`)
+### mp.hashes.toTweakdbid(name)
 
-Register commands for the server terminal or client F8 console:
+> **mp.hashes.toTweakdbid**(`name`): `string`
 
-```lua title="server.lua"
-mp.commands.add('heal', function(player, args)
-  if not player then
-    print('[Command] heal must be executed by a player in-game.')
-    return
-  end
+TweakDBID hash (`Vehicle.*`, `Character.*`, `Items.*`).
 
-  local amount = tonumber(args[1]) or 100
-  player.health = amount
-  player:emit('chat:addMessage', string.format("Health set to %s HP.", amount))
-end)
-```
+<a id="mp-hashes-toresref-server"></a>
+
+### mp.hashes.toResref(path)
+
+> **mp.hashes.toResref**(`path`): `string`
+
+Resource reference hash (archive `.ent` paths).
+
+<a id="mp-gethashfromname-server"></a>
+
+### mp.getHashFromName(name, kind)
+
+> **mp.getHashFromName**(`name`, `kind`): `string`
+
+Same as the helpers above; `kind` is `'cname'`, `'tweakdbid'` or `'resref'`.
+
+The server has no reverse `from*` helpers; they exist only on the client with `use_game_natives = true`.
+
+:::caution[Hash Rules]
+Never pass the string itself to a native or `create`: it arrives as a pointer instead of a hash. Do not hash a vehicle or ped record with `toCname`, do not hash an `.ent` path with `toTweakdbid`, and do not pass `appearance = 0` — clients can disagree on the look. Use `toTweakdbid` for vehicle, ped and pickup models, `toResref` for object models, and `toCname` for appearances.
+:::
 
 ---
 
-## Resources Management (`mp.resources`)
 
-| Method | Description |
-| :--- | :--- |
-| `mp.resources.start(name)` | Starts an installed resource folder. |
-| `mp.resources.stop(name)` | Stops an active resource. |
-| `mp.resources.restart(name)` | Restarts an active resource. |
-| `mp.resources.getState(name)` | Returns resource state: `'running'`, `'stopped'`, `'not_found'`. |
-| `mp.resources.refresh()` | Re-indexes disk resources without restarting running scripts. |
-| `mp.resources.getTomlFile(name)` | Returns the resource's `resource.toml` as a JSON string. |
+## Creating Entities
+
+Every `create` call returns an entity object whose `id` is assigned by the server. Options are plain Lua tables; unknown fields are ignored.
+
+:::caution[Position Format]
+`position` must be a `vector3` or a table with named fields `x`, `y` and `z` (default `0, 0, 0`). A plain array such as `position = {-1392.6, 1271.5, 123.0}` is not read: the server reads `position.x`, `position.y` and `position.z`, so the entity is created at the origin. Always write `vector3(-1392.6, 1271.5, 123.0)` or `position = { x = -1392.6, y = 1271.5, z = 123.0 }`.
+:::
+
+### Vehicles
+
+<a id="vehicles-create-model"></a>
+
+#### model
+
+> **model**: `integer`
+
+Integer TweakDBID of a `Vehicle.*` record.
+
+<a id="vehicles-create-appearance"></a>
+
+#### appearance
+
+> **appearance**: `integer`
+
+Integer CName hash. Use a real appearance; `0` is not reliable.
+
+<a id="vehicles-create-position"></a>
+
+#### position
+
+> **position**: `vector3`
+
+`vector3` or a table with `x`, `y`, `z`. Default `0, 0, 0`.
+
+<a id="vehicles-create-yaw"></a>
+
+#### yaw
+
+> **yaw**: `number`
+
+Heading in degrees. Default `0`.
+
+<a id="vehicles-create-health"></a>
+
+#### health
+
+> **health**: `number`
+
+Starting body health. Default `300`.
+
+<a id="vehicles-create-dimension"></a>
+
+#### dimension
+
+> **dimension**: `number`
+
+Applied right after the vehicle is created. Default `0`.
+
+### Peds
+
+<a id="peds-create-model"></a>
+
+#### model
+
+> **model**: `integer`
+
+Integer TweakDBID of a `Character.*` record.
+
+<a id="peds-create-appearance"></a>
+
+#### appearance
+
+> **appearance**: `integer`
+
+Integer CName hash.
+
+<a id="peds-create-position"></a>
+
+#### position
+
+> **position**: `vector3`
+
+`vector3` or a table with `x`, `y`, `z`. Default `0, 0, 0`.
+
+<a id="peds-create-yaw"></a>
+
+#### yaw
+
+> **yaw**: `number`
+
+Heading in degrees. Default `0`.
+
+<a id="peds-create-health"></a>
+
+#### health
+
+> **health**: `number`
+
+Starting health. Default `200`.
+
+<a id="peds-create-dimension"></a>
+
+#### dimension
+
+> **dimension**: `number`
+
+Applied right after the ped is created. Default `0`.
+
+### Objects
+
+<a id="objects-create-model"></a>
+
+#### model
+
+> **model**: `integer`
+
+Integer ResRef hash of an `.ent` archive path.
+
+<a id="objects-create-position"></a>
+
+#### position
+
+> **position**: `vector3`
+
+`vector3` or a table with `x`, `y`, `z`. Default `0, 0, 0`.
+
+<a id="objects-create-yaw"></a>
+
+#### yaw
+
+> **yaw**: `number`
+
+Heading in degrees. Default `0`.
+
+<a id="objects-create-dynamic"></a>
+
+#### dynamic
+
+> **dynamic**: `boolean`
+
+`false` creates a static prop that does not react to physics. Default `true`.
+
+<a id="objects-create-dimension"></a>
+
+#### dimension
+
+> **dimension**: `number`
+
+Applied right after the object is created. Default `0`.
+
+### Pickups
+
+<a id="pickups-create-model"></a>
+
+#### model
+
+> **model**: `integer`
+
+Integer TweakDBID of an `Items.*` record.
+
+<a id="pickups-create-type"></a>
+
+#### type
+
+> **type**: `number`
+
+`1` clothes, `2` weapon, `3` other. Read it back with `pickup.pickupType`.
+
+<a id="pickups-create-position"></a>
+
+#### position
+
+> **position**: `vector3`
+
+`vector3` or a table with `x`, `y`, `z`. Default `0, 0, 0`.
+
+<a id="pickups-create-yaw"></a>
+
+#### yaw
+
+> **yaw**: `number`
+
+Heading in degrees. Default `0`.
+
+<a id="pickups-create-dimension"></a>
+
+#### dimension
+
+> **dimension**: `number`
+
+Applied right after the pickup is created. Default `0`.
 
 ---
 
-## HTTP & Utilities
 
-### HTTP Requests
-`mp.sendHttpRequest(url, callback, method, data, headers, options)`:
+## Server Events
 
-```lua title="server.lua"
-mp.sendHttpRequest('https://api.example.com/data', function(status, body, headers, err)
-  if err then
-    print("HTTP request error:", err)
-    return
-  end
+### Registration and Triggers
 
-  local response = json.decode(body)
-  print("Response status:", status, "Data:", response.message)
-end, 'POST', json.encode({ token = 'auth123' }), { ['Content-Type'] = 'application/json' })
-```
+<a id="mp-events-add-serverref"></a>
+
+#### mp.events.add(name, fn)
+
+> **mp.events.add**(`name`, `fn`): `handlerId`
+
+Registers a listener for platform events and for custom events triggered inside the server process. Returns a numeric handler ID.
+
+<a id="mp-events-remove-serverref"></a>
+
+#### mp.events.remove(name, handlerId)
+
+> **mp.events.remove**(`name`, `handlerId`): `nil`
+
+Unregisters a handler registered by `add` or `addClient`. Passing the function itself does nothing; a name that was never registered raises an error. It looks for `add` handlers of that name first and only then for `addClient` handlers, so an `addClient` handler cannot be removed while an `add` handler with the same name exists.
+
+<a id="mp-events-trigger-serverref"></a>
+
+#### mp.events.trigger(name, ...)
+
+> **mp.events.trigger**(`name`, `...`): `boolean`
+
+Emits a local event. Returns `false` when a handler cancelled it; use `mp.events.isCanceled()` to inspect the last cancellation flag.
+
+<a id="mp-events-addclient-serverref"></a>
+
+#### mp.events.addClient(name, fn)
+
+> **mp.events.addClient**(`name`, `fn`): `handlerId`
+
+Registers a listener for network events sent by clients with `mp.events.triggerServer`. `fn` receives the sending player object as its first argument.
+
+<a id="mp-events-addclientraw-serverref"></a>
+
+#### mp.events.addClientRaw(name, fn)
+
+> **mp.events.addClientRaw**(`name`, `fn`): `handlerId`
+
+Same as `addClient`, but the first argument is the numeric player ID.
+
+<a id="mp-events-triggerclient-serverref"></a>
+
+#### mp.events.triggerClient(playerOrId, name, ...)
+
+> **mp.events.triggerClient**(`playerOrId`, `name`, `...`): `boolean`
+
+Sends an event to one client (`mp.events.addServer` there). Pass `-1` to broadcast to all players. Returns `false` and prints a message when a player object no longer exists.
+
+<a id="mp-events-triggerclientraw-serverref"></a>
+
+#### mp.events.triggerClientRaw(playerId, name, ...)
+
+> **mp.events.triggerClientRaw**(`playerId`, `name`, `...`)
+
+Same with an explicit numeric ID.
+
+<a id="mp-events-iscanceled-serverref"></a>
+
+#### mp.events.isCanceled()
+
+> **mp.events.isCanceled**(): `boolean`
+
+Returns `true` when the last local event was cancelled.
+
+Handlers receive payload values as separate arguments: an array arrives as a Lua table with indexes from `1`, an object arrives as a table with named fields.
+
+### Platform Event Catalog
+
+The first argument is a numeric player ID unless stated otherwise; it is not a player object. Data arrays are Lua tables with indexes from `1`.
+
+#### Players
+
+<a id="playerconnecting"></a>
+
+##### playerConnecting(tempId, name)
+
+> **playerConnecting**(`tempId`, `name`): `nil`
+
+Not cancellable.
+
+<a id="playerconnected"></a>
+
+##### playerConnected(playerId, tempId)
+
+> **playerConnected**(`playerId`, `tempId`): `nil`
+
+`tempId` is a string. Not cancellable.
+
+<a id="playerspawn"></a>
+
+##### playerSpawn(playerId)
+
+> **playerSpawn**(`playerId`): `nil`
+
+Not cancellable.
+
+<a id="playerrespawn"></a>
+
+##### playerRespawn(playerId, data)
+
+> **playerRespawn**(`playerId`, `data`): `nil`
+
+`data` has the fields `posX`, `posY`, `posZ`. Cancellable.
+
+<a id="playerdespawn"></a>
+
+##### playerDespawn(playerId)
+
+> **playerDespawn**(`playerId`): `nil`
+
+Not cancellable.
+
+<a id="playerdeath"></a>
+
+##### playerDeath(playerId, data)
+
+> **playerDeath**(`playerId`, `data`): `nil`
+
+`data` has the fields `killerId`, `deathReason`. Cancellable.
+
+<a id="playerdisconnected"></a>
+
+##### playerDisconnected(playerId, reason)
+
+> **playerDisconnected**(`playerId`, `reason`): `nil`
+
+Not cancellable.
+
+<a id="playerappearancechange"></a>
+
+##### playerAppearanceChange(playerId, data)
+
+> **playerAppearanceChange**(`playerId`, `data`): `nil`
+
+Cancellable.
+
+<a id="playerhealing"></a>
+
+##### playerHealing(playerId)
+
+> **playerHealing**(`playerId`): `nil`
+
+Cancellable.
+
+<a id="playerknockdown"></a>
+
+##### playerKnockdown(playerId)
+
+> **playerKnockdown**(`playerId`): `nil`
+
+Cancellable.
+
+<a id="damage-event"></a>
+
+##### damage(playerId, data)
+
+> **damage**(`playerId`, `data`): `nil`
+
+`playerId` is the sending attacker (`killerId`). `data` has the fields `victimId`, `totalDamage`, `damageType`, `weaponHash`, ... Cancellable.
+
+<a id="meleeaction-event"></a>
+
+##### meleeAction(playerId, data)
+
+> **meleeAction**(`playerId`, `data`): `nil`
+
+`data` is an array: `type`, `weaponHash`, `instigatorID`, `x`, `y`, `z`. Cancellable.
+
+<a id="shootaction-event"></a>
+
+##### shootAction(playerId, data)
+
+> **shootAction**(`playerId`, `data`): `nil`
+
+`data` is an array: `weaponHash`, `instigatorID`, `x`, `y`, `z`. Cancellable.
+
+<a id="weaponreload"></a>
+
+##### weaponReload(playerId, data)
+
+> **weaponReload**(`playerId`, `data`): `nil`
+
+Cancellable.
+
+<a id="throwgrenade-event"></a>
+
+##### throwGrenade(playerId, data)
+
+> **throwGrenade**(`playerId`, `data`): `nil`
+
+`data` is an array: `weaponHash`, `type`, `isQuickThrow`, ... Cancellable.
+
+<a id="playermetachange-event"></a>
+
+##### playerMetaChange(id, key, newValue, oldValue)
+
+> **playerMetaChange**(`id`, `key`, `newValue`, `oldValue`): `nil`
+
+Not cancellable.
+
+<a id="globalmetachange-event"></a>
+
+##### globalMetaChange(key, newValue, oldValue)
+
+> **globalMetaChange**(`key`, `newValue`, `oldValue`): `nil`
+
+Not cancellable.
+
+#### Vehicles
+
+<a id="entervehicle-event"></a>
+
+##### enterVehicle(playerId, data)
+
+> **enterVehicle**(`playerId`, `data`): `nil`
+
+`data` is an array: `vehicleId`, `seat`. Cancellable.
+
+<a id="exitvehicle-event"></a>
+
+##### exitVehicle(playerId, data)
+
+> **exitVehicle**(`playerId`, `data`): `nil`
+
+`data` is an array: `vehicleId`. Cancellable.
+
+<a id="vehiclespawn-event"></a>
+
+##### vehicleSpawn(id)
+
+> **vehicleSpawn**(`id`): `nil`
+
+Not cancellable.
+
+<a id="vehicledespawn-event"></a>
+
+##### vehicleDespawn(id)
+
+> **vehicleDespawn**(`id`): `nil`
+
+Not cancellable.
+
+<a id="vehiclecustomizationchange-event"></a>
+
+##### vehicleCustomizationChange(playerId, data)
+
+> **vehicleCustomizationChange**(`playerId`, `data`): `nil`
+
+Cancellable.
+
+<a id="vehicledestructionchange-event"></a>
+
+##### vehicleDestructionChange(playerId, data)
+
+> **vehicleDestructionChange**(`playerId`, `data`): `nil`
+
+Cancellable.
+
+<a id="vehicleweaponshoot-event"></a>
+
+##### vehicleWeaponShoot(id, data)
+
+> **vehicleWeaponShoot**(`id`, `data`): `nil`
+
+Cancellable.
+
+<a id="vehiclehittedbyplayer-event"></a>
+
+##### vehicleHittedByPlayer(id, data)
+
+> **vehicleHittedByPlayer**(`id`, `data`): `nil`
+
+`data` is an array: `vehicleID`, `componentNameHash`, `weaponHash`, `byOwner`. Cancellable.
+
+#### Entities and World
+
+<a id="entityspawn-event"></a>
+
+##### entitySpawn(id, type)
+
+> **entitySpawn**(`id`, `type`): `nil`
+
+Not cancellable.
+
+<a id="entitydespawn-event"></a>
+
+##### entityDespawn(id, type)
+
+> **entityDespawn**(`id`, `type`): `nil`
+
+Not cancellable.
+
+<a id="entitymetachange-event"></a>
+
+##### entityMetaChange(id, key, newValue, oldValue)
+
+> **entityMetaChange**(`id`, `key`, `newValue`, `oldValue`): `nil`
+
+Not cancellable.
+
+<a id="pedspawn-event"></a>
+
+##### pedSpawn(id)
+
+> **pedSpawn**(`id`): `nil`
+
+Not cancellable.
+
+<a id="peddespawn-event"></a>
+
+##### pedDespawn(id)
+
+> **pedDespawn**(`id`): `nil`
+
+Not cancellable.
+
+<a id="objectspawn-event"></a>
+
+##### objectSpawn(id)
+
+> **objectSpawn**(`id`): `nil`
+
+Not cancellable.
+
+<a id="objectdespawn-event"></a>
+
+##### objectDespawn(id)
+
+> **objectDespawn**(`id`): `nil`
+
+Not cancellable.
+
+<a id="gameobjectspawn-event"></a>
+
+##### gameObjectSpawn(id)
+
+> **gameObjectSpawn**(`id`): `nil`
+
+Not cancellable.
+
+<a id="gameobjectdespawn-event"></a>
+
+##### gameObjectDespawn(id)
+
+> **gameObjectDespawn**(`id`): `nil`
+
+Not cancellable.
+
+<a id="pickupspawn-event"></a>
+
+##### pickupSpawn(id)
+
+> **pickupSpawn**(`id`): `nil`
+
+Not cancellable.
+
+<a id="pickupdespawn-event"></a>
+
+##### pickupDespawn(id)
+
+> **pickupDespawn**(`id`): `nil`
+
+Not cancellable.
+
+<a id="pickupchange-event"></a>
+
+##### pickupChange(playerId, data)
+
+> **pickupChange**(`playerId`, `data`): `nil`
+
+Cancellable.
+
+<a id="pickupraise-event"></a>
+
+##### pickupRaise(playerId, data)
+
+> **pickupRaise**(`playerId`, `data`): `nil`
+
+`data` has the fields `pickupNetId`, `pickupHash`, `isBag`. Cancellable.
+
+<a id="pickupdrop-event"></a>
+
+##### pickupDrop(playerId, data)
+
+> **pickupDrop**(`playerId`, `data`): `nil`
+
+`data` has the fields `pickupNetId`, `type`, `isBag`, ... Cancellable.
+
+<a id="doorstatechange-event"></a>
+
+##### doorStateChange(playerId, data)
+
+> **doorStateChange**(`playerId`, `data`): `nil`
+
+Cancellable.
+
+<a id="liftstatechange-event"></a>
+
+##### liftStateChange(playerId, data)
+
+> **liftStateChange**(`playerId`, `data`): `nil`
+
+Cancellable.
+
+<a id="fire-event"></a>
+
+##### fire(playerId, data)
+
+> **fire**(`playerId`, `data`): `nil`
+
+Cancellable.
+
+<a id="explosion-event"></a>
+
+##### explosion(playerId, data)
+
+> **explosion**(`playerId`, `data`): `nil`
+
+`data` has the fields `posX`, `posY`, `posZ`, `isVehicle`, `vehicleID`, `hashObject`, `objNetID`. Cancellable.
+
+#### Resources
+
+<a id="resourcestart-event"></a>
+
+##### resourceStart()
+
+> **resourceStart**(): `nil`
+
+This resource started. Not cancellable.
+
+<a id="resourcestop-event"></a>
+
+##### resourceStop()
+
+> **resourceStop**(): `nil`
+
+This resource is stopping. Not cancellable.
+
+<a id="resourcesrefresh-event"></a>
+
+##### resourcesRefresh()
+
+> **resourcesRefresh**(): `nil`
+
+Not cancellable.
+
+<a id="anyresourcestart-event"></a>
+
+##### anyResourceStart(resourceName)
+
+> **anyResourceStart**(`resourceName`): `nil`
+
+Not cancellable.
+
+<a id="anyresourcestop-event"></a>
+
+##### anyResourceStop(resourceName)
+
+> **anyResourceStop**(`resourceName`): `nil`
+
+Not cancellable.
+
+<a id="anyserverresourcestart-event"></a>
+
+##### anyServerResourceStart(resourceName)
+
+> **anyServerResourceStart**(`resourceName`): `nil`
+
+Not cancellable.
+
+<a id="anyserverresourcestop-event"></a>
+
+##### anyServerResourceStop(resourceName)
+
+> **anyServerResourceStop**(`resourceName`): `nil`
+
+Not cancellable.
+
+---
+
+
+## Server Commands
+
+<a id="mp-commands-add-serverref"></a>
+
+### mp.commands.add(name, fn)
+
+> **mp.commands.add**(`name`, `fn`)
+
+Registers a console command. `fn(player, args, raw)` is described below.
+
+<a id="mp-commands-addraw-serverref"></a>
+
+### mp.commands.addRaw(name, fn)
+
+> **mp.commands.addRaw**(`name`, `fn`)
+
+Same, but the first argument is the numeric player ID.
+
+<a id="mp-commands-remove-serverref"></a>
+
+### mp.commands.remove(name)
+
+> **mp.commands.remove**(`name`)
+
+Removes a registered command.
+
+<a id="mp-commands-execute-serverref"></a>
+
+### mp.commands.execute(line)
+
+> **mp.commands.execute**(`line`)
+
+Runs a console command line.
+
+<a id="mp-commands-getall-serverref"></a>
+
+### mp.commands.getAll()
+
+> **mp.commands.getAll**(): `table`
+
+Returns a table with the registered command names.
+
+The handler callback receives three arguments:
+
+- `player` — the invoking player's object when the command comes from a client F8 console. When the command is typed into the **server terminal**, `player` is the **number `0`**, not `nil`; when the player no longer exists, it is the numeric player ID. Test `player == 0` and never rely on a truthiness check, because `0` is truthy in Lua.
+- `args` — a Lua table of whitespace-delimited argument strings, indexed from `1`.
+- `raw` — the full command line as typed, including the command name.
+
+Commands run as coroutines, so `mp.wait` works inside them. All commands of a resource are removed when the resource stops.
+
+---
+
+
+## Entity Metadata
+
+<a id="mp-meta-setglobal-serverref"></a>
+
+### mp.meta.setGlobal(key, value, sync) / mp.meta.getGlobal(key)
+
+> **mp.meta.setGlobal**(`key`, `value`, `sync`): `nil`
+>
+> **mp.meta.getGlobal**(`key`): `any`
+
+Global server value. `sync = true` replicates the value to clients; an omitted `sync` means the value is kept locally.
+
+<a id="mp-meta-setplayer-serverref"></a>
+
+### mp.meta.setPlayer(playerOrId, key, value, sync) / mp.meta.getPlayer(playerOrId, key)
+
+> **mp.meta.setPlayer**(`playerOrId`, `key`, `value`, `sync`): `nil`
+>
+> **mp.meta.getPlayer**(`playerOrId`, `key`): `any`
+
+One player.
+
+<a id="mp-meta-setentity-serverref"></a>
+
+### mp.meta.setEntity(entityOrId, key, value, sync) / mp.meta.getEntity(entityOrId, key)
+
+> **mp.meta.setEntity**(`entityOrId`, `key`, `value`, `sync`): `nil`
+>
+> **mp.meta.getEntity**(`entityOrId`, `key`): `any`
+
+Vehicle, ped, object or pickup.
+
+<a id="entity-getmeta-serverref"></a>
+
+### entity:getMeta(key) / entity:setMeta(key, value)
+
+> **entity:getMeta**(`key`): `any`
+>
+> **entity:setMeta**(`key`, `value`): `nil`
+
+Same store on the entity object. `setMeta` never syncs; the entity proxies ignore a third `setMeta` argument, so use `mp.meta.setPlayer` / `mp.meta.setEntity` with `sync = true` for keys that clients must read.
+
+When synced metadata changes, the server fires `playerMetaChange(id, key, newValue, oldValue)`, `entityMetaChange(id, key, newValue, oldValue)` and `globalMetaChange(key, newValue, oldValue)`.
+
+---
+
+
+## Resources Management
+
+<a id="mp-resources-start"></a>
+
+### mp.resources.start(name)
+
+> **mp.resources.start**(`name`): `boolean`
+
+Starts an installed resource folder.
+
+<a id="mp-resources-stop"></a>
+
+### mp.resources.stop(name)
+
+> **mp.resources.stop**(`name`): `boolean`
+
+Stops an active resource.
+
+<a id="mp-resources-restart"></a>
+
+### mp.resources.restart(name)
+
+> **mp.resources.restart**(`name`): `boolean`
+
+Stops and starts an active resource.
+
+<a id="mp-resources-refreshall"></a>
+
+### mp.resources.refreshAll()
+
+> **mp.resources.refreshAll**()
+
+Rescans the resources folder, like the `refresh` console command.
+
+<a id="mp-resources-getstate"></a>
+
+### mp.resources.getState(name)
+
+> **mp.resources.getState**(`name`): `number`
+
+`0` not found, `1` starting, `2` started, `3` stopped (or found but never started).
+
+<a id="mp-resources-gettomlfile"></a>
+
+### mp.resources.getTomlFile(name)
+
+> **mp.resources.getTomlFile**(`name`): `string` | `nil`
+
+The resource's `resource.toml` as a JSON string.
+
+<a id="mp-resources-loadfile"></a>
+
+### mp.resources.loadFile(name, path)
+
+> **mp.resources.loadFile**(`name`, `path`): `string` | `nil`
+
+Content of a file inside that resource, as a string.
+
+<a id="mp-resources-getcurrentname"></a>
+
+### mp.resources.getCurrentName()
+
+> **mp.resources.getCurrentName**(): `string`
+
+Name of the current resource.
+
+Stopping or restarting a resource closes its Lua state: event handlers, tasks, timeouts and `mp.onUpdateLoop` callbacks of the old instance are gone, and its commands are removed. Entities created with `mp.*.create` stay on the server, so destroy them in a `resourceStop` handler if they belong to the resource. After editing `resource.toml`, run `refresh` (or `refreshAll`) before `start`/`restart`, because restart does not reread the manifest.
+
+---
+
+
+## HTTP Requests
+
+<a id="mp-sendhttprequest"></a>
+
+### mp.sendHttpRequest(url, callback, method, data, headers, options)
+
+> **mp.sendHttpRequest**(`url`, `callback`, `method`, `data`, `headers`, `options`)
+
+- `url` — request address.
+- `callback` — `function(status, body, headers, err)`. On success `status` is the HTTP code, `body` is the response string with `err` set to `nil`. On failure `body` is `nil` and `err` holds the error text.
+- `method` — HTTP method string; defaults to `'GET'`.
+- `data` — request body string (pass an encoded string, not a table).
+- `headers` — table of header names to values.
+- `options` — optional table; the supported field is `followRedirects` (boolean, default `true`).
+
+---
+
+
+## Utilities
 
 ### Password Hashing (Bcrypt)
-```lua title="server.lua"
-local hashed = mp.generateBcryptHash('player_password')
-local isMatch = mp.verifyBcryptHash('player_password', hashed) -- true
-```
+
+<a id="mp-generatebcrypthash"></a>
+
+#### mp.generateBcryptHash(password)
+
+> **mp.generateBcryptHash**(`password`): `string`
+
+Returns the bcrypt hash as a string.
+
+<a id="mp-verifybcrypthash"></a>
+
+#### mp.verifyBcryptHash(password, hash)
+
+> **mp.verifyBcryptHash**(`password`, `hash`): `boolean`
+
+Returns `true` when the password matches the stored hash.
 
 ### Console Variables (CVars)
-```lua title="server.lua"
-local valueStr = mp.getVar('max_players')
-local valueInt = mp.getVarInt('max_players')
-mp.addVar('custom_mode', 'deathmatch')
-```
 
-### Reading `server.toml`
-```lua title="server.lua"
-local serverTomlJson = mp.getServerTomlFile()
-local config = json.decode(serverTomlJson)
-print("Configured TCP host:", config.tcp_host)
-```
+<a id="mp-getvar"></a>
+
+#### mp.getVar(name)
+
+> **mp.getVar**(`name`): `string`
+
+Value of the variable. Raises an error when the variable does not exist.
+
+<a id="mp-getvarint"></a>
+
+#### mp.getVarInt(name)
+
+> **mp.getVarInt**(`name`): `number`
+
+Value as an integer; `'true'` reads as `1`, a missing variable reads as `0`.
+
+<a id="mp-addvar"></a>
+
+#### mp.addVar(name, value)
+
+> **mp.addVar**(`name`, `value`)
+
+Sets a variable, like the console command `add_var`. Pass both values as strings: the number `0` is converted to `nil` and the call fails.
+
+### Reading server.toml
+
+<a id="mp-getservertomlfile"></a>
+
+#### mp.getServerTomlFile()
+
+> **mp.getServerTomlFile**(): `string`
+
+Returns the parsed `server.toml` as a JSON string; a resource's own `resource.toml` is available through `mp.resources.getTomlFile`.
+
+### Timer, Side Flag and Logging
+
+<a id="mp-gettimer-serverref"></a>
+
+#### mp.getTimer()
+
+> **mp.getTimer**(): `number`
+
+Millisecond counter for measuring intervals.
+
+<a id="mp-isserver-serverref"></a>
+
+#### mp.isServer()
+
+> **mp.isServer**(): `boolean`
+
+Always `true` on the server.
+
+<a id="mp-log-serverref"></a>
+
+#### mp.log(text)
+
+> **mp.log**(`text`): `nil`
+
+Writes raw text to the console.
+
+### Script Scheduling
+
+<a id="mp-spawntask-serverref"></a>
+
+#### mp.spawnTask(fn)
+
+> **mp.spawnTask**(`fn`): `nil`
+
+Runs `fn` as a coroutine on the next scheduler pass.
+
+<a id="mp-spawntaskimmediatly-serverref"></a>
+
+#### mp.spawnTaskImmediatly(fn)
+
+> **mp.spawnTaskImmediatly**(`fn`): `boolean`
+
+Runs `fn` as a coroutine immediately, up to its first `mp.wait`. The name is spelled this way in the API.
+
+<a id="mp-wait-serverref"></a>
+
+#### mp.wait(ms)
+
+> **mp.wait**(`ms`): `nil`
+
+Suspends the current coroutine for `ms` milliseconds. `mp.wait(0)` resumes on the next pass.
+
+<a id="mp-settimeout-serverref"></a>
+
+#### mp.setTimeout(fn, ms)
+
+> **mp.setTimeout**(`fn`, `ms`): `nil`
+
+Runs `fn` as a coroutine after `ms` milliseconds. Returns nothing and cannot be cancelled.
+
+<a id="mp-onupdateloop-serverref"></a>
+
+#### mp.onUpdateLoop(fn)
+
+> **mp.onUpdateLoop**(`fn`): `nil`
+
+Calls `fn` on every script tick. There is no way to remove it.
+
+`mp.wait` works only inside a coroutine; event handlers, command handlers, tasks and timeouts are coroutines, while the main body of a script file is not.
 
 ---
 
-## Low-Level `mp.v1` API
 
-Low-level functions operating on raw numeric IDs without wrapping into entity tables:
-- `mp.v1.getPlayersCount()`: Returns the total number of connected players.
-- `mp.v1.getEntityMaxHealth(id)`: Returns the maximum health attribute of the specified entity.
+## Voice Chat
+
+<a id="player-mute-serverref"></a>
+
+### player:mute(enable)
+
+> **player:mute**(`enable`): `nil`
+
+Mutes (`true`) or unmutes (`false`) the player.
+
+<a id="mp-voicechat-muteplayer-serverref"></a>
+
+### mp.voiceChat.mutePlayer(playerId, toggle)
+
+> **mp.voiceChat.mutePlayer**(`playerId`, `toggle`): `nil`
+
+Same by numeric player ID.
+
+<a id="mp-voicechat-isplayermuted-serverref"></a>
+
+### mp.voiceChat.isPlayerMuted(playerId)
+
+> **mp.voiceChat.isPlayerMuted**(`playerId`): `boolean`
+
+Returns `true` when the player is muted.
+
+<a id="mp-voicechat-createchannel-serverref"></a>
+
+### mp.voiceChat.createChannel(id)
+
+> **mp.voiceChat.createChannel**(`id`): `nil`
+
+Creates a voice channel with the given numeric ID.
+
+`mp.voiceChat` functions take numeric player IDs; pass `player.id`, not the player object. The voice server itself is configured in `server.toml`.

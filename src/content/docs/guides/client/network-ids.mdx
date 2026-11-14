@@ -1,0 +1,67 @@
+---
+title: Network IDs
+description: Learn how to map between server-assigned network IDs and REDengine game IDs in JavaScript and Lua.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { SCRIPT_LANG_TAB_SYNC_KEY } from '../../../../lib/const';
+
+In CyberMP, the server identifies entities using lightweight **Network IDs** (`netId`), while REDengine tracks entities in memory using internal **Game IDs** (`gameId` / `EntityID`). Passing a `netId` directly into a game native or transmitting a local `gameId` to the server will result in lookup failures.
+
+For complete API signatures and types, see the [`MpNetwork`](/reference/client/api/global/mpnetwork/) reference, or the [Lua Client API Reference](/reference/lua/client/). Client-only entities and per-frame loops are covered in [Local Entities](/guides/client/local-entities/).
+
+---
+
+## ID Translation (`mp.network`)
+
+When an entity enters streaming range, the client receives both its `netID` and its active `gameID`. The `mp.network` namespace provides helper functions to convert between them:
+
+| Method | Return Value | Target Entity Type |
+| :--- | :--- | :--- |
+| `getVehicleGameId(netId)` / `getVehicleId(gameId)` | `gameId` or `netId` | Vehicles |
+| `getPlayerGameId(netId)` / `getPlayerId(gameId)` | `gameId` or `netId` | Connected Players |
+| `getPedGameId(netId)` / `getPedId(gameId)` | `gameId` or `netId` | Pedestrians / NPCs |
+| `getObjectGameId(netId)` / `getObjectId(gameId)` | `gameId` or `netId` | World Objects |
+| `getLocalPlayerId()` | `number` | The local client's permanent Network ID |
+| `getStreamedPlayers()` | `Array<gameId>` | All remote players currently streamed in |
+| `getStreamedPool(poolName)` | `Array<gameId>` | Entities in `'CVehicle'`, `'CPed'`, `'CObject'`, `'CPickup'` |
+| `getServerAddress()` | `string` | Connected session endpoint (e.g. `127.0.0.1:2077`) |
+
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    ```js title="client.js"
+    mp.events.on('vehicleStreamIn', (netID, gameID) => {
+      // Look up entity metadata using netID
+      const isLocked = mp.meta.getEntityMeta(netID, 'locked');
+
+      // Convert gameID back to netID
+      const originalNetID = mp.network.getVehicleId(gameID);
+
+      console.log(`Streamed vehicle: NetID=${netID}, GameID=${gameID}, Locked=${isLocked}`);
+    });
+
+    const localNetID = mp.network.getLocalPlayerId();
+    const streamedPlayers = mp.network.getStreamedPlayers();
+    ```
+  </TabItem>
+  <TabItem label="Lua">
+    ```lua title="client.lua"
+    mp.events.add('vehicleStreamIn', function(netID, gameID)
+      -- Look up entity metadata using netID
+      local isLocked = mp.meta.getEntity(netID, 'locked')
+
+      -- Convert gameID back to netID
+      local originalNetID = mp.network.getVehicleId(gameID)
+
+      print(string.format("Streamed vehicle: NetID=%s, GameID=%s, Locked=%s", netID, gameID, tostring(isLocked)))
+    end)
+
+    local localNetID = mp.network.getLocalPlayerId()
+    local streamedPlayers = mp.network.getStreamedPlayers()
+    ```
+  </TabItem>
+</Tabs>
+
+:::caution[Streaming Range Requirement]
+ID conversions are only valid while the entity is currently within streaming range. An entity that has despawned or not yet streamed into the client scene has no active `gameID`.
+:::

@@ -12,10 +12,10 @@ You can use built-in commands or create your own using server API
 | Name            | Arguments    | Description                                                                              |
 | --------------- | ------------ | ---------------------------------------------------------------------------------------- |
 | cmdlist         | None         | Returns a complete list of all registered commands (Core + Resources).                   |
-| disconnect_peer | `<index>`    | Forcefully disconnects the player associated with the provided numeric index.            |
-| exec_cfg        | `<filename>` | Parses and executes the specified `.toml` or configuration file from the root directory. |
-| max_players     | `<integer>`  | Dynamically updates the maximum player slot count for the current session.               |
-| quit            | None         | Initiates the graceful shutdown sequence for all resources and stops the server.         |
+| config          | None         | Effective `server.toml` values and their source (file or environment). `private_token` is masked. |
+| kick_player     | `<playerId>`  | Disconnect the player with that id (no reason sent).                                     |
+| max_players     | `[integer]`  | Print or set the console variable. The enforced slot cap is read from `server.toml` at startup and does not change. |
+| quit            | `[reason]`   | Initiates the graceful shutdown sequence for all resources and stops the server.         |
 | refresh         | None         | Reindex all resources without restarting them.                                           |
 | restart         | `<resName>`  | Restarts the specific resource.                                                          |
 | start           | `<resName>`  | Start the specific resource.                                                             |

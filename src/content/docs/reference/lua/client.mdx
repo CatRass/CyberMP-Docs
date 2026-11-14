@@ -1,192 +1,1001 @@
 ---
 title: Client Lua API Reference
-description: Authoritative reference for the CyberMP Client Lua API, covering client events, local spawn, network mapping, CEF, and the CET game native layer.
+description: "Reference for the CyberMP Client Lua API: client events, local spawn, network mapping, CEF, local storage, Discord, scheduler, commands, resources and the game layer."
 ---
 
-The client-side Lua API runs within the game process. It provides interfaces for local and network events, CEF browser integration, local entity spawning, and full access to REDengine through the Cyber Engine Tweaks (CET) layer.
+The client-side Lua API runs inside the game process. Names, signatures and return values below follow the runtime implementation in `libs/client/lua`. Hashes and the game layer are available only in a resource that sets `use_game_natives = true`.
 
 ---
+
 
 ## Client Events (`mp.events`)
 
-The client event dispatcher handles communication across three distinct layers: local scripts, the server, and the CEF browser.
+The client event dispatcher routes communication across three targets: the local script, the server, and the CEF page.
 
-### Registration Methods
+### Registration and Removal
 
-| Method | Context | Description |
-| :--- | :--- | :--- |
-| `mp.events.add(name, fn)` | Local | Listens for built-in platform events and local signals. |
-| `mp.events.addServer(name, fn)` | Server → Client | Listens for network broadcasts sent by the server via `triggerClient`. |
-| `mp.events.addCef(name, fn)` | CEF → Client | Listens for events emitted by the embedded HTML UI page. |
-| `mp.events.trigger(name, ...)` | Local | Emits an event within the local client script. |
-| `mp.events.triggerServer(name, ...)` | Client → Server | Sends a reliable network packet to the server (`mp.events.addClient`). |
-| `mp.events.triggerUnreliable(name, bps, ...)` | Client → Server | Sends an unreliable UDP packet (ideal for high-frequency input streams). |
-| `mp.events.triggerCef(name, ...)` | Client → CEF | Forwards an event packet into the active CEF web page. |
-| `mp.events.remove(token)` | Any | Unregisters an active listener token returned by `add*`. |
+<a id="mp-events-add-clientref"></a>
+
+#### mp.events.add(name, fn)
+
+> **mp.events.add**(`name`, `fn`): `handlerId`
+
+Registers a platform or custom local handler. Returns a numeric handler id.
+
+<a id="mp-events-addserver"></a>
+
+#### mp.events.addServer(name, fn)
+
+> **mp.events.addServer**(`name`, `fn`): `handlerId`
+
+Server → Client. Receives what the server sends with `mp.events.triggerClient`. Returns a numeric handler id.
+
+<a id="mp-events-addcef"></a>
+
+#### mp.events.addCef(name, fn)
+
+> **mp.events.addCef**(`name`, `fn`): `token`
+
+CEF → Client. Receives what the page sends with `mp.events.emit`. Returns a table token.
+
+<a id="mp-events-trigger-clientref"></a>
+
+#### mp.events.trigger(name, ...)
+
+> **mp.events.trigger**(`name`, `...`)
+
+Local. Fires a local event. Handlers run in their own coroutine, so `mp.wait` works inside them.
+
+<a id="mp-events-triggerserver-clientref"></a>
+
+#### mp.events.triggerServer(name, ...)
+
+> **mp.events.triggerServer**(`name`, `...`)
+
+Client → Server. Sends a reliable packet. The server receives it in `mp.events.addClient`.
+
+<a id="mp-events-triggercef"></a>
+
+#### mp.events.triggerCef(name, ...)
+
+> **mp.events.triggerCef**(`name`, `...`)
+
+Client → CEF. Sends an event to the page, which receives it in `mp.events.on`.
+
+<a id="mp-events-remove-clientref"></a>
+
+#### mp.events.remove(name, id)
+
+> **mp.events.remove**(`name`, `id`): `nil`
+
+Local. Removes a handler by the numeric id returned by `add` or `addServer`.
+
+<a id="mp-events-removecef"></a>
+
+#### mp.events.removeCef(name, token)
+
+> **mp.events.removeCef**(`name`, `token`): `nil`
+
+CEF → Client. Removes a CEF handler. `token` is the table returned by `addCef`.
+
+`mp.events.remove` is looked up by `name` too: it searches the `add` handlers of that name first and only then the `addServer` handlers of the same name. Pass the id, not the function; a function is not a valid key. `mp.events.removeCef` needs the exact token table, not the id. Handlers are dropped automatically when the resource stops. There is no event cancel on the client in Lua: the return value of a client handler is ignored.
 
 ### Client Platform Events
 
-| Event Name | Parameters | Description |
-| :--- | :--- | :--- |
-| `resourceStart` | `()` | Triggered when the client script finishes parsing. |
-| `resourceStop` | `()` | Triggered immediately before the resource is unloaded. |
-| `vehicleStreamIn` | `(netID, gameID)` | Synchronized vehicle entered streaming range. |
-| `vehicleStreamOut` | `(netID, gameID)` | Synchronized vehicle left streaming range. |
-| `remotePlayerStreamIn` | `(netID, gameID)` | Another player character entered streaming range. |
-| `remotePlayerStreamOut` | `(netID, gameID)` | Another player character left streaming range. |
-| `objectStreamIn` | `(netID, gameID)` | Synchronized world object entered streaming range. |
-| `pedStreamIn` | `(netID, gameID)` | Synchronized ped NPC entered streaming range. |
-| `pickupStreamIn` | `(netID, gameID)` | Synchronized collectible item entered streaming range. |
-| `doorStreamIn` | `(netID, gameID)` | Synchronized door entered streaming range. |
-| `domReady` | `(frameName)` | CEF browser window completed DOM construction. |
-| `loadingFailed` | `(error)` | CEF browser encountered a render or load failure. |
+Register these with `mp.events.add(name, fn)`.
+
+<a id="resourcestart-clientevent"></a>
+
+#### resourceStart()
+
+> **resourceStart**(): `nil`
+
+This client resource finished loading.
+
+<a id="resourcestop-clientevent"></a>
+
+#### resourceStop()
+
+> **resourceStop**(): `nil`
+
+This client resource is stopping.
+
+<a id="anyresourcestart-clientevent"></a>
+
+#### anyResourceStart(resourceName)
+
+> **anyResourceStart**(`resourceName`): `nil`
+
+Another client resource started.
+
+<a id="anyresourcestop-clientevent"></a>
+
+#### anyResourceStop(resourceName)
+
+> **anyResourceStop**(`resourceName`): `nil`
+
+Another client resource stopped.
+
+<a id="anyclientresourcestart-clientevent"></a>
+
+#### anyClientResourceStart(resourceName)
+
+> **anyClientResourceStart**(`resourceName`): `nil`
+
+A client resource started; emitted together with `anyResourceStart`.
+
+<a id="anyclientresourcestop-clientevent"></a>
+
+#### anyClientResourceStop(resourceName)
+
+> **anyClientResourceStop**(`resourceName`): `nil`
+
+A client resource stopped; emitted together with `anyResourceStop`.
+
+<a id="vehiclestreamin-clientevent"></a>
+
+#### vehicleStreamIn(netID, gameID)
+
+> **vehicleStreamIn**(`netID`, `gameID`): `nil`
+
+A vehicle entered the streaming radius.
+
+<a id="vehiclestreamout-clientevent"></a>
+
+#### vehicleStreamOut(netID, gameID)
+
+> **vehicleStreamOut**(`netID`, `gameID`): `nil`
+
+A vehicle left the streaming radius.
+
+<a id="remoteplayerstreamin-clientevent"></a>
+
+#### remotePlayerStreamIn(netID, gameID)
+
+> **remotePlayerStreamIn**(`netID`, `gameID`): `nil`
+
+A remote player entered the streaming radius.
+
+<a id="remoteplayerstreamout-clientevent"></a>
+
+#### remotePlayerStreamOut(netID, gameID)
+
+> **remotePlayerStreamOut**(`netID`, `gameID`): `nil`
+
+A remote player left the streaming radius.
+
+<a id="pedstreamin-clientevent"></a>
+
+#### pedStreamIn(netID, gameID)
+
+> **pedStreamIn**(`netID`, `gameID`): `nil`
+
+A ped entered the streaming radius.
+
+<a id="pedstreamout-clientevent"></a>
+
+#### pedStreamOut(netID, gameID)
+
+> **pedStreamOut**(`netID`, `gameID`): `nil`
+
+A ped left the streaming radius.
+
+<a id="objectstreamin-clientevent"></a>
+
+#### objectStreamIn(netID, gameID)
+
+> **objectStreamIn**(`netID`, `gameID`): `nil`
+
+A world object entered the streaming radius.
+
+<a id="objectstreamout-clientevent"></a>
+
+#### objectStreamOut(netID, gameID)
+
+> **objectStreamOut**(`netID`, `gameID`): `nil`
+
+A world object left the streaming radius.
+
+The internal `CyberMP_Core` resource does not emit the `any*` resource notifications. `resourcesRefresh`, `anyServerResourceStart` and `anyServerResourceStop` are server-only and do not fire on the client. Use [Network Mapping](#network-mapping-mpnetwork) to convert `netID` to `gameID` and back.
+
+### CEF Page Events
+
+The CEF process emits two built-in events into every frame. Register both with `mp.events.addCef`.
+
+<a id="domready"></a>
+
+#### domReady(frameName)
+
+> **domReady**(`frameName`): `nil`
+
+The frame fired `DOMContentLoaded`; `frameName` is its `window.name` string.
+
+<a id="loadingfailed"></a>
+
+#### loadingFailed(err)
+
+> **loadingFailed**(`err`): `nil`
+
+An uncaught page error or unhandled promise rejection. `err` is a table with `frameName`, `message`, `source`, `line`, `column` and `stack`. It is not a network or HTTP load error.
+
+The page sends with `mp.events.emit(name, ...)`. Arguments are serialized as JSON: no arguments arrive as nothing, a single argument arrives as one value, several arguments arrive as separate Lua arguments, and one object arrives as one table.
 
 ---
+
 
 ## Local Entities (`mp.client`)
 
-Spawn entities visible **only** to the local player. Ideal for preview vehicles, cutscene dummies, and client-side checkpoints:
+Spawns entities that exist **only** on this client. Other players do not see them, and they are not synchronized. Use them for preview vehicles, decorations, cutscene dummies and client-side checkpoints.
 
-| Method | Return Type | Description |
-| :--- | :--- | :--- |
-| `mp.client.spawnPlayer(x, y, z, yaw)` | `boolean` | Initiates spawning of the local player character. |
-| `mp.client.spawnVehicle(model, app, x, y, z, roll, pitch, yaw, streaming)` | `number` | Spawns a client-only vehicle and returns its handle. |
-| `mp.client.spawnPed(model, app, x, y, z, yaw, streaming)` | `number` | Spawns a client-only ped and returns its handle. |
-| `mp.client.spawnObject(model, app, x, y, z, roll, pitch, yaw, streaming)` | `number` | Spawns a client-only prop and returns its handle. |
-| `mp.client.despawnVehicle(handle)` | `boolean` | Removes a client-only vehicle. |
-| `mp.client.despawnPed(handle)` | `boolean` | Removes a client-only ped. |
-| `mp.client.despawnObject(handle)` | `boolean` | Removes a client-only object. |
+<a id="mp-client-spawnplayer"></a>
 
-```lua title="client.lua"
--- Hashes must be passed as integers (convert from decimal strings)
-local model = tonumber(mp.hashes.toTweakdbid('Vehicle.v_standard2_archer_hella'), 10)
-local app = tonumber(mp.hashes.toCname('default'), 10)
+### mp.client.spawnPlayer(x, y, z, yaw)
 
-local handle = mp.client.spawnVehicle(model, app, -1392.6, 1271.5, 123.0, 0, 0, 90, true)
-mp.client.despawnVehicle(handle)
-```
+> **mp.client.spawnPlayer**(`x`, `y`, `z`, `yaw`): `boolean`
+
+Sets the spawn point and starts the local player spawn. `true` means only that the sequence started.
+
+<a id="mp-client-spawnvehicle"></a>
+
+### mp.client.spawnVehicle(model, appearance, x, y, z, roll, pitch, yaw, streaming)
+
+> **mp.client.spawnVehicle**(`model`, `appearance`, `x`, `y`, `z`, `roll`, `pitch`, `yaw`, `streaming`): `integer`
+
+Spawns a client-only vehicle and returns a handle. `0` when creation failed.
+
+<a id="mp-client-spawnped"></a>
+
+### mp.client.spawnPed(model, appearance, x, y, z, yaw, streaming)
+
+> **mp.client.spawnPed**(`model`, `appearance`, `x`, `y`, `z`, `yaw`, `streaming`): `integer`
+
+Spawns a client-only ped and returns a handle. `0` when creation failed.
+
+<a id="mp-client-spawnobject"></a>
+
+### mp.client.spawnObject(model, appearance, x, y, z, roll, pitch, yaw, streaming)
+
+> **mp.client.spawnObject**(`model`, `appearance`, `x`, `y`, `z`, `roll`, `pitch`, `yaw`, `streaming`): `integer`
+
+Spawns a client-only world object and returns a handle. `0` when creation failed.
+
+<a id="mp-client-despawnvehicle"></a>
+
+### mp.client.despawnVehicle(handle)
+
+> **mp.client.despawnVehicle**(`handle`): `boolean`
+
+Removes a client-only vehicle.
+
+<a id="mp-client-despawnped"></a>
+
+### mp.client.despawnPed(handle)
+
+> **mp.client.despawnPed**(`handle`): `boolean`
+
+Removes a client-only ped.
+
+<a id="mp-client-despawnobject"></a>
+
+### mp.client.despawnObject(handle)
+
+> **mp.client.despawnObject**(`handle`): `boolean`
+
+Removes a client-only object.
 
 ---
+
 
 ## Network Mapping (`mp.network`)
 
-Translates between multiplayer network IDs (`netId`) and internal REDengine game handles (`gameId` / `EntityID`):
+<a id="mp-network-getvehicle"></a>
 
-| Method | Context |
-| :--- | :--- |
-| `mp.network.getVehicleGameId(netId)` / `getVehicleId(gameId)` | Vehicles |
-| `mp.network.getPlayerGameId(netId)` / `getPlayerId(gameId)` | Remote Players |
-| `mp.network.getPedGameId(netId)` / `getPedId(gameId)` | Ped NPCs |
-| `mp.network.getObjectGameId(netId)` / `getObjectId(gameId)` | World Objects |
-| `mp.network.getLocalPlayerId()` | Local player network ID |
-| `mp.network.getStreamedPlayers()` | Table of `gameId`s for all remote players in range |
-| `mp.network.getStreamedPool(poolName)` | Returns streamed entities in `'CVehicle'`, `'CPed'`, `'CObject'`, `'CPickup'` |
-| `mp.getServerAddress()` | Connected server endpoint (`ip:port`) |
+### mp.network.getVehicleGameId(netId) / getVehicleId(gameId)
+
+> **mp.network.getVehicleGameId**(`netId`): `gameId`
+>
+> **mp.network.getVehicleId**(`gameId`): `netId`
+
+Vehicle identifiers.
+
+<a id="mp-network-getped"></a>
+
+### mp.network.getPedGameId(netId) / getPedId(gameId)
+
+> **mp.network.getPedGameId**(`netId`): `gameId`
+>
+> **mp.network.getPedId**(`gameId`): `netId`
+
+Pedestrian identifiers.
+
+<a id="mp-network-getobject"></a>
+
+### mp.network.getObjectGameId(netId) / getObjectId(gameId)
+
+> **mp.network.getObjectGameId**(`netId`): `gameId`
+>
+> **mp.network.getObjectId**(`gameId`): `netId`
+
+World object identifiers.
+
+<a id="mp-network-getplayer"></a>
+
+### mp.network.getPlayerGameId(netId) / getPlayerId(gameId)
+
+> **mp.network.getPlayerGameId**(`netId`): `gameId`
+>
+> **mp.network.getPlayerId**(`gameId`): `netId`
+
+Player identifiers.
+
+<a id="mp-network-getlocalplayerid"></a>
+
+### mp.network.getLocalPlayerId()
+
+> **mp.network.getLocalPlayerId**(): `netId`
+
+The local player's network id.
+
+<a id="mp-network-getstreamedplayers"></a>
+
+### mp.network.getStreamedPlayers()
+
+> **mp.network.getStreamedPlayers**(): `gameId[]`
+
+Game ids of the remote players in range.
+
+<a id="mp-network-getstreamedpool"></a>
+
+### mp.network.getStreamedPool(poolName)
+
+> **mp.network.getStreamedPool**(`poolName`): `gameId[]`
+
+Game ids in a pool. `poolName` is exactly `'CVehicle'`, `'CPed'`, `'CObject'` or `'CPickup'`.
+
+<a id="mp-getserveraddress-clientref"></a>
+
+### mp.getServerAddress()
+
+> **mp.getServerAddress**(): `string` | `nil`
+
+Connected endpoint, for example `127.0.0.1:2077`; `nil` while the session is not connected. In Lua it is on `mp`, not on `mp.network`.
 
 ---
+
 
 ## Embedded Browser (`mp.cef`)
 
-Controls the Chromium Embedded Framework overlay:
+Controls the Chromium Embedded Framework overlay. Page files must be listed in the `file` array of `resource.toml`; unlisted files are not delivered to the client.
 
-```lua title="client.lua"
--- Load entry HTML page
-mp.cef.setUrl('./ui/index.html')
+<a id="mp-cef-seturl"></a>
 
--- Toggle input capture: mp.cef.setFocus(keyboardFocus, mouseCursor)
-mp.cef.setFocus(true, true)
+### mp.cef.setUrl(url)
 
--- Check focus status
-local hasFocus = mp.cef.isInFocus()
-```
+> **mp.cef.setUrl**(`url`): `nil`
+
+Loads a page. The URL can also be set once with `cef_url` in `resource.toml`.
+
+<a id="mp-cef-setfocus"></a>
+
+### mp.cef.setFocus(focus, cursor)
+
+> **mp.cef.setFocus**(`focus`, `cursor`): `nil`
+
+Gives the page keyboard focus and shows the mouse cursor. Pass both arguments: `mp.cef.setFocus(true, true)`.
+
+<a id="mp-cef-isinfocus"></a>
+
+### mp.cef.isInFocus()
+
+> **mp.cef.isInFocus**(): `boolean`
+
+`true` while the page holds focus.
 
 ---
+
 
 ## Local Storage (`mp.localStorage`)
 
-Key-value persistent storage saved on the user's local machine:
+A string key-value store on the local machine. It is not replicated to the server. There is one store per server address, shared by all resources of that server, so prefix your keys and remember that `deleteAll()` clears the store for every resource.
 
-```lua title="client.lua"
-mp.localStorage.set('hud_color', '#00f0ff')
-mp.localStorage.save() -- commit changes to disk
+<a id="mplocalstorage-set"></a>
 
-local color = mp.localStorage.get('hud_color')
-mp.localStorage.delete('hud_color')
-mp.localStorage.deleteAll()
-mp.localStorage.save()
-```
+### mp.localStorage.set(key, value)
+
+> **mp.localStorage.set**(`key`, `value`): `nil`
+
+Stores a non-empty string. An empty value is rejected and logged.
+
+<a id="mplocalstorage-get"></a>
+
+### mp.localStorage.get(key)
+
+> **mp.localStorage.get**(`key`): `string`
+
+Returns the value **JSON-encoded**: `'"abc"'` for `'abc'`, and `'null'` for a missing key. Never returns `nil`.
+
+<a id="mplocalstorage-delete"></a>
+
+### mp.localStorage.delete(key)
+
+> **mp.localStorage.delete**(`key`): `nil`
+
+Removes one key from memory.
+
+<a id="mplocalstorage-deleteall"></a>
+
+### mp.localStorage.deleteAll()
+
+> **mp.localStorage.deleteAll**(): `nil`
+
+Clears the whole store from memory.
+
+<a id="mplocalstorage-save"></a>
+
+### mp.localStorage.save()
+
+> **mp.localStorage.save**(): `nil`
+
+Writes the store to disk. Nothing is saved automatically.
+
+Serialize tables yourself and unwrap the JSON encoding on read. Because the stored value is a JSON string, a value written with `json.encode` is encoded twice and needs two `json.decode` calls.
 
 ---
+
 
 ## Discord Integration (`mp.discord`)
 
-```lua title="client.lua"
--- Update Rich Presence
-mp.discord.setActivity({
-  state = "Exploring Pacifica",
-  details = "Combat Zone Infiltration"
-})
+The client talks to the Discord desktop app. Everything here is client-only.
 
--- Clear presence
-mp.discord.clearActivity()
+<a id="mp-discord-updaterichpresence"></a>
 
--- OAuth2 authorization code
-local code = mp.discord.getOAuth2Code('APP_ID', '["identify"]')
-```
+### mp.discord.updateRichPresence(state, details)
+
+> **mp.discord.updateRichPresence**(`state`, `details`): `nil`
+
+Sets the two presence lines. `''` empties a line; the CyberMP card and timer stay.
+
+<a id="mp-discord-getcodeauthorization"></a>
+
+### mp.discord.getCodeAuthorization(appId, scopes)
+
+> **mp.discord.getCodeAuthorization**(`appId`, `scopes`): `string`
+
+Returns a one-time **authorization code**, or `''` while pending. `scopes` is a JSON array string such as `'["identify","guilds"]'`.
+
+<a id="mp-discord-getoauth2token"></a>
+
+### mp.discord.getOAuth2Token(appId)
+
+> **mp.discord.getOAuth2Token**(`appId`): `string`
+
+Returns an **access token** from the Discord Game SDK, or `''` while pending. The SDK is initialized once with the first app id passed.
+
+Both authorization calls are asynchronous: the first call starts the request and returns an empty string, the value arrives on a later call, and the code is returned once. If Discord is not running they keep returning an empty string, so always validate the result. Exchange the authorization code on **your server**; never put a Discord client secret in a client resource.
 
 ---
+
 
 ## Per-Frame Tick Loop
 
-`mp.onUpdateLoop(fn)` registers a function that runs on every render frame. Keep the execution lightweight:
+<a id="mp-onupdateloop-clientref"></a>
 
-```lua title="client.lua"
-local enabled = true
+### mp.onUpdateLoop(fn)
 
-mp.onUpdateLoop(function()
-  if not enabled then return end
-  -- Frame calculations
-end)
-```
+> **mp.onUpdateLoop**(`fn`): `nil`
+
+Registers `fn` for every script tick. There is no way to remove the callback, and an error inside it is dropped without a message, so guard the body with a flag and keep it cheap.
+
+<a id="mp-setimmediate-clientref"></a>
+
+### mp.setImmediate(fn, ...)
+
+> **mp.setImmediate**(`fn`, `...`): `nil`
+
+The client-only deferred queue. Calls `fn(...)` on a later tick, up to 256 callbacks per tick. An error inside the callback is printed as `Error in immediate callback: ...`. The observe wrappers use this queue internally.
+
+For periodic work use a task instead: a task can wait, a tick callback cannot.
 
 ---
 
-## CET Game Layer (`use_game_natives = true`)
 
-When `use_game_natives = true` is set in `resource.toml`, the client runtime injects the Cyber Engine Tweaks (CET) environment:
+## Scheduler (`mp.spawnTask`, `mp.wait`, `mp.setTimeout`)
+
+<a id="mp-spawntask-clientref"></a>
+
+### mp.spawnTask(fn)
+
+> **mp.spawnTask**(`fn`): `nil`
+
+Runs `fn` as a coroutine on the next scheduler pass.
+
+<a id="mp-spawntaskimmediatly-clientref"></a>
+
+### mp.spawnTaskImmediatly(fn)
+
+> **mp.spawnTaskImmediatly**(`fn`): `boolean`
+
+Runs `fn` as a coroutine right now, up to its first `mp.wait`. The name is spelled this way in the API. Returns a boolean.
+
+<a id="mp-settimeout-clientref"></a>
+
+### mp.setTimeout(fn, ms)
+
+> **mp.setTimeout**(`fn`, `ms`): `nil`
+
+Runs `fn` as a coroutine after `ms` milliseconds. Returns nothing and cannot be cancelled.
+
+<a id="mp-wait-clientref"></a>
+
+### mp.wait(ms)
+
+> **mp.wait**(`ms`): `nil`
+
+Suspends the current coroutine for `ms` milliseconds. `mp.wait(0)` resumes it on the next pass.
+
+<a id="mp-gettimer-clientref"></a>
+
+### mp.getTimer()
+
+> **mp.getTimer**(): `number`
+
+Millisecond counter. Compare two readings to measure elapsed time.
+
+---
+
+<a id="console-commands-mpcommands-clientref"></a>
+
+## Console Commands (`mp.commands`)
+
+<a id="mp-commands-add-clientref"></a>
+
+### mp.commands.add(name, fn)
+
+> **mp.commands.add**(`name`, `fn`)
+
+Registers a console command that runs when the player types `name` in the client console (`F8`). The optional third argument is the admin flag.
+
+<a id="mp-commands-remove-clientref"></a>
+
+### mp.commands.remove(name)
+
+> **mp.commands.remove**(`name`)
+
+Removes the command.
+
+<a id="mp-commands-execute-clientref"></a>
+
+### mp.commands.execute(command)
+
+> **mp.commands.execute**(`command`)
+
+Executes a console command line, as if it were typed.
+
+<a id="mp-commands-getall-clientref"></a>
+
+### mp.commands.getAll()
+
+> **mp.commands.getAll**(): `table`
+
+Returns an array with the names of the registered commands.
+
+---
+
+
+## Resources (`mp.resources`)
+
+<a id="mp-resources-getcurrentname-clientref"></a>
+
+### mp.resources.getCurrentName()
+
+> **mp.resources.getCurrentName**(): `string`
+
+Name of the running resource.
+
+<a id="mp-resources-gettomlfile-clientref"></a>
+
+### mp.resources.getTomlFile(resourceName)
+
+> **mp.resources.getTomlFile**(`resourceName`): `string`
+
+Contents of the target resource's `resource.toml`, or nothing when not found.
+
+<a id="mp-resources-loadfile-clientref"></a>
+
+### mp.resources.loadFile(resourceName, file)
+
+> **mp.resources.loadFile**(`resourceName`, `file`): `string`
+
+Contents of a file declared by the target resource.
+
+<a id="mp-resources-getstate-clientref"></a>
+
+### mp.resources.getState(resourceName)
+
+> **mp.resources.getState**(`resourceName`): `number`
+
+`0` uninitialized or unknown, `1` starting, `2` started, `3` stopped.
+
+---
+
+
+## Runtime Helpers
+
+<a id="mp-log-clientref"></a>
+
+### mp.log(text)
+
+> **mp.log**(`text`): `nil`
+
+Writes one line to the resource log.
+
+<a id="mp-isserver-clientref"></a>
+
+### mp.isServer()
+
+> **mp.isServer**(): `boolean`
+
+Always `false` on the client.
+
+<a id="mp-getserveraddress-runtime"></a>
+
+### mp.getServerAddress()
+
+> **mp.getServerAddress**(): `string` | `nil`
+
+Connected endpoint, for example `127.0.0.1:2077`, or `nil` while the session is not connected.
+
+<a id="mp-getlaunchersettings"></a>
+
+### mp.getLauncherSettings()
+
+> **mp.getLauncherSettings**(): `string`
+
+The launcher `--settings` payload as a JSON string, or nothing when the launcher did not pass it. Decode it with `json.decode`; fields change between launcher builds.
+
+<a id="mp-iskypressed"></a>
+
+### mp.isKeyPressed(keyCode)
+
+> **mp.isKeyPressed**(`keyCode`): `boolean`
+
+`true` when the runtime reports the given integer key code as pressed. The exact press/consume semantics are not documented here.
+
+---
+
+
+## Shared Metadata (`mp.meta`)
+
+<a id="mp-meta-setglobal-clientref"></a>
+
+### mp.meta.setGlobal(key, value, sync) / mp.meta.getGlobal(key)
+
+> **mp.meta.setGlobal**(`key`, `value`, `sync`): `nil`
+>
+> **mp.meta.getGlobal**(`key`): `any`
+
+Metadata without an owner.
+
+<a id="mp-meta-setplayer-clientref"></a>
+
+### mp.meta.setPlayer(netId, key, value, sync) / mp.meta.getPlayer(netId, key)
+
+> **mp.meta.setPlayer**(`netId`, `key`, `value`, `sync`): `nil`
+>
+> **mp.meta.getPlayer**(`netId`, `key`): `any`
+
+Metadata for a player by its network id.
+
+<a id="mp-meta-setlocalplayer-clientref"></a>
+
+### mp.meta.setLocalPlayer(key, value, sync) / mp.meta.getLocalPlayer(key)
+
+> **mp.meta.setLocalPlayer**(`key`, `value`, `sync`): `nil`
+>
+> **mp.meta.getLocalPlayer**(`key`): `any`
+
+Metadata for the local player.
+
+<a id="mp-meta-setentity-clientref"></a>
+
+### mp.meta.setEntity(netId, key, value, sync) / mp.meta.getEntity(netId, key)
+
+> **mp.meta.setEntity**(`netId`, `key`, `value`, `sync`): `nil`
+>
+> **mp.meta.getEntity**(`netId`, `key`): `any`
+
+Metadata for a networked entity by its network id.
+
+The last argument is the sync flag: when it is omitted or `false` the value stays local, when it is `true` the value is replicated by the server. On the client, `setPlayer` and `setEntity` accept a network id (number or numeric string). An unknown key returns `nil`.
+
+---
+
+
+## Resource Exports (`mp.exports`)
+
+Publishes a function to other client resources of the same server. Server scripts have their own, separate export table.
+
+<a id="mp-exports-register-clientref"></a>
+
+### mp.exports(name, fn)
+
+> **mp.exports**(`name`, `fn`): `nil`
+
+Registers a function under `name`. A global function can also be exported by name from `resource.toml`, where the value must be an array.
+
+<a id="mp-exports-call-clientref"></a>
+
+### mp.exports.resource:name(...)
+
+> **mp.exports.`resource`:name**(`...`): `any`
+
+Calls an export from another resource. Call with `:`; the proxy passes itself as the first argument.
+
+A missing export or a stopped resource raises `Cant find <field> in <resource>`; an error inside the export raises `failed emit export <field> in resource <resource>`. Put provider resources first in the load order.
+
+---
+
+
+## Game Layer (`use_game_natives = true`)
 
 ### Global Classes & Constructors
-- `Game`: Accesses the game engine singleton and systems (`Game.GetPlayer()`, `Game.GetStatsSystem()`, `Game.GetTeleportationFacility()`).
-- `NewObject(className)`: Instantiates a REDengine class.
-- `GetSingleton(className)`: Retrieves an engine singleton.
-- `Vector4.new(x, y, z, w)`: Creates a 4D spatial coordinate struct.
-- `EulerAngles.new(pitch, roll, yaw)`: Creates an orientation rotation struct.
-- `ToCName(str)`, `ToTweakDBID(str)`, `ToItemID(str)`: Explicit hash conversion helpers.
+
+
+#### Game
+
+> **Game**
+
+Game instance and global functions: `Game.GetPlayer()`, `Game.GetStatsSystem()`, `Game.GetStatPoolsSystem()`, `Game.GetTeleportationFacility()`. Call object methods with `:`.
+
+<a id="newobject"></a>
+
+#### NewObject(typeName)
+
+> **NewObject**(`typeName`): `object` | `nil`
+
+Instantiates a REDengine class by name, for example `NewObject('ForceCloseHubMenuEvent')`. Returns `nil` when the type is unknown.
+
+<a id="getsingleton"></a>
+
+#### GetSingleton(typeName), NewProxy, IsDefined, EnumInt
+
+> **GetSingleton**, **NewProxy**, **IsDefined**, **EnumInt**
+
+Engine singleton, native proxy, type check and enum conversion.
+
+<a id="vector4new"></a>
+
+#### Vector4.new(x, y, z, w), ToVector4(table)
+
+> **Vector4.new**(`x`, `y`, `z`, `w`)
+>
+> **ToVector4**(`table`)
+
+4D vector and conversion from a table with `x`, `y`, `z`, `w`.
+
+<a id="euleranglesnew"></a>
+
+#### EulerAngles.new(roll, pitch, yaw), ToEulerAngles(table)
+
+> **EulerAngles.new**(`roll`, `pitch`, `yaw`)
+>
+> **ToEulerAngles**(`table`)
+
+Orientation struct. The constructor order is `roll, pitch, yaw`.
+
+<a id="quaternion"></a>
+
+#### Quaternion / ToQuaternion(table)
+
+> **Quaternion**, **ToQuaternion**(`table`)
+
+Quaternion from a table with `i`, `j`, `k`, `r`.
+
+<a id="game-value-types"></a>
+
+#### CName, TweakDBID, ItemID, CRUID, LocKey
+
+> **CName**, **TweakDBID**, **ItemID**, **CRUID**, **LocKey**
+
+Game value types and their `To*` helpers. `CName('name')` and `TweakDBID('name')` build a hash from a string; `ToCName(table)`, `ToTweakDBID(table)` and `ToItemID(table)` build one from a table of fields.
+
+Names, signatures and enums of game classes are listed on [NativeDB](https://nativedb.red4ext.com/); the names there match the names you call from Lua.
 
 ### Game Lifecycle Stages
-Register callbacks for engine startup phases using `mp.registerGameState(stage, fn)`:
 
-| Stage | Trigger Timing |
-| :--- | :--- |
-| `'onTweak'` | TweakDB database ready for modification. |
-| `'onInit'` | Game engine core runtime initialized; game classes bound. |
-| `'onGameLoaded'` | 3D world loaded; safe to query player puppets and spawn. |
-| `'onceGameLoaded'` | Triggers only once on initial world entry. |
-| `'onUpdate'` | Triggers on every tick after `onInit` (receives delta time `dt`). |
-| `'onInputKeyEvent'` | Triggers on keyboard/mouse input events (receives `action, key`). |
+<a id="mp-registergamestate"></a>
 
-Stage check methods: `mp.isOnTweakCalled()`, `mp.isOnInitCalled()`, `mp.isOnGameLoadedCalled()`.
+#### mp.registerGameState(stage, fn)
+
+> **mp.registerGameState**(`stage`, `fn`): `nil`
+
+Registers a callback for a game lifecycle stage. Handlers run on the next script tick after the stage; if the stage was already reached when the resource started, they run on the first tick.
+
+| Stage | When | Arguments |
+| :--- | :--- | :--- |
+| `onTweak` | TweakDB is ready. | — |
+| `onInit` | Game runtime initialized; `Game` calls become usable. | — |
+| `onGameLoaded` | The world is loaded. Runs on every load. | — |
+| `onceGameLoaded` | The first world load after registration only. | — |
+| `onUpdate` | Every tick after `onInit`. | `dt` |
+| `onInputKeyEvent` | A key event. | `action, key` |
+
+<a id="mp-isontweakcalled"></a>
+
+#### mp.isOnTweakCalled()
+
+> **mp.isOnTweakCalled**(): `boolean`
+
+`true` once the `onTweak` stage has passed.
+
+<a id="mp-isoninitcalled"></a>
+
+#### mp.isOnInitCalled()
+
+> **mp.isOnInitCalled**(): `boolean`
+
+`true` once the `onInit` stage has passed.
+
+<a id="mp-isongameloadedcalled"></a>
+
+#### mp.isOnGameLoadedCalled()
+
+> **mp.isOnGameLoadedCalled**(): `boolean`
+
+`true` once the `onGameLoaded` stage has passed.
+
+Register events and commands at resource start and keep every `Game.*` call behind the appropriate stage. `Game.GetPlayer()` can still return `nil` right after `mp.client.spawnPlayer`; poll for the puppet before health, appearance or teleport work.
 
 ### Method Hooks (Observe & Override)
-- **`mp.observe(className, methodName, callback)`**: Non-intrusive method listener.
-- **`mp.observeBefore` / `mp.observeAfter`**: Controls before/after capture points.
-- **`mp.observeRaw` / `mp.observeBeforeRaw` / `mp.observeAfterRaw`**: Immediate dispatching without tick queuing.
-- **`mp.override(className, methodName, callback)`**: Intercepts method calls. Callback receives `(self, arg1, ..., wrappedMethod)` and must return the expected value.
+
+Hooks are registered from the `onInit` stage, once per resource. Registration does not return a removal id; the hooks are removed when the resource stops or restarts. To disable a hook temporarily, check a flag inside the callback.
+
+<a id="mp-observe"></a>
+
+#### mp.observe(typeName, methodName, fn)
+
+> **mp.observe**(`typeName`, `methodName`, `fn`): `nil`
+
+Capture point: before the method. Dispatch: queued with `mp.setImmediate`, on a later tick. `mp.observe` is the `mp.observeBefore` variant.
+
+<a id="mp-observebefore"></a>
+
+#### mp.observeBefore(typeName, methodName, fn)
+
+> **mp.observeBefore**(`typeName`, `methodName`, `fn`): `nil`
+
+Capture point: before the method. Queued with `mp.setImmediate`, on a later tick.
+
+<a id="mp-observeafter"></a>
+
+#### mp.observeAfter(typeName, methodName, fn)
+
+> **mp.observeAfter**(`typeName`, `methodName`, `fn`): `nil`
+
+Capture point: after the method. Queued with `mp.setImmediate`, on a later tick.
+
+<a id="mp-observeraw"></a>
+
+#### mp.observeRaw(typeName, methodName, fn)
+
+> **mp.observeRaw**(`typeName`, `methodName`, `fn`): `nil`
+
+Capture point: before the method. Called immediately, without the queue. `mp.observeRaw` is the `mp.observeBeforeRaw` variant.
+
+<a id="mp-observebeforeraw"></a>
+
+#### mp.observeBeforeRaw(typeName, methodName, fn)
+
+> **mp.observeBeforeRaw**(`typeName`, `methodName`, `fn`): `nil`
+
+Capture point: before the method. Called immediately, without the queue.
+
+<a id="mp-observeafterraw"></a>
+
+#### mp.observeAfterRaw(typeName, methodName, fn)
+
+> **mp.observeAfterRaw**(`typeName`, `methodName`, `fn`): `nil`
+
+Capture point: after the method. Called immediately, without the queue.
+
+<a id="mp-override"></a>
+
+#### mp.override(typeName, methodName, fn)
+
+> **mp.override**(`typeName`, `methodName`, `fn`): `nil`
+
+Replaces the method. Synchronous. `fn` receives `self, arg1, ..., wrappedMethod` (or `arg1, ..., wrappedMethod` for a static method) and returns the value the game method expects, then the out parameters in declaration order.
+
+"Before" describes the capture point, not the time the user callback runs: a queued observer body can execute after the game method has already finished. Observer return values are ignored.
+
+Callback arguments:
+
+- Instance method: `fn(self, arg1, ...)`.
+- Static method: `fn(arg1, ...)`, without `self`.
+- Override: `fn(self, arg1, ..., wrappedMethod)`, or `fn(arg1, ..., wrappedMethod)` for a static method.
+- An overloaded method is selected by its full signature with the suffix after `;`, for example `'IsSummoningVehiclesRestricted;GameInstance'`.
+- `self` is a weak reference. A stored controller can be invalid after it closes or unloads.
+
+`wrappedMethod(...)` calls the next link in the chain and finally the original method. Do not pass `self` to it: the instance context is retained by the runtime. The continuation is valid only during the override call. Omitting `wrappedMethod` skips the rest of the chain and the original method. Overrides run synchronously; do not defer the continuation with `mp.wait`. Keep Raw callbacks short: they run inside the game call.
 
 ### TweakDB Database
-```lua title="client.lua"
-mp.registerGameState('onTweak', function()
-  TweakDB:SetFlat('Items.Preset_Nue_Default.damage', 150)
-  TweakDB:UpdateRecord('Items.Preset_Nue_Default')
-end)
-```
+
+TweakDB becomes available in the `onTweak` stage.
+
+<a id="tweakdb-getflat"></a>
+
+#### TweakDB:GetFlat(flatId) / TweakDB:GetRecord(recordId)
+
+> **TweakDB:GetFlat**(`flatId`)
+>
+> **TweakDB:GetRecord**(`recordId`)
+
+Read a flat or a record.
+
+<a id="tweakdb-setflat"></a>
+
+#### TweakDB:SetFlat(flatId, value) / TweakDB:SetFlatNoUpdate(flatId, value)
+
+> **TweakDB:SetFlat**(`flatId`, `value`)
+>
+> **TweakDB:SetFlatNoUpdate**(`flatId`, `value`)
+
+Write a flat, with or without an immediate record update.
+
+<a id="tweakdb-update"></a>
+
+#### TweakDB:Update(recordId)
+
+> **TweakDB:Update**(`recordId`)
+
+Applies pending flat writes to the record.
+
+<a id="tweakdb-records"></a>
+
+#### TweakDB:CreateRecord / CloneRecord / DeleteRecord
+
+> **TweakDB:CreateRecord**(`recordId`, `typeName`)
+>
+> **TweakDB:CloneRecord**(`newId`, `sourceId`)
+>
+> **TweakDB:DeleteRecord**(`recordId`)
+
+Record management.
+
+### Hashes (`mp.hashes`)
+
+<a id="mp-hashes-tocname-clientref"></a>
+
+#### mp.hashes.toCname(name)
+
+> **mp.hashes.toCname**(`name`): `string`
+
+CName hash of an appearance or other CName string.
+
+<a id="mp-hashes-totweakdbid-clientref"></a>
+
+#### mp.hashes.toTweakdbid(name)
+
+> **mp.hashes.toTweakdbid**(`name`): `string`
+
+TweakDBID of a record such as `Vehicle.*`, `Character.*` or `Items.*`.
+
+<a id="mp-hashes-toresref-clientref"></a>
+
+#### mp.hashes.toResref(path)
+
+> **mp.hashes.toResref**(`path`): `string`
+
+Resource reference hash of a `.ent` path.
+
+<a id="mp-hashes-from-clientref"></a>
+
+#### mp.hashes.fromCname(hash) / fromTweakdbid(hash) / fromResref(hash)
+
+> **mp.hashes.fromCname**(`hash`): `string`
+>
+> **mp.hashes.fromTweakdbid**(`hash`): `string`
+>
+> **mp.hashes.fromResref**(`hash`): `string`
+
+Reverse lookup. The argument is the decimal hash string.

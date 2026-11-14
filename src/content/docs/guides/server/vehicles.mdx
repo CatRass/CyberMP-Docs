@@ -39,14 +39,14 @@ Vehicles are spawned using the vehicle creation API. In Cyberpunk 2077, vehicle 
   <TabItem label="Lua">
     ```lua title="server.lua"
     -- 1. Resolve vehicle model and appearance hashes
-    local vehicleModel = mp.hashes.tweakdbid('Vehicle.v_sport1_quadra_turbo_r_player')
-    local vehicleAppearance = mp.hashes.cname('quadra_turbo_r__basic_player_01')
+    local vehicleModel = tonumber(mp.hashes.toTweakdbid('Vehicle.v_sport1_quadra_turbo_r_player'), 10)
+    local vehicleAppearance = tonumber(mp.hashes.toCname('quadra_turbo_r__basic_player_01'), 10)
 
     -- 2. Spawn the vehicle in the game world
     local car = mp.vehicles.create({
       model = vehicleModel,
       appearance = vehicleAppearance,
-      position = {-1392.6, 1271.5, 123.0},
+      position = vector3(-1392.6, 1271.5, 123.0),
       yaw = 90.0,
       health = 1000,
       dimension = 0
@@ -180,7 +180,7 @@ CyberMP tracks passenger occupancy across seats:
     ```lua title="server.lua"
     function checkOccupants(vehicle)
       -- Check current driver
-      if vehicle.seats.driver then
+      if vehicle.seats.driver and vehicle.seats.driver.id ~= 0 then
         print(string.format("Driver: %s", vehicle.seats.driver.nickname))
       else
         print("Vehicle has no driver.")
@@ -191,7 +191,7 @@ CyberMP tracks passenger occupancy across seats:
 
       -- Check who was last in a seat
       local lastDriver = vehicle:getLastPlayerInSeat(0)
-      if lastDriver then
+      if lastDriver and lastDriver.id ~= 0 then
         print(string.format("Last driver was: %s", lastDriver.nickname))
       end
     end
@@ -234,24 +234,24 @@ Subscribe to vehicle platform events:
   <TabItem label="Lua">
     ```lua title="server.lua"
     -- Player entered a vehicle seat
-    mp.events.on('playerEnterVehicle', function(playerId, vehicleId, seat)
+    mp.events.add('enterVehicle', function(playerId, data)
       local player = mp.players.at(playerId)
-      print(string.format("%s entered seat #%s of Vehicle #%s", player.nickname, seat, vehicleId))
+      print(string.format("%s entered seat #%s of Vehicle #%s", player.nickname, data[2], data[1]))
     end)
 
     -- Player exited a vehicle
-    mp.events.on('playerExitVehicle', function(playerId, vehicleId)
+    mp.events.add('exitVehicle', function(playerId, data)
       local player = mp.players.at(playerId)
-      print(string.format("%s exited Vehicle #%s", player.nickname, vehicleId))
+      print(string.format("%s exited Vehicle #%s", player.nickname, data[1]))
     end)
 
     -- Vehicle customization changed (CrystalCoat)
-    mp.events.on('vehicleCustomizationChange', function(playerId, data)
+    mp.events.add('vehicleCustomizationChange', function(playerId, data)
       print(string.format("Player %s modified vehicle customization.", playerId))
     end)
 
     -- Vehicle destruction updated
-    mp.events.on('vehicleDestructionChange', function(playerId, data)
+    mp.events.add('vehicleDestructionChange', function(playerId, data)
       print(string.format("Vehicle destruction update from Player %s.", playerId))
     end)
     ```

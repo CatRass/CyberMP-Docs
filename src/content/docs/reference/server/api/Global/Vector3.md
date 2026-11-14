@@ -5,7 +5,7 @@ prev: false
 title: "Vector3"
 ---
 
-> **Vector3** = \[`number`, `number`, `number`\]
+> **Vector3** = \[`x`: `number`, `y`: `number`, `z`: `number`\]
 
 Defined in: shared.ts:7
 
