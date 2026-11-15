@@ -93,8 +93,8 @@ When implementing custom 3D markers, distance math, or camera updates, execute l
     ```lua title="client.lua"
     local isRunning = true
 
-    -- mp.onUpdateLoop runs on every script tick and cannot be removed
-    mp.onUpdateLoop(function()
+    -- mp.registerGameState('onUpdate') runs on every script tick; the game layer is required
+    mp.registerGameState('onUpdate', function(dt)
       if not isRunning then return end
 
       local player = Game.GetPlayer() -- needs use_game_natives = true
