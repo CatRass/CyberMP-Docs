@@ -43,7 +43,7 @@ Game objects allow placing props, barriers, dynamic physics items, and custom sc
   <TabItem label="JS">
     ```js title="server.js"
     // 1. Resolve hash for an in-game asset
-    const barrierHash = mp.hashes.cname('base\\gameplay\\devices\\barriers\\road_barrier_a.ent');
+    const barrierHash = mp.hashes.resref('base\\gameplay\\devices\\doors\\gates\\appearances\\w300_h250_mall_metal.ent');
 
     // 2. Create the object
     const barrier = mp.objects.create({
@@ -60,14 +60,14 @@ Game objects allow placing props, barriers, dynamic physics items, and custom sc
   <TabItem label="Lua">
     ```lua title="server.lua"
     -- 1. Resolve hash for an in-game asset
-    local barrierHash = mp.hashes.cname('base\\gameplay\\devices\\barriers\\road_barrier_a.ent')
+    local barrierHash = tonumber(mp.hashes.toResref('base\\gameplay\\devices\\doors\\gates\\appearances\\w300_h250_mall_metal.ent'), 10)
 
     -- 2. Create the object
     local barrier = mp.objects.create({
       model = barrierHash,
-      position = {-1400.5, 1280.0, 122.5},
+      position = vector3(-1400.5, 1280.0, 122.5),
       yaw = 45.0,
-      dynamic = false, -- Set to true if the prop should react to physical collisions and gravity
+      dynamic = false, -- Objects are dynamic by default; false pins the prop in place
       dimension = 0
     })
 
@@ -106,10 +106,10 @@ The `mp.peds` manager enables spawning ambient civilians, enemies, quest givers,
 <Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
   <TabItem label="JS">
     ```js title="server.js"
-    const vendorModel = mp.hashes.tweakdbid('Character.afterlife_bartender');
-    const vendorAppearance = mp.hashes.cname('afterlife_bartender_default');
+    const vendorModel = mp.hashes.tweakdbid('Character.Judy');
+    const vendorAppearance = mp.hashes.cname('default');
 
-    const bartender = mp.peds.create({
+    const judy = mp.peds.create({
       model: vendorModel,
       appearance: vendorAppearance,
       position: [-1456.8, 1038.2, 16.8],
@@ -118,24 +118,24 @@ The `mp.peds` manager enables spawning ambient civilians, enemies, quest givers,
       dimension: 0
     });
 
-    console.log(`Spawned Bartender Ped #${bartender.id}`);
+    console.log(`Spawned Judy Ped #${judy.id}`);
     ```
   </TabItem>
   <TabItem label="Lua">
     ```lua title="server.lua"
-    local vendorModel = mp.hashes.tweakdbid('Character.afterlife_bartender')
-    local vendorAppearance = mp.hashes.cname('afterlife_bartender_default')
+    local vendorModel = tonumber(mp.hashes.toTweakdbid('Character.Judy'), 10)
+    local vendorAppearance = tonumber(mp.hashes.toCname('default'), 10)
 
-    local bartender = mp.peds.create({
+    local judy = mp.peds.create({
       model = vendorModel,
       appearance = vendorAppearance,
-      position = {-1456.8, 1038.2, 16.8},
+      position = vector3(-1456.8, 1038.2, 16.8),
       yaw = 180.0,
       health = 200,
       dimension = 0
     })
 
-    print(string.format("Spawned Bartender Ped #%s", bartender.id))
+    print(string.format("Spawned Judy Ped #%s", judy.id))
     ```
   </TabItem>
 </Tabs>
@@ -146,20 +146,20 @@ The `mp.peds` manager enables spawning ambient civilians, enemies, quest givers,
   <TabItem label="JS">
     ```js title="server.js"
     // Inspect ped
-    console.log(`Ped health: ${bartender.health}`);
+    console.log(`Ped health: ${judy.health}`);
 
     // Destroy ped
-    bartender.destroy();
+    judy.destroy();
     // or: mp.peds.destroy(pedId);
     ```
   </TabItem>
   <TabItem label="Lua">
     ```lua title="server.lua"
     -- Inspect ped
-    print(string.format("Ped health: %s", bartender.health))
+    print(string.format("Ped health: %s", judy.health))
 
     -- Destroy ped
-    bartender:destroy()
+    judy:destroy()
     -- or: mp.peds.destroy(pedId)
     ```
   </TabItem>
@@ -197,12 +197,12 @@ Pickups represent interactive items, weapon drops, and collectible packages that
   </TabItem>
   <TabItem label="Lua">
     ```lua title="server.lua"
-    local katanaHash = mp.hashes.tweakdbid('Items.Preset_Katana_Military')
+    local katanaHash = tonumber(mp.hashes.toTweakdbid('Items.Preset_Katana_Military'), 10)
 
     local droppedWeapon = mp.pickups.create({
       model = katanaHash,
       type = 2, -- 1 = Clothes, 2 = Weapon, 3 = Other
-      position = {-1395.0, 1275.0, 123.0},
+      position = vector3(-1395.0, 1275.0, 123.0),
       yaw = 0,
       dimension = 0
     })
@@ -232,14 +232,14 @@ Pickups represent interactive items, weapon drops, and collectible packages that
   <TabItem label="Lua">
     ```lua title="server.lua"
     -- Player picked up an item
-    mp.events.on('pickupRaise', function(playerId, data)
+    mp.events.add('pickupRaise', function(playerId, data)
       local player = mp.players.at(playerId)
       print(string.format("Player %s picked up: %s (NetID: %s)", player.nickname, data.pickupHash, data.pickupNetId))
     end)
 
     -- Item dropped to the ground
-    mp.events.on('pickupDrop', function(playerId, data)
-      print(string.format("Player %s dropped item %s", playerId, data.pickupHash))
+    mp.events.add('pickupDrop', function(playerId, data)
+      print(string.format("Player %s dropped pickup %s (type %s)", playerId, data.pickupNetId, data.type))
     end)
     ```
   </TabItem>
@@ -265,11 +265,11 @@ To listen to lifecycle changes across all entity types simultaneously, use `enti
   </TabItem>
   <TabItem label="Lua">
     ```lua title="server.lua"
-    mp.events.on('entitySpawn', function(entityId, type)
+    mp.events.add('entitySpawn', function(entityId, type)
       print(string.format("[Entity Spawn] Type: %s | ID: %s", type, entityId))
     end)
 
-    mp.events.on('entityDespawn', function(entityId, type)
+    mp.events.add('entityDespawn', function(entityId, type)
       print(string.format("[Entity Despawn] ID: %s", entityId))
     end)
     ```

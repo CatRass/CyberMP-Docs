@@ -14,17 +14,23 @@ The callback receives the instance (`self`), the original arguments, and the ori
 
 ## Type Parameters
 
+<a id="__typec"></a>
+
 ### C
 
 `C` *extends* keyof `MpClasses`
 
 The class name key from `MpClasses`.
 
+<a id="__typei"></a>
+
 ### I
 
 `I` *extends* `UnwrapClass`\<`MpClasses`\[`C`\]\>
 
 The resolved instance type of the class.
+
+<a id="__typem"></a>
 
 ### M
 

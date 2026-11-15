@@ -116,6 +116,8 @@ Detaches and de-allocates an active type-safe engine hook handler reference.
 
 ##### Type Parameters
 
+<a id="offe"></a>
+
 ###### E
 
 `E` *extends* keyof [`MpEventsMap`](/reference/client/api/events/mpeventsmap/)
@@ -182,6 +184,8 @@ Subscribes a type-safe listener function to catch core multiplayer platform trac
 
 ##### Type Parameters
 
+<a id="one"></a>
+
 ###### E
 
 `E` *extends* keyof [`MpEventsMap`](/reference/client/api/events/mpeventsmap/)
@@ -247,6 +251,8 @@ Defined in: events.d.ts:180
 Registers a strict event listener tracking core CEF lifecycle mutations.
 
 ##### Type Parameters
+
+<a id="oncefe"></a>
 
 ###### E
 

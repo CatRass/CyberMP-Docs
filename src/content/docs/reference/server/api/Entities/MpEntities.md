@@ -19,6 +19,8 @@ Collection wrapper for managing multiple entities.
 
 ## Type Parameters
 
+<a id="t"></a>
+
 ### T
 
 `T` *extends* [`MpEntity`](/reference/server/api/entities/mpentity/) = [`MpEntity`](/reference/server/api/entities/mpentity/)

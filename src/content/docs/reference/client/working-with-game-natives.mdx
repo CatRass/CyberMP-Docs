@@ -121,7 +121,7 @@ widget.SetTranslation({ x: 100, y: 250 });
 In Lua, instantiate explicit engine struct types:
 ```lua title="client.lua"
 local pos = Vector4.new(x, y, z, 1.0)
-local rot = EulerAngles.new(pitch, roll, yaw)
+local rot = EulerAngles.new(roll, pitch, yaw)
 ```
 
 ### 2. Handling Engine `Variant` Boxes
@@ -153,7 +153,7 @@ To modify game stats, item parameters, or vehicle handling at runtime, read and 
     mp.registerGameState('onTweak', function()
       -- Modify flat values in TweakDB
       TweakDB:SetFlat('Items.Preset_Nue_Default.damage', 150)
-      TweakDB:UpdateRecord('Items.Preset_Nue_Default')
+      TweakDB:Update('Items.Preset_Nue_Default')
     end)
     ```
   </TabItem>

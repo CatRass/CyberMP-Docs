@@ -55,7 +55,7 @@ Listen for connection and spawn events:
       console.log(`[Connected] ${player.nickname} joined with ID: ${playerId}`);
 
       // Send a private welcome packet to the client
-      player.emit('chat:addMessage', `Welcome to Night City, ${player.nickname}!`);
+      player.emit('chat:add', `Welcome to Night City, ${player.nickname}!`);
     });
 
     // 3. Player spawned in the game world
@@ -71,21 +71,21 @@ Listen for connection and spawn events:
   <TabItem label="Lua">
     ```lua title="server.lua"
     -- 1. Connection attempt
-    mp.events.on('playerConnecting', function(tempId, name)
+    mp.events.add('playerConnecting', function(tempId, name)
       print(string.format("[Connect Request] Incoming connection: %s (TempID: %s)", name, tempId))
     end)
 
     -- 2. Connection finalized: Permanent network ID assigned
-    mp.events.on('playerConnected', function(playerId, tempId)
+    mp.events.add('playerConnected', function(playerId, tempId)
       local player = mp.players.at(playerId)
       print(string.format("[Connected] %s joined with ID: %s", player.nickname, playerId))
 
       -- Send a private welcome packet to the client
-      player:emit('chat:addMessage', string.format("Welcome to Night City, %s!", player.nickname))
+      player:trigger('chat:add', string.format("Welcome to Night City, %s!", player.nickname))
     end)
 
     -- 3. Player spawned in the game world
-    mp.events.on('playerSpawn', function(playerId)
+    mp.events.add('playerSpawn', function(playerId)
       local player = mp.players.at(playerId)
       print(string.format("[Spawn] Player %s (%s) spawned", player.nickname, playerId))
 
@@ -131,7 +131,7 @@ Track player flatlining, respawning, and leaving the server:
   <TabItem label="Lua">
     ```lua title="server.lua"
     -- Player dies
-    mp.events.on('playerDeath', function(playerId, data)
+    mp.events.add('playerDeath', function(playerId, data)
       local victim = mp.players.at(playerId)
 
       if data.killerId then
@@ -143,13 +143,13 @@ Track player flatlining, respawning, and leaving the server:
     end)
 
     -- Player respawns back into the world
-    mp.events.on('playerRespawn', function(playerId, data)
+    mp.events.add('playerRespawn', function(playerId, data)
       local player = mp.players.at(playerId)
-      print(string.format("[Respawn] %s respawned at [%s, %s, %s]", player.nickname, data.posX, data.posY, data.posZ))
+      print(string.format("[Respawn] %s respawned at [%s, %s, %s]", player.nickname, player.position[1], player.position[2], player.position[3]))
     end)
 
     -- Player disconnects
-    mp.events.on('playerDisconnected', function(playerId, reason)
+    mp.events.add('playerDisconnected', function(playerId, reason)
       print(string.format("[Disconnect] Player %s disconnected. Reason: %s", playerId, reason))
     end)
     ```
@@ -273,7 +273,7 @@ Player objects expose synchronized properties describing their current state in 
       print(string.format("Position: [%.2f, %.2f, %.2f] (Yaw: %.1f°)", pos[1], pos[2], pos[3], player.yaw))
       print(string.format("Health: %s | Ping: %sms | IP: %s", player.health, player.ping, player.ip))
 
-      if player.vehicle then
+      if player.vehicle and player.vehicle.id ~= 0 then
         print(string.format("Currently seated in Vehicle ID: %s", player.vehicle.id))
       end
     end
@@ -304,12 +304,12 @@ To send an event directly to a player, call `emit` on the player object or `mp.e
   <TabItem label="Lua">
     ```lua title="server.lua"
     -- Send private notifications or UI updates
-    player:emit('ui:showNotification', {
+    player:trigger('ui:showNotification', {
       title = 'Contract Completed',
       amount = 2500
     })
 
-    player:emit('hud:updateBalance', 15000)
+    player:trigger('hud:updateBalance', 15000)
     ```
   </TabItem>
 </Tabs>
@@ -332,7 +332,7 @@ To send an event directly to a player, call `emit` on the player object or `mp.e
     player:kick('Exploiting game mechanics')
 
     -- Mute player's voice transmission
-    player:mute()
+    player:mute(true)
     ```
   </TabItem>
 </Tabs>
@@ -372,25 +372,25 @@ The server receives synchronized events when players take damage or fire weapons
   <TabItem label="Lua">
     ```lua title="server.lua"
     -- Handle damage
-    mp.events.on('damage', function(victimId, data)
-      local victim = mp.players.at(victimId)
+    mp.events.add('damage', function(playerId, data)
+      local victim = mp.players.at(data.victimId)
       print(string.format("[Damage] %s took %s damage.", victim.nickname, data.totalDamage))
       print(string.format("Weapon Hash: %s | Damage Type: %s", data.weaponHash, data.damageType))
     end)
 
     -- Weapon fired
-    mp.events.on('shootAction', function(playerId, data)
-      print(string.format("Player %s fired weapon %s at [%s, %s, %s]", playerId, data.weaponHash, data.posX, data.posY, data.posZ))
+    mp.events.add('shootAction', function(playerId, data)
+      print(string.format("Player %s fired weapon %s at [%s, %s, %s]", playerId, data[1], data[3], data[4], data[5]))
     end)
 
     -- Melee attack
-    mp.events.on('meleeAction', function(playerId, data)
-      print(string.format("Player %s performed melee action type: %s", playerId, data.type))
+    mp.events.add('meleeAction', function(playerId, data)
+      print(string.format("Player %s performed melee action type: %s", playerId, data[1]))
     end)
 
     -- Grenade thrown
-    mp.events.on('throwGrenade', function(playerId, data)
-      print(string.format("Player %s threw grenade (QuickThrow: %s)", playerId, tostring(data.isQuickThrow)))
+    mp.events.add('throwGrenade', function(playerId, data)
+      print(string.format("Player %s threw grenade (QuickThrow: %s)", playerId, tostring(data[3])))
     end)
     ```
   </TabItem>
@@ -411,13 +411,13 @@ Dimensions isolate players into virtual instances. Entities in different dimensi
     // Enter private instance
     function enterApartment(player, apartmentId) {
       player.dimension = 1000 + apartmentId;
-      player.emit('chat:addMessage', `Entered private apartment #${apartmentId}.`);
+      player.emit('chat:add', `Entered private apartment #${apartmentId}.`);
     }
 
     // Return to public world
     function exitApartment(player) {
       player.dimension = 0;
-      player.emit('chat:addMessage', 'Returned to public street.');
+      player.emit('chat:add', 'Returned to public street.');
     }
     ```
   </TabItem>
@@ -426,13 +426,13 @@ Dimensions isolate players into virtual instances. Entities in different dimensi
     -- Enter private instance
     function enterApartment(player, apartmentId)
       player.dimension = 1000 + apartmentId
-      player:emit('chat:addMessage', string.format("Entered private apartment #%s.", apartmentId))
+      player:trigger('chat:add', string.format("Entered private apartment #%s.", apartmentId))
     end
 
     -- Return to public world
     function exitApartment(player)
       player.dimension = 0
-      player:emit('chat:addMessage', 'Returned to public street.')
+      player:trigger('chat:add', 'Returned to public street.')
     end
     ```
   </TabItem>

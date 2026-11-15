@@ -7,3 +7,35 @@
   --sl-color-accent: #e5ff00;
   --sl-color-accent-high: #f2ff80;
 }
+
+/*
+ * Tables: wrap text only between words. Identifier-length tokens stay on one
+ * line; a table that becomes too wide scrolls horizontally (Starlight gives
+ * the table `display: block; overflow: auto`) instead of breaking words.
+ */
+.sl-markdown-content table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--sl-text-sm);
+}
+
+.sl-markdown-content :is(th, td) {
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: none;
+  vertical-align: top;
+}
+
+.sl-markdown-content :is(th, td) code {
+  overflow-wrap: normal;
+  word-break: normal;
+  white-space: nowrap;
+}
+
+.sl-markdown-content thead th {
+  background-color: color-mix(in srgb, var(--sl-color-text) 6%, transparent);
+}
+
+.sl-markdown-content tbody tr:nth-child(even) {
+  background-color: color-mix(in srgb, var(--sl-color-text) 3%, transparent);
+}

@@ -9,7 +9,13 @@ Defined in: events.ts:553
 
 ## Extends
 
-- [`EntitiesEvents`](/reference/server/api/events/entities/entitiesevents/).[`PedEvents`](/reference/server/api/events/peds/pedevents/).[`PickupsEvents`](/reference/server/api/events/pickups/pickupsevents/).[`VehiclesEvents`](/reference/server/api/events/vehicles/vehiclesevents/).[`WorldEvents`](/reference/server/api/events/world/worldevents/).[`PlayersEvents`](/reference/server/api/events/players/playersevents/).[`ResourcesEvents`](/reference/server/api/events/resources/resourcesevents/)
+- [`EntitiesEvents`](/reference/server/api/events/entities/entitiesevents/)
+- [`PedEvents`](/reference/server/api/events/peds/pedevents/)
+- [`PickupsEvents`](/reference/server/api/events/pickups/pickupsevents/)
+- [`VehiclesEvents`](/reference/server/api/events/vehicles/vehiclesevents/)
+- [`WorldEvents`](/reference/server/api/events/world/worldevents/)
+- [`PlayersEvents`](/reference/server/api/events/players/playersevents/)
+- [`ResourcesEvents`](/reference/server/api/events/resources/resourcesevents/)
 
 ## Methods
 

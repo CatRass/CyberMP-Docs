@@ -59,7 +59,8 @@ export default defineConfig({
                   "guides/client/lifecycle",
                   "guides/client/observes",
                   "guides/client/overrides",
-                  "guides/client/network-and-local",
+                  "guides/client/network-ids",
+                  "guides/client/local-entities",
                   "guides/client/local-storage",
                   "guides/client/discord",
                 ],
@@ -90,9 +91,7 @@ export default defineConfig({
                   {
                     label: "Lua API",
                     items: [
-                      "reference/lua/overview",
                       "reference/lua/server",
-                      "reference/lua/shared",
                     ],
                     collapsed: true,
                   },
@@ -112,9 +111,7 @@ export default defineConfig({
                   {
                     label: "Lua API",
                     items: [
-                      "reference/lua/overview",
                       "reference/lua/client",
-                      "reference/lua/shared",
                     ],
                     collapsed: true,
                   },
@@ -249,5 +246,6 @@ export default defineConfig({
   },
   redirects: {
     "/": "/guides/introduction",
+    "/guides/client/network-and-local": "/guides/client/network-ids",
   },
 });

@@ -38,7 +38,7 @@ Removes game object classes (e.g., `GameObject`, `Door`) from the active multipl
 
 ##### objectClassMap
 
-keyof `MpClasses`[]
+(keyof `MpClasses`)[]
 
 Array of class names from `MpClasses` to clear.
 

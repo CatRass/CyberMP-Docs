@@ -37,20 +37,20 @@ Generate hashes directly in your server scripts:
     const appearanceHash = mp.hashes.cname('quadra_turbo_r__basic_player_01');
 
     // 3. ResRef: Game engine file resources
-    const barrierResRef = mp.hashes.resref('base\\gameplay\\devices\\barriers\\road_barrier_a.ent');
+    const barrierResRef = mp.hashes.resref('base\\gameplay\\devices\\doors\\gates\\appearances\\w300_h250_mall_metal.ent');
     ```
   </TabItem>
   <TabItem label="Lua">
     ```lua title="server.lua"
     -- 1. TweakDBID: Item and vehicle definitions
-    local quadraHash = mp.hashes.tweakdbid('Vehicle.v_sport1_quadra_turbo_r_player')
-    local katanaHash = mp.hashes.tweakdbid('Items.Preset_Katana_Military')
+    local quadraHash = tonumber(mp.hashes.toTweakdbid('Vehicle.v_sport1_quadra_turbo_r_player'), 10)
+    local katanaHash = tonumber(mp.hashes.toTweakdbid('Items.Preset_Katana_Military'), 10)
 
     -- 2. CName: Appearance and component names
-    local appearanceHash = mp.hashes.cname('quadra_turbo_r__basic_player_01')
+    local appearanceHash = tonumber(mp.hashes.toCname('quadra_turbo_r__basic_player_01'), 10)
 
     -- 3. ResRef: Game engine file resources
-    local barrierResRef = mp.hashes.resref('base\\gameplay\\devices\\barriers\\road_barrier_a.ent')
+    local barrierResRef = tonumber(mp.hashes.toResref('base\\gameplay\\devices\\doors\\gates\\appearances\\w300_h250_mall_metal.ent'), 10)
     ```
   </TabItem>
 </Tabs>
@@ -75,8 +75,8 @@ Spawning vehicles and peds requires passing model and appearance hashes:
 
     // Spawn an NPC ped
     const npc = mp.peds.create({
-      model: mp.hashes.tweakdbid('Character.afterlife_bartender'),
-      appearance: mp.hashes.cname('afterlife_bartender_default'),
+      model: mp.hashes.tweakdbid('Character.Judy'),
+      appearance: mp.hashes.cname('default'),
       position: [-1456.8, 1038.2, 16.8]
     });
     ```
@@ -85,16 +85,16 @@ Spawning vehicles and peds requires passing model and appearance hashes:
     ```lua title="server.lua"
     -- Spawn a vehicle with specific model and skin
     local car = mp.vehicles.create({
-      model = mp.hashes.tweakdbid('Vehicle.v_sport2_mizutani_shion_player'),
-      appearance = mp.hashes.cname('mizutani_shion__basic_player_01'),
-      position = {-1392.6, 1271.5, 123.0}
+      model = tonumber(mp.hashes.toTweakdbid('Vehicle.v_sport2_mizutani_shion_player'), 10),
+      appearance = tonumber(mp.hashes.toCname('mizutani_shion__basic_player_01'), 10),
+      position = vector3(-1392.6, 1271.5, 123.0)
     })
 
     -- Spawn an NPC ped
     local npc = mp.peds.create({
-      model = mp.hashes.tweakdbid('Character.afterlife_bartender'),
-      appearance = mp.hashes.cname('afterlife_bartender_default'),
-      position = {-1456.8, 1038.2, 16.8}
+      model = tonumber(mp.hashes.toTweakdbid('Character.Judy'), 10),
+      appearance = tonumber(mp.hashes.toCname('default'), 10),
+      position = vector3(-1456.8, 1038.2, 16.8)
     })
     ```
   </TabItem>
@@ -118,11 +118,11 @@ When a player deals damage or fires a weapon, `data.weaponHash` contains the Twe
   </TabItem>
   <TabItem label="Lua">
     ```lua title="server.lua"
-    local WEAPON_KATANA = mp.hashes.tweakdbid('Items.Preset_Katana_Military')
+    local WEAPON_KATANA = tonumber(mp.hashes.toTweakdbid('Items.Preset_Katana_Military'), 10)
 
-    mp.events.on('damage', function(victimId, data)
+    mp.events.add('damage', function(playerId, data)
       if data.weaponHash == WEAPON_KATANA then
-        print(string.format("Victim #%s was struck by a military katana!", victimId))
+        print(string.format("Victim #%s was struck by a military katana!", data.victimId))
       end
     end)
     ```

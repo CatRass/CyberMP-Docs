@@ -61,7 +61,7 @@ Platform events are fired automatically by the client runtime when engine states
   </TabItem>
 </Tabs>
 
-Stream events (such as `vehicleStreamIn` / `Out` and `remotePlayerStreamIn` / `Out`) pass both the server-assigned `netID` and local engine `gameID`. For identifier mapping outside of stream callbacks, see [Network IDs and Local Entities](/guides/client/network-and-local). For all built-in events, consult the [`MpEventsMap`](/reference/client/api/events/mpeventsmap/) reference.
+Stream events (such as `vehicleStreamIn` / `Out` and `remotePlayerStreamIn` / `Out`) pass both the server-assigned `netID` and local engine `gameID`. For identifier mapping outside of stream callbacks, see [Network IDs](/guides/client/network-ids/). For all built-in events, consult the [`MpEventsMap`](/reference/client/api/events/mpeventsmap/) reference.
 
 ---
 
@@ -85,9 +85,6 @@ Client scripts send data to the server using reliable network packets and listen
     ```lua title="client.lua"
     -- Send a reliable packet to the server
     mp.events.triggerServer('requestVehicleSpawn', 'Vehicle.v_sport1_quadra_turbo_r_player')
-
-    -- Send over unreliable channel (ideal for high-frequency input streams)
-    mp.events.triggerUnreliable('playerInputTick', 30, { moving = true })
 
     -- Listen for events dispatched from the server
     mp.events.addServer('serverNotification', function(message)
@@ -140,8 +137,8 @@ Use CEF events to pass data between your client script and embedded HTML/CSS web
     end)
 
     -- Built-in CEF event: fires on uncaught JS errors in the browser
-    mp.events.addCef('loadingFailed', function(error)
-      print(string.format("CEF Load Failed: %s", tostring(error)))
+    mp.events.addCef('loadingFailed', function(err)
+      print(string.format("CEF error in %s: %s", err.frameName, err.message))
     end)
 
     -- Custom event: dispatched from the CEF page via mp.events.emit
@@ -184,11 +181,11 @@ To prevent memory leaks and duplicate callbacks across script reloads, detach li
       print(string.format("Vehicle %s streamed in.", netID))
     end
 
-    -- Register listener (returns a handler token)
-    local token = mp.events.add('vehicleStreamIn', handleVehicleStream)
+    -- Register listener (returns a numeric handler id)
+    local handlerId = mp.events.add('vehicleStreamIn', handleVehicleStream)
 
-    -- Unregister listener
-    mp.events.remove(token)
+    -- Unregister listener; the event name is required too
+    mp.events.remove('vehicleStreamIn', handlerId)
     ```
   </TabItem>
 </Tabs>

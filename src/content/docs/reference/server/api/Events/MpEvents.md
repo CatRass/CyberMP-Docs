@@ -87,6 +87,8 @@ Works for both standard and [MpEvents.onClient](/reference/server/api/events/mpe
 
 ##### Type Parameters
 
+<a id="offe"></a>
+
 ###### E
 
 `E` *extends* keyof [`MpEventsMap`](/reference/server/api/events/mpeventsmap/)
@@ -146,6 +148,8 @@ Defined in: events.ts:574
 Listen for a platform or custom event.
 
 ##### Type Parameters
+
+<a id="one"></a>
 
 ###### E
 

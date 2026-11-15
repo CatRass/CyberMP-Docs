@@ -25,10 +25,10 @@ To register a command on the server, use `mp.commands.add`. Command names are pl
     mp.commands.add('ping', (player, args) => {
       if (player) {
         // Invoked by a player in the client F8 console
-        player.emit('chat:addMessage', `Pong! Latency: ${player.ping}ms.`);
+        player.emit('chat:add', `Latency: ${player.ping}ms.`);
       } else {
         // Invoked in the server terminal
-        console.log('[Server Console] Pong! Server is running.');
+        console.log('[Server Console] Server is running.');
       }
     });
     ```
@@ -36,12 +36,12 @@ To register a command on the server, use `mp.commands.add`. Command names are pl
   <TabItem label="Lua">
     ```lua title="server.lua"
     mp.commands.add('ping', function(player, args)
-      if player then
+      if player ~= 0 then
         -- Invoked by a player in the client F8 console
-        player:emit('chat:addMessage', string.format("Pong! Latency: %sms.", player.ping))
+        player:trigger('chat:add', string.format("Latency: %sms.", player.ping))
       else
         -- Invoked in the server terminal
-        print('[Server Console] Pong! Server is running.')
+        print('[Server Console] Server is running.')
       end
     end)
     ```
@@ -78,18 +78,18 @@ Arguments arrive as raw strings inside `args`. When designing commands that requ
       }
 
       if (!args[0]) {
-        player.emit('chat:addMessage', 'Usage: sethealth <amount>');
+        player.emit('chat:add', 'Usage: sethealth <amount>');
         return;
       }
 
       const amount = parseInt(args[0], 10);
       if (Number.isNaN(amount) || amount < 0 || amount > 1000) {
-        player.emit('chat:addMessage', 'Error: Health must be between 0 and 1000.');
+        player.emit('chat:add', 'Error: Health must be between 0 and 1000.');
         return;
       }
 
       player.emit('player:setHealth', amount);
-      player.emit('chat:addMessage', `Your health was updated to ${amount} HP.`);
+      player.emit('chat:add', `Your health was updated to ${amount} HP.`);
     });
     ```
   </TabItem>
@@ -98,24 +98,24 @@ Arguments arrive as raw strings inside `args`. When designing commands that requ
     -- Invocation (F8 console): sethealth 500
     mp.commands.add('sethealth', function(player, args)
       -- Reject execution from the server terminal where there is no player entity
-      if not player then
+      if player == 0 then
         print('[Command] sethealth can only be executed by a player in-game.')
         return
       end
 
       if not args[1] then
-        player:emit('chat:addMessage', 'Usage: sethealth <amount>')
+        player:trigger('chat:add', 'Usage: sethealth <amount>')
         return
       end
 
       local amount = tonumber(args[1])
       if not amount or amount < 0 or amount > 1000 then
-        player:emit('chat:addMessage', 'Error: Health must be between 0 and 1000.')
+        player:trigger('chat:add', 'Error: Health must be between 0 and 1000.')
         return
       end
 
-      player:emit('player:setHealth', amount)
-      player:emit('chat:addMessage', string.format("Your health was updated to %s HP.", amount))
+      player:trigger('player:setHealth', amount)
+      player:trigger('chat:add', string.format("Your health was updated to %s HP.", amount))
     end)
     ```
   </TabItem>
@@ -159,9 +159,9 @@ This command requires player coordinates to position the new vehicle, so it veri
           dimension: player.dimension,
         });
 
-        player.emit('chat:addMessage', `Spawned vehicle #${vehicle.id} (${modelName}).`);
+        player.emit('chat:add', `Spawned vehicle #${vehicle.id} (${modelName}).`);
       } catch (error) {
-        player.emit('chat:addMessage', `Failed to spawn vehicle: ${error.message}`);
+        player.emit('chat:add', `Failed to spawn vehicle: ${error.message}`);
       }
     });
     ```
@@ -170,7 +170,7 @@ This command requires player coordinates to position the new vehicle, so it veri
     ```lua title="server.lua"
     -- Invocation (F8 console): veh [model] [appearance]
     mp.commands.add('veh', function(player, args)
-      if not player then
+      if player == 0 then
         print('[Command] veh can only be executed by a player in-game.')
         return
       end
@@ -178,8 +178,8 @@ This command requires player coordinates to position the new vehicle, so it veri
       local modelName = args[1] or 'Vehicle.v_sport1_quadra_turbo_r_player'
       local appearanceName = args[2] or 'quadra_turbo_r__basic_player_01'
 
-      local modelHash = mp.hashes.tweakdbid(modelName)
-      local appearanceHash = mp.hashes.cname(appearanceName)
+      local modelHash = tonumber(mp.hashes.toTweakdbid(modelName), 10)
+      local appearanceHash = tonumber(mp.hashes.toCname(appearanceName), 10)
 
       local pos = player.position
       local rad = math.rad(player.yaw)
@@ -189,12 +189,12 @@ This command requires player coordinates to position the new vehicle, so it veri
       local vehicle = mp.vehicles.create({
         model = modelHash,
         appearance = appearanceHash,
-        position = {spawnX, spawnY, pos[3]},
+        position = vector3(spawnX, spawnY, pos[3]),
         yaw = player.yaw,
         dimension = player.dimension,
       })
 
-      player:emit('chat:addMessage', string.format("Spawned vehicle #%s (%s).", vehicle.id, modelName))
+      player:trigger('chat:add', string.format("Spawned vehicle #%s (%s).", vehicle.id, modelName))
     end)
     ```
   </TabItem>
@@ -213,18 +213,18 @@ This command requires player coordinates to position the new vehicle, so it veri
       }
 
       if (args.length < 3) {
-        player.emit('chat:addMessage', 'Usage: tp <x> <y> <z>');
+        player.emit('chat:add', 'Usage: tp <x> <y> <z>');
         return;
       }
 
       const [x, y, z] = args.map(Number);
       if (Number.isNaN(x) || Number.isNaN(y) || Number.isNaN(z)) {
-        player.emit('chat:addMessage', 'Error: Invalid coordinates provided.');
+        player.emit('chat:add', 'Error: Invalid coordinates provided.');
         return;
       }
 
       player.emit('player:teleport', x, y, z);
-      player.emit('chat:addMessage', `Teleported to [${x}, ${y}, ${z}].`);
+      player.emit('chat:add', `Teleported to [${x}, ${y}, ${z}].`);
     });
 
     // Invocation (F8 console): goto <playerId>
@@ -236,7 +236,7 @@ This command requires player coordinates to position the new vehicle, so it veri
 
       const targetId = parseInt(args[0], 10);
       if (!mp.players.exists(targetId)) {
-        player.emit('chat:addMessage', `Player ID #${targetId} not found.`);
+        player.emit('chat:add', `Player ID #${targetId} not found.`);
         return;
       }
 
@@ -245,7 +245,7 @@ This command requires player coordinates to position the new vehicle, so it veri
 
       player.dimension = target.dimension;
       player.emit('player:teleport', tx + 1, ty + 1, tz);
-      player.emit('chat:addMessage', `Teleported to ${target.nickname}.`);
+      player.emit('chat:add', `Teleported to ${target.nickname}.`);
     });
     ```
   </TabItem>
@@ -253,36 +253,36 @@ This command requires player coordinates to position the new vehicle, so it veri
     ```lua title="server.lua"
     -- Invocation (F8 console): tp <x> <y> <z>
     mp.commands.add('tp', function(player, args)
-      if not player then
+      if player == 0 then
         print('[Command] tp can only be executed by a player in-game.')
         return
       end
 
       if #args < 3 then
-        player:emit('chat:addMessage', 'Usage: tp <x> <y> <z>')
+        player:trigger('chat:add', 'Usage: tp <x> <y> <z>')
         return
       end
 
       local x, y, z = tonumber(args[1]), tonumber(args[2]), tonumber(args[3])
       if not x or not y or not z then
-        player:emit('chat:addMessage', 'Error: Invalid coordinates provided.')
+        player:trigger('chat:add', 'Error: Invalid coordinates provided.')
         return
       end
 
-      player:emit('player:teleport', x, y, z)
-      player:emit('chat:addMessage', string.format("Teleported to [%s, %s, %s].", x, y, z))
+      player:trigger('player:teleport', x, y, z)
+      player:trigger('chat:add', string.format("Teleported to [%s, %s, %s].", x, y, z))
     end)
 
     -- Invocation (F8 console): goto <playerId>
     mp.commands.add('goto', function(player, args)
-      if not player then
+      if player == 0 then
         print('[Command] goto can only be executed by a player in-game.')
         return
       end
 
       local targetId = tonumber(args[1])
       if not targetId or not mp.players.exists(targetId) then
-        player:emit('chat:addMessage', string.format("Player ID #%s not found.", tostring(args[1])))
+        player:trigger('chat:add', string.format("Player ID #%s not found.", tostring(args[1])))
         return
       end
 
@@ -290,8 +290,8 @@ This command requires player coordinates to position the new vehicle, so it veri
       local pos = target.position
 
       player.dimension = target.dimension
-      player:emit('player:teleport', pos[1] + 1, pos[2] + 1, pos[3])
-      player:emit('chat:addMessage', string.format("Teleported to %s.", target.nickname))
+      player:trigger('player:teleport', pos[1] + 1, pos[2] + 1, pos[3])
+      player:trigger('chat:add', string.format("Teleported to %s.", target.nickname))
     end)
     ```
   </TabItem>
@@ -308,7 +308,7 @@ Unlike commands that require a physical player entity in the world, moderation c
     mp.commands.add('kick', (player, args) => {
       // If invoked by a player via F8 console, verify admin permissions
       if (player && !player.getMeta('isAdmin')) {
-        player.emit('chat:addMessage', 'Error: Access denied.');
+        player.emit('chat:add', 'Error: Access denied.');
         return;
       }
 
@@ -316,7 +316,7 @@ Unlike commands that require a physical player entity in the world, moderation c
       if (Number.isNaN(targetId) || !mp.players.exists(targetId)) {
         const errorMsg = `Player ID #${args[0]} not found. Usage: kick <playerId> [reason...]`;
         if (player) {
-          player.emit('chat:addMessage', errorMsg);
+          player.emit('chat:add', errorMsg);
         } else {
           console.log(`[Command] ${errorMsg}`);
         }
@@ -329,7 +329,7 @@ Unlike commands that require a physical player entity in the world, moderation c
 
       // Broadcast kick notice to all online players
       mp.players.toArray().forEach((p) => {
-        p.emit('chat:addMessage', `[Kick] ${targetPlayer.nickname} was kicked by ${senderName} (${reason})`);
+        p.emit('chat:add', `[Kick] ${targetPlayer.nickname} was kicked by ${senderName} (${reason})`);
       });
 
       console.log(`[Kick] ${targetPlayer.nickname} was kicked by ${senderName} (${reason})`);
@@ -342,16 +342,16 @@ Unlike commands that require a physical player entity in the world, moderation c
     -- Invocation: kick <playerId> [reason...]
     mp.commands.add('kick', function(player, args)
       -- If invoked by a player via F8 console, verify admin permissions
-      if player and not player:getMeta('isAdmin') then
-        player:emit('chat:addMessage', 'Error: Access denied.')
+      if player ~= 0 and not player:getMeta('isAdmin') then
+        player:trigger('chat:add', 'Error: Access denied.')
         return
       end
 
       local targetId = tonumber(args[1])
       if not targetId or not mp.players.exists(targetId) then
         local errorMsg = string.format("Player ID #%s not found. Usage: kick <playerId> [reason...]", tostring(args[1]))
-        if player then
-          player:emit('chat:addMessage', errorMsg)
+        if player ~= 0 then
+          player:trigger('chat:add', errorMsg)
         else
           print(string.format("[Command] %s", errorMsg))
         end
@@ -364,11 +364,11 @@ Unlike commands that require a physical player entity in the world, moderation c
         table.insert(reasonParts, args[i])
       end
       local reason = #reasonParts > 0 and table.concat(reasonParts, ' ') or 'Kicked by administrator'
-      local senderName = player and player.nickname or 'Server Console'
+      local senderName = player ~= 0 and player.nickname or 'Server Console'
 
       -- Broadcast kick notice to all online players
       for _, p in ipairs(mp.players.toArray()) do
-        p:emit('chat:addMessage', string.format("[Kick] %s was kicked by %s (%s)", targetPlayer.nickname, senderName, reason))
+        p:trigger('chat:add', string.format("[Kick] %s was kicked by %s (%s)", targetPlayer.nickname, senderName, reason))
       end
 
       print(string.format("[Kick] %s was kicked by %s (%s)", targetPlayer.nickname, senderName, reason))

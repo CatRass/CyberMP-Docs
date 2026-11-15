@@ -73,9 +73,9 @@ Entities created with `mp.*.create` (such as spawned vehicles or NPCs) live in t
 
        mp.events.add('resourceStart', function()
          local car = mp.vehicles.create({
-           model = mp.hashes.tweakdbid('Vehicle.v_sport1_quadra_turbo_r_player'),
-           appearance = mp.hashes.cname('quadra_turbo_r__basic_player_01'),
-           position = {-1392.6, 1271.5, 123.0},
+           model = tonumber(mp.hashes.toTweakdbid('Vehicle.v_sport1_quadra_turbo_r_player'), 10),
+           appearance = tonumber(mp.hashes.toCname('quadra_turbo_r__basic_player_01'), 10),
+           position = vector3(-1392.6, 1271.5, 123.0),
            yaw = 90
          })
          table.insert(spawnedVehicles, car)

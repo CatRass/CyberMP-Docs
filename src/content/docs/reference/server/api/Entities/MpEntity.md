@@ -19,6 +19,8 @@ Base interface representing any in-game entity.
 
 ## Type Parameters
 
+<a id="tentitytype"></a>
+
 ### TEntityType
 
 `TEntityType` *extends* [`EntityType`](/reference/server/api/entities/entitytype/) = [`EntityType`](/reference/server/api/entities/entitytype/)
@@ -140,6 +142,8 @@ Defined in: entities.ts:73
 Retrieves metadata stored on this entity.
 
 #### Type Parameters
+
+<a id="getmetat"></a>
 
 ##### T
 
