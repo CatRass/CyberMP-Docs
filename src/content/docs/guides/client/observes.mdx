@@ -14,7 +14,7 @@ For complete type signatures, see [`ObserveFunction`](/reference/client/api/glob
 
 ## Registering an Observer
 
-Observers must be registered after game classes are initialized, typically inside the `onInit` lifecycle stage:
+Register observers from the `onInit` lifecycle stage.
 
 <Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
   <TabItem label="JS">
@@ -63,10 +63,11 @@ Observers must be registered after game classes are initialized, typically insid
 
 Class and method names correspond directly to definitions found in [NativeDB](https://nativedb.red4ext.com/).
 
-- **Instance Methods:** The callback receives `(self, arg1, arg2, ...)`. The first argument represents the instance of the game object executing the method.
+- **Instance Methods:** The callback receives `(self, arg1, arg2, ...)`. The first argument is the instance of the game object executing the method.
 - **Static Methods:** The callback receives `(arg1, arg2, ...)` without a `self` reference.
+- **No Continuation Function:** Observers never receive `wrappedMethod`; it is appended only to overrides.
 - **Overloaded Signatures:** If a method has multiple signatures in NativeDB, supply the full signature suffix (e.g. `'ClassName'`, `'MethodName;Int32Bool'`).
-- **No Result Modification:** Observers receive method arguments only; they cannot alter return values or cancel function execution.
+- **No Result Modification:** Observers receive `self` (for instance methods) and then the method arguments; they cannot alter return values or cancel function execution.
 
 :::warning[Weak References]
 The `self` reference passed into the callback is a weak pointer into the game engine's memory pool. Never assume a stored controller or entity reference remains valid once the corresponding entity or menu is closed or destroyed.
@@ -107,6 +108,10 @@ The engine provides several observer variants to control capture timing and thre
     ```
   </TabItem>
 </Tabs>
+
+:::warning[Raw callbacks run on the game thread]
+A raw observer runs synchronously inside the hooked game call, often on a job worker thread rather than the script thread, so the resource runtime is not freely available there. Keep raw callbacks to reading the arguments, and forward real work through the queued variants (`mp.observe`, `observeBefore`, `observeAfter`) or the client deferred queue (`setImmediate` in JS, `mp.setImmediate` in Lua).
+:::
 
 :::tip[Observer vs Override]
 Observers cannot alter return values or prevent a game function from executing. If you need to intercept, replace, or block a game method, use [Method Overrides](/guides/client/overrides).

@@ -24,6 +24,8 @@ Retrieves a metadata value associated with a synchronized network entity.
 
 #### Type Parameters
 
+<a id="getentitymetat"></a>
+
 ##### T
 
 `T` = `any`
@@ -64,6 +66,8 @@ Retrieves a global metadata value by its key.
 
 #### Type Parameters
 
+<a id="getglobalmetat"></a>
+
 ##### T
 
 `T` = `any`
@@ -98,6 +102,8 @@ Retrieves a metadata value attached specifically to the local player instance.
 
 #### Type Parameters
 
+<a id="getlocalplayermetat"></a>
+
 ##### T
 
 `T` = `any`
@@ -131,6 +137,8 @@ Defined in: meta.d.ts:43
 Retrieves a metadata value attached to a specific remote player.
 
 #### Type Parameters
+
+<a id="getplayermetat"></a>
 
 ##### T
 

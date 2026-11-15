@@ -192,6 +192,8 @@ Deserializes a native engine container structure layout (`Variant`) back into ra
 
 #### Type Parameters
 
+<a id="fromvariantr"></a>
+
 ##### R
 
 `R` = `any`
@@ -218,7 +220,7 @@ The unwrapped JavaScript object structure data.
 
 ### getDisplayResolution()
 
-> **getDisplayResolution**(): \[`number`, `number`\]
+> **getDisplayResolution**(): \[`width`: `number`, `height`: `number`\]
 
 Defined in: game.d.ts:278
 
@@ -226,7 +228,7 @@ Gets the rendering dimensions of the active screen display.
 
 #### Returns
 
-\[`number`, `number`\]
+\[`width`: `number`, `height`: `number`\]
 
 A tuple format containing `[width, height]` in pixels.
 
@@ -243,6 +245,8 @@ Defined in: game.d.ts:316
 Resolves and fetches an engine singleton class reference safely.
 
 #### Type Parameters
+
+<a id="getsingletont"></a>
 
 ##### T
 
@@ -421,6 +425,8 @@ Defined in: game.d.ts:376
 Serializes a JavaScript runtime payload object structural value into a native engine container format (`Variant`).
 
 #### Type Parameters
+
+<a id="tovariantr"></a>
 
 ##### R
 

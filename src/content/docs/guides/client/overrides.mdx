@@ -54,6 +54,7 @@ The last parameter passed to your override callback is the continuation function
 - **Chaining Execution:** Calling `wrappedMethod(...)` invokes the next registered override in the chain or the vanilla REDengine function.
 - **Do Not Pass `self`:** When calling `wrappedMethod(arg1, arg2)`, omit the `self` reference. The runtime bridge already retains the internal instance context.
 - **Blocking Execution:** Omitting the `wrappedMethod(...)` call completely cancels the vanilla method logic and skips further execution.
+- **Return Values and Out Parameters:** An override may replace the method's result and its `out` values instead of calling the original. A result that is not returned falls back to the type default (Lua) or keeps the current value (JS); an `out` value that is not returned keeps what `wrappedMethod(...)` (or the original call) produced. See [Handling Methods with Out Parameters](#handling-methods-with-out-parameters).
 - **Synchronous Execution Only:** Overrides run synchronously. Never mark the callback `async` or return a Promise; the game engine expects immediate C++ return values.
 
 ---
@@ -99,8 +100,25 @@ To disable or override specific vanilla gameplay mechanics (such as vehicle summ
 
 ## Handling Methods with Out Parameters
 
-For game methods that return output parameters (`out` values in REDscript), return the primary result followed by the out values:
+For game methods with output parameters (`out` values in REDscript), return the primary result followed by the out values. The shape of the return value differs between the languages:
 
-- **Single Out Parameter:** Return an array `[result, out1]`.
-- **Multiple Out Parameters:** Return `[result, out1, out2, ...]`.
-- **Void Return with Out Parameters:** Return `[out1, out2]`.
+<Tabs syncKey={SCRIPT_LANG_TAB_SYNC_KEY}>
+  <TabItem label="JS">
+    An override returns **one array**: the return value first, then every `out` value in declaration order. A bare value is also accepted when the method has a single result.
+
+    - **Only a result:** return `result` (or `[result]`).
+    - **Result and one out value:** return `[result, out1]`.
+    - **Void method with out values:** return `[out1, out2, ...]`.
+
+    `undefined`, or an array element that is `undefined`, keeps the current value; `null` resets the slot to the type default.
+  </TabItem>
+  <TabItem label="Lua">
+    An override returns **multiple values**, not a table: the return value first, then every `out` value in declaration order.
+
+    - **Only a result:** `return result`
+    - **Result and one out value:** `return result, out1`
+    - **Void method with out values:** `return out1, out2`
+
+    A Lua table is treated as one value, not as a list of results: it fails the type conversion and is logged as `ignored returned value: expected <Type>`. A result that is not returned fills the return slot with the type default; an out value that is not returned keeps what `wrappedMethod(...)` returned; returning `nil` for an out value resets it to the default.
+  </TabItem>
+</Tabs>

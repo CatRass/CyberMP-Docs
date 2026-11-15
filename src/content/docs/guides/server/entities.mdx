@@ -43,7 +43,7 @@ Game objects allow placing props, barriers, dynamic physics items, and custom sc
   <TabItem label="JS">
     ```js title="server.js"
     // 1. Resolve hash for an in-game asset
-    const barrierHash = mp.hashes.cname('base\\gameplay\\devices\\doors\\gates\\appearances\\w300_h250_mall_metal.ent');
+    const barrierHash = mp.hashes.resref('base\\gameplay\\devices\\doors\\gates\\appearances\\w300_h250_mall_metal.ent');
 
     // 2. Create the object
     const barrier = mp.objects.create({

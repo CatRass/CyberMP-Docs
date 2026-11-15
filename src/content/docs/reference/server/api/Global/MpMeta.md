@@ -21,6 +21,8 @@ Defined in: meta.ts:25
 
 #### Type Parameters
 
+<a id="getentitymetat"></a>
+
 ##### T
 
 `T` = `any`
@@ -51,6 +53,8 @@ Defined in: meta.ts:9
 
 #### Type Parameters
 
+<a id="getglobalmetat"></a>
+
 ##### T
 
 `T` = `any`
@@ -76,6 +80,8 @@ Defined in: meta.ts:9
 Defined in: meta.ts:17
 
 #### Type Parameters
+
+<a id="getplayermetat"></a>
 
 ##### T
 

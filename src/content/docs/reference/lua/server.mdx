@@ -1,6 +1,6 @@
 ---
 title: Server Lua API Reference
-description: "Reference for the CyberMP Server Lua API: entity pools, entity objects, spawning options, events, commands, resources, HTTP, utilities and voice chat."
+description: "Reference for the CyberMP Server Lua API: entity pools, entity objects, spawning options, events, commands, resources, HTTP and utilities."
 ---
 
 The server-side Lua API is exposed through the global `mp` table in `.lua` files running within the `server_script` of a resource. Every resource runs in its own Lua state.
@@ -145,14 +145,6 @@ Distance at which clients stream this entity in. Read / write.
 
 Player object of the network owner client, or `-1` when unowned. Read / write; assignable for non-player entities (pass a player object or network ID).
 
-<a id="entity-firstowner"></a>
-
-#### firstOwner
-
-> **firstOwner**: `Player` | `-1` | `nil`
-
-The initial network owner, or `-1`. Read-only.
-
 <a id="entity-getmeta"></a>
 
 #### entity:getMeta(key)
@@ -245,7 +237,7 @@ Disconnects the player. `reason` is optional.
 
 #### player:trigger(eventName, ...)
 
-> **player:trigger**(`eventName`, `...`): `boolean`
+> **player:trigger**(`eventName`, `...`)
 
 Sends a network event to this client (`mp.events.addServer` on the client).
 
@@ -1165,7 +1157,7 @@ Not cancellable.
 
 > **mp.commands.add**(`name`, `fn`)
 
-Registers a console command. `fn(player, args, raw)` is described below.
+Registers a console command. `fn(player, args)` is described below.
 
 <a id="mp-commands-addraw-serverref"></a>
 
@@ -1471,42 +1463,3 @@ Runs `fn` as a coroutine after `ms` milliseconds. Returns nothing and cannot be 
 Calls `fn` on every script tick. There is no way to remove it.
 
 `mp.wait` works only inside a coroutine; event handlers, command handlers, tasks and timeouts are coroutines, while the main body of a script file is not.
-
----
-
-
-## Voice Chat
-
-<a id="player-mute-serverref"></a>
-
-### player:mute(enable)
-
-> **player:mute**(`enable`): `nil`
-
-Mutes (`true`) or unmutes (`false`) the player.
-
-<a id="mp-voicechat-muteplayer-serverref"></a>
-
-### mp.voiceChat.mutePlayer(playerId, toggle)
-
-> **mp.voiceChat.mutePlayer**(`playerId`, `toggle`): `nil`
-
-Same by numeric player ID.
-
-<a id="mp-voicechat-isplayermuted-serverref"></a>
-
-### mp.voiceChat.isPlayerMuted(playerId)
-
-> **mp.voiceChat.isPlayerMuted**(`playerId`): `boolean`
-
-Returns `true` when the player is muted.
-
-<a id="mp-voicechat-createchannel-serverref"></a>
-
-### mp.voiceChat.createChannel(id)
-
-> **mp.voiceChat.createChannel**(`id`): `nil`
-
-Creates a voice channel with the given numeric ID.
-
-`mp.voiceChat` functions take numeric player IDs; pass `player.id`, not the player object. The voice server itself is configured in `server.toml`.

@@ -16,11 +16,15 @@ discoverable and executable by separate script runtime containers.
 
 ## Type Parameters
 
+<a id="__typet"></a>
+
 ### T
 
 `T` *extends* `unknown`[] = `unknown`[]
 
 Array type mapping the callback's expected input parameters.
+
+<a id="__typer"></a>
 
 ### R
 

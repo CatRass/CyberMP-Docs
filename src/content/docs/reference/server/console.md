@@ -15,7 +15,7 @@ You can use built-in commands or create your own using server API
 | config          | None         | Effective `server.toml` values and their source (file or environment). `private_token` is masked. |
 | kick_player     | `<playerId>`  | Disconnect the player with that id (no reason sent).                                     |
 | max_players     | `[integer]`  | Print or set the console variable. The enforced slot cap is read from `server.toml` at startup and does not change. |
-| quit            | `[reason]`   | Initiates the graceful shutdown sequence for all resources and stops the server.         |
+| quit            | None         | Initiates the graceful shutdown sequence for all resources and stops the server.         |
 | refresh         | None         | Reindex all resources without restarting them.                                           |
 | restart         | `<resName>`  | Restarts the specific resource.                                                          |
 | start           | `<resName>`  | Start the specific resource.                                                             |

@@ -199,6 +199,8 @@ Retrieves metadata stored on this entity.
 
 #### Type Parameters
 
+<a id="getmetat"></a>
+
 ##### T
 
 `T` = `any`

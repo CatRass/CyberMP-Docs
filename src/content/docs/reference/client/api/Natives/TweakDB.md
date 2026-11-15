@@ -56,6 +56,8 @@ Retrieves a "flat" property value directly from TweakDB.
 
 #### Type Parameters
 
+<a id="getflatt"></a>
+
 ##### T
 
 `T` = `any`
@@ -90,6 +92,8 @@ Retrieves a single record from TweakDB.
 
 #### Type Parameters
 
+<a id="getrecordt"></a>
+
 ##### T
 
 `T` = `any`
@@ -123,6 +127,8 @@ Defined in: game.d.ts:76
 Retrieves an array of records matching a specific query or record type.
 
 #### Type Parameters
+
+<a id="getrecordst"></a>
 
 ##### T
 
