@@ -65,14 +65,14 @@ export default defineConfig({
                   "guides/client/discord",
                 ],
               },
-              {
-                label: "Recipes",
-                items: [
-                  "guides/recipes/typescript",
-                  "guides/recipes/hotreload",
-                  "guides/recipes/rpc",
-                ],
-              },
+              // {
+              //   label: "Recipes",
+              //   items: [
+              //     "guides/recipes/typescript",
+              //     "guides/recipes/hotreload",
+              //     "guides/recipes/rpc",
+              //   ],
+              // },
             ],
           },
           {
@@ -90,9 +90,7 @@ export default defineConfig({
                   },
                   {
                     label: "Lua API",
-                    items: [
-                      "reference/lua/server",
-                    ],
+                    items: ["reference/lua/server"],
                     collapsed: true,
                   },
                   "reference/server/configuration",
@@ -110,9 +108,7 @@ export default defineConfig({
                   },
                   {
                     label: "Lua API",
-                    items: [
-                      "reference/lua/client",
-                    ],
+                    items: ["reference/lua/client"],
                     collapsed: true,
                   },
                   "reference/client/working-with-game-natives",
