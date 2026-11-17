@@ -75,7 +75,7 @@ There are two ways to run CyberMP Server:
                   --mount type=bind,source="$(pwd)"/resources,target=/cybermp/resources \
                   -p 2077:2077/tcp \
                   -p 2077:2077/udp \
-                  ghcr.io/cybermp/server:latest
+                  ghcr.io/cyber-mp/server:latest
                   ```
               </TabItem>
               <TabItem label="Docker compose">
@@ -84,7 +84,7 @@ There are two ways to run CyberMP Server:
                   ```yaml title="docker-compose.yml"
                   services:
                     server:
-                      image: ghcr.io/cybermp/server:latest
+                      image: ghcr.io/cyber-mp/server:latest
                       stdin_open: true
                       tty: true
                       volumes:
