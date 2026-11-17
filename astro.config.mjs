@@ -17,116 +17,119 @@ export default defineConfig({
   integrations: [
     starlight({
       plugins: [
-        starlightSidebarTopics([
-          {
-            label: "Guides and recipes",
-            link: "/guides/introduction",
-            icon: "open-book",
-            items: [
-              "guides/introduction",
-              "guides/getting-started",
-              {
-                label: "Resources",
-                items: [
-                  "guides/resources/introduction",
-                  "guides/resources/creating-resource",
-                  "guides/resources/interacting-with-resources",
-                  "guides/resources/live-updates",
-                  "guides/resources/adding-resource-files",
-                  "guides/resources/exports",
-                ],
-              },
-              {
-                label: "Server",
-                items: [
-                  "guides/server/players",
-                  "guides/server/vehicles",
-                  "guides/server/entities",
-                  "guides/server/events",
-                  "guides/server/commands",
-                  "guides/server/meta",
-                  "guides/server/hashes",
-                  "guides/server/cdn",
-                ],
-              },
-              {
-                label: "Client",
-                items: [
-                  "guides/client/spawning-player",
-                  "guides/client/teleporting-player",
-                  "guides/client/events",
-                  "guides/client/first-cef-ui",
-                  "guides/client/lifecycle",
-                  "guides/client/observes",
-                  "guides/client/overrides",
-                  "guides/client/network-ids",
-                  "guides/client/local-entities",
-                  "guides/client/local-storage",
-                  "guides/client/discord",
-                ],
-              },
-              // {
-              //   label: "Recipes",
-              //   items: [
-              //     "guides/recipes/typescript",
-              //     "guides/recipes/hotreload",
-              //     "guides/recipes/rpc",
-              //   ],
-              // },
-            ],
-          },
-          {
-            label: "Reference",
-            link: "/reference/server/configuration",
-            icon: "information",
-            items: [
-              {
-                label: "Server",
-                items: [
-                  {
-                    label: "JS API",
-                    autogenerate: { directory: "reference/server/api" },
-                    collapsed: true,
-                  },
-                  {
-                    label: "Lua API",
-                    items: ["reference/lua/server"],
-                    collapsed: true,
-                  },
-                  "reference/server/configuration",
-                  "reference/server/console",
-                ],
-              },
+        starlightSidebarTopics(
+          [
+            {
+              label: "Guides and recipes",
+              link: "/guides/introduction",
+              icon: "open-book",
+              items: [
+                "guides/introduction",
+                "guides/getting-started",
+                {
+                  label: "Resources",
+                  items: [
+                    "guides/resources/introduction",
+                    "guides/resources/creating-resource",
+                    "guides/resources/interacting-with-resources",
+                    "guides/resources/live-updates",
+                    "guides/resources/adding-resource-files",
+                    "guides/resources/exports",
+                  ],
+                },
+                {
+                  label: "Server",
+                  items: [
+                    "guides/server/players",
+                    "guides/server/vehicles",
+                    "guides/server/entities",
+                    "guides/server/events",
+                    "guides/server/commands",
+                    "guides/server/meta",
+                    "guides/server/hashes",
+                    "guides/server/cdn",
+                  ],
+                },
+                {
+                  label: "Client",
+                  items: [
+                    "guides/client/spawning-player",
+                    "guides/client/teleporting-player",
+                    "guides/client/events",
+                    "guides/client/first-cef-ui",
+                    "guides/client/lifecycle",
+                    "guides/client/observes",
+                    "guides/client/overrides",
+                    "guides/client/network-ids",
+                    "guides/client/local-entities",
+                    "guides/client/local-storage",
+                    "guides/client/discord",
+                  ],
+                },
+                // {
+                //   label: "Recipes",
+                //   items: [
+                //     "guides/recipes/typescript",
+                //     "guides/recipes/hotreload",
+                //     "guides/recipes/rpc",
+                //   ],
+                // },
+              ],
+            },
+            {
+              label: "Reference",
+              link: "/reference/server/configuration",
+              icon: "information",
+              items: [
+                {
+                  label: "Server",
+                  items: [
+                    {
+                      label: "JS API",
+                      autogenerate: { directory: "reference/server/api" },
+                      collapsed: true,
+                    },
+                    {
+                      label: "Lua API",
+                      items: ["reference/lua/server"],
+                      collapsed: true,
+                    },
+                    "reference/server/configuration",
+                    "reference/server/console",
+                  ],
+                },
 
-              {
-                label: "Client",
-                items: [
-                  {
-                    label: "JS API",
-                    autogenerate: { directory: "reference/client/api" },
-                    collapsed: true,
-                  },
-                  {
-                    label: "Lua API",
-                    items: ["reference/lua/client"],
-                    collapsed: true,
-                  },
-                  "reference/client/working-with-game-natives",
-                ],
-              },
-              {
-                label: "Browser",
-                items: [
-                  {
-                    label: "JS API",
-                    autogenerate: { directory: "reference/browser/api" },
-                    collapsed: true,
-                  },
-                ],
-              },
-            ],
-          },
-        ]),
+                {
+                  label: "Client",
+                  items: [
+                    {
+                      label: "JS API",
+                      autogenerate: { directory: "reference/client/api" },
+                      collapsed: true,
+                    },
+                    {
+                      label: "Lua API",
+                      items: ["reference/lua/client"],
+                      collapsed: true,
+                    },
+                    "reference/client/working-with-game-natives",
+                  ],
+                },
+                {
+                  label: "Browser",
+                  items: [
+                    {
+                      label: "JS API",
+                      autogenerate: { directory: "reference/browser/api" },
+                      collapsed: true,
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+          { exclude: ["/guides/recipes/*"] },
+        ),
         // starlightLinksValidatorPlugin(),
         starlightThemeNext(),
         serverStarlightTypeDoc({
